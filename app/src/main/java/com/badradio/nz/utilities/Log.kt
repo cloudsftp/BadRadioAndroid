@@ -1,10 +1,10 @@
 package com.badradio.nz.utilities
 
 import android.util.Log
+import com.badradio.nz.Config.LOG
 import java.lang.Exception
 
 object Log {
-    const val LOG = true
     fun i(tag: String, string: String) {
         if (LOG) Log.i(tag, string)
     }
