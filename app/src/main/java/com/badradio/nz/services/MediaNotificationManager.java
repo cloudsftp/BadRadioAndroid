@@ -12,8 +12,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.badradio.nz.Activity.MainActivity;
 import com.badradio.nz.R;
@@ -91,9 +92,9 @@ public class MediaNotificationManager {
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
         PendingIntent pendingIntent = PendingIntent.getActivity(service, 0, intent, 0);
-//
-//        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//        PendingIntent pendingIntent = PendingIntent.getActivity(service, 0, intent, 0);
+
+        //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); TODO: remove commented out code?
+        // PendingIntent pendingIntent = PendingIntent.getActivity(service, 0, intent, 0);
         //PendingIntent pendingIntent = PendingIntent.getActivity(service, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         NotificationManagerCompat.from(service).cancel(NOTIFICATION_ID);
@@ -115,12 +116,12 @@ public class MediaNotificationManager {
                 .addAction(R.drawable.ic_stop_black_24dp, "stop", stopAction)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setVibrate(new long[]{0L})
-                .setWhen(System.currentTimeMillis())
-                .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                .setWhen(System.currentTimeMillis());
+                /* .setStyle(new android.support.v4.media.app.NotificationCompat.MediaStyle()   TODO: set style
                         .setMediaSession(service.getMediaSession().getSessionToken())
                         .setShowActionsInCompactView(0, 1)
                         .setShowCancelButton(true)
-                        .setCancelButtonIntent(stopAction));
+                        .setCancelButtonIntent(stopAction)); */
 
         Notification notification = builder.build();
         service.startForeground(NOTIFICATION_ID, notification);

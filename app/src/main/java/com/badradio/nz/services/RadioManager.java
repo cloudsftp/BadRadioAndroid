@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
-import android.support.v4.app.NotificationManagerCompat;
 
 import com.badradio.nz.utilities.Log;
 import com.badradio.nz.utilities.Tools;

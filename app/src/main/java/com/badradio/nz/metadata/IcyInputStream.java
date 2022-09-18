@@ -1,7 +1,6 @@
 package com.badradio.nz.metadata;
 
 
-import android.support.annotation.NonNull;
 import android.util.Log;
 
 import java.io.FilterInputStream;
@@ -11,6 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import static java.lang.System.in;
+
+import androidx.annotation.NonNull;
 
 class IcyInputStream extends FilterInputStream {
     private static final String TAG = IcyInputStream.class.getName();

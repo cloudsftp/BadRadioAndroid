@@ -2,12 +2,14 @@ package com.badradio.nz.Activity;
 
 
 import android.graphics.PorterDuff;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
+
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.badradio.nz.R;
 
 public class WebActivity extends AppCompatActivity {
