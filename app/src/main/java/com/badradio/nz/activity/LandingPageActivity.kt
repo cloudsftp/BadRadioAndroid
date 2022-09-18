@@ -35,9 +35,10 @@ import java.util.ArrayList
 // TODO: can be deleted???
 
 class LandingPageActivity : AppCompatActivity(), Tools.EventListener {
+    private var radioLists: MutableList<RadioList> = mutableListOf()
+
     private var rv_stationist: RecyclerView? = null
     private var mAdapter: RecyclerView.Adapter<*>? = null
-    private var radioLists: MutableList<RadioList>? = null
     private var img_about: ImageButton? = null
     private var radioManager: RadioManager? = null
     private var nowPlaying: RelativeLayout? = null

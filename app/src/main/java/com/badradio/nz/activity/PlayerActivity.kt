@@ -249,20 +249,15 @@ class PlayerActivity : AppCompatActivity(), Tools.EventListener {
         }
     }
 
-    //@param info - the text to be updated. Giving a null string will hide the info.
-    fun updateMediaInfoFromBackground(artist: String?, song: String?, image: Bitmap?) {
-        val nowPlayingTitle = findViewById<View>(R.id.tv_songName) as TextView
-        val nowPlaying = findViewById<View>(R.id.tv_Artist) as TextView
-
-        //checking if data is null else updating artist ,song and album art
-        if (artist != null) {
-            nowPlaying.text = artist
-            nowPlayingTitle.text = song
+    private fun updateMediaInfoFromBackground(artist: String?, song: String?, image: Bitmap?) {
+        if (artist != null && song != null) {
+            binding.tvSongName.text = artist
+            binding.tvArtist.text = song
         } else {
-            nowPlayingTitle.visibility = View.VISIBLE
-            nowPlayingTitle.text = StationName
-            nowPlaying.visibility = View.VISIBLE
-            nowPlaying.text = StationDesc
+            binding.tvSongName.visibility = View.VISIBLE
+            binding.tvSongName.text = StationName
+            binding.tvArtist.visibility = View.VISIBLE
+            binding.tvArtist.text = StationDesc
         }
 
         if (image != null) {
@@ -293,13 +288,10 @@ class PlayerActivity : AppCompatActivity(), Tools.EventListener {
         radioManager!!.bind(applicationContext)
     }
 
-    override fun onMetaDataReceived(meta: Metadata, image: Bitmap) {
-        //Update the mediainfo shown above the controls
-        var artist: String? = null
-        var Song: String? = null
-        if (meta != null && meta.artist != null) artist = meta.artist
-        Song = meta.song
-        updateMediaInfoFromBackground(artist, Song, image)
+    override fun onMetaDataReceived(meta: Metadata, image: Bitmap?) { // TODO: why is image sometimes null?
+        if (image != null) {
+            updateMediaInfoFromBackground(meta.artist, meta.song, image)
+        }
     }
 
     @Subscribe
