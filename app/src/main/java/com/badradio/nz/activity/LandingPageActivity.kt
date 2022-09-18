@@ -27,7 +27,7 @@ import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import com.android.volley.Request
-import com.badradio.nz.Adapter.RadioListAdapter
+import com.badradio.nz.adapter.RadioListAdapter
 import com.badradio.nz.metadata.Metadata
 import com.karumi.dexter.listener.PermissionRequest
 import java.util.ArrayList
