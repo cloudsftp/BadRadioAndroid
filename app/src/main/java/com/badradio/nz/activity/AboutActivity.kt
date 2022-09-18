@@ -26,7 +26,6 @@ class AboutActivity : AppCompatActivity() {
         }
 
         binding.btnClose.setOnClickListener {
-            onBackPressed()
             finish()
         }
     }

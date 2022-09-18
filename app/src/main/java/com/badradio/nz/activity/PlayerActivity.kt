@@ -216,7 +216,7 @@ class PlayerActivity : AppCompatActivity(), Tools.EventListener {
     //checking if currently radio is playing
     private val isPlaying: Boolean
         private get() =//checking if currently radio is playing
-            null != radioManager && null != RadioManager.getService() && RadioManager.getService().isPlaying
+            null != radioManager && null != RadioManager.service && RadioManager.service!!.isPlaying
 
     private fun startStopPlaying() {
         //Start the radio playing
@@ -229,7 +229,7 @@ class PlayerActivity : AppCompatActivity(), Tools.EventListener {
         if (isPlaying) {
 
             //If another stream is playing, show this in the layout
-            if (RadioManager.getService() != null && urlToPlay != null && urlToPlay != RadioManager.getService().streamUrl) {
+            if (RadioManager.service != null && urlToPlay != null && urlToPlay != RadioManager.service!!.streamUrl) {
                 binding.imgBtnPlay.setImageResource(R.drawable.btnplay)
                 tvSong.text = StationName
                 tvArtist.text = StationDesc
@@ -381,7 +381,7 @@ class PlayerActivity : AppCompatActivity(), Tools.EventListener {
                 //setting station image
                 Picasso.get().load(StationImage).into(binding.imgStationPlaying)
                 if (isPlaying) {
-                    onAudioSessionId(RadioManager.getService().audioSessionId)
+                    onAudioSessionId(RadioManager.service!!.audioSessionId)
                 }
                 initVolumeBar()
                 updateButtons()

@@ -109,7 +109,7 @@ class LandingPageActivity : AppCompatActivity(), Tools.EventListener {
     }
 
     private val isPlaying: Boolean
-        private get() = null != radioManager && null != RadioManager.getService() && RadioManager.getService().isPlaying
+        private get() = null != radioManager && null != RadioManager.service && RadioManager.service!!.isPlaying
 
     private fun requestStoragePermission() {
         //Checking for permissions
