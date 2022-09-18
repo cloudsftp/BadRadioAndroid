@@ -288,10 +288,8 @@ class PlayerActivity : AppCompatActivity(), Tools.EventListener {
         radioManager!!.bind(applicationContext)
     }
 
-    override fun onMetaDataReceived(meta: Metadata, image: Bitmap?) { // TODO: why is image sometimes null?
-        if (image != null) {
-            updateMediaInfoFromBackground(meta.artist, meta.song, image)
-        }
+    override fun onMetaDataReceived(meta: Metadata, image: Bitmap) {
+        updateMediaInfoFromBackground(meta.artist, meta.song, image)
     }
 
     @Subscribe
