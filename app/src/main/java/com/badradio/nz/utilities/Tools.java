@@ -8,7 +8,7 @@ import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
-import com.badradio.nz.Activity.PlayerActivity;
+import com.badradio.nz.activity.PlayerActivity;
 import com.badradio.nz.R;
 import com.badradio.nz.metadata.Metadata;
 

@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.badradio.nz.Models.RadioList;
-import com.badradio.nz.Activity.PlayerActivity;
+import com.badradio.nz.activity.PlayerActivity;
 import com.badradio.nz.R;
 import com.squareup.picasso.Picasso;
 

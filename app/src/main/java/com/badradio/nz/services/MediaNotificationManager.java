@@ -16,7 +16,7 @@ import android.os.Build;
 import androidx.core.app.NotificationCompat;
 import androidx.core.app.NotificationManagerCompat;
 
-import com.badradio.nz.Activity.MainActivity;
+import com.badradio.nz.activity.MainActivity;
 import com.badradio.nz.R;
 import com.badradio.nz.metadata.Metadata;
 import com.badradio.nz.utilities.Tools;

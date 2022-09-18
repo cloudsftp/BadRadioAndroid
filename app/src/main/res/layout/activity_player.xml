@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Activity.PlayerActivity">
+    tools:context=".activity.PlayerActivity">
 
     <RelativeLayout
         android:layout_width="match_parent"
