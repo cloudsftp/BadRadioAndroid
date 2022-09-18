@@ -255,9 +255,10 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         editor.putString("station", data.station)
         editor.apply()
         AlbumArtGetter.getImageForQuery(artistAndSong, { art ->
-            notificationManager!!.startNotify(art, data)
-            //Post meta to Activities
-            onMetaDataReceived(data, art)
+            if (art != null) { // TODO: handle null art
+                notificationManager!!.startNotify(art, data)
+                onMetaDataReceived(data, art)
+            }
         }, this)
     }
 
