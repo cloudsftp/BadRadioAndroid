@@ -75,23 +75,23 @@ public class MediaNotificationManager {
         int icon = R.drawable.ic_pause_black_24dp;
         Intent playbackAction = new Intent(service, RadioService.class);
         playbackAction.setAction(RadioService.ACTION_PAUSE);
-        PendingIntent action = PendingIntent.getService(service, 1, playbackAction, 0);
+        PendingIntent action = PendingIntent.getService(service, 1, playbackAction, PendingIntent.FLAG_MUTABLE);
 
         if (playbackStatus.equals(PlaybackStatus.PAUSED)) {
             icon = R.drawable.ic_play_arrow_black_24dp;
             playbackAction.setAction(RadioService.ACTION_PLAY);
-            action = PendingIntent.getService(service, 2, playbackAction, 0);
+            action = PendingIntent.getService(service, 2, playbackAction, PendingIntent.FLAG_IMMUTABLE);
         }
 
 
         Intent stopIntent = new Intent(service, RadioService.class);
         stopIntent.setAction(RadioService.ACTION_STOP);
-        PendingIntent stopAction = PendingIntent.getService(service, 3, stopIntent, 0);
+        PendingIntent stopAction = PendingIntent.getService(service, 3, stopIntent, PendingIntent.FLAG_IMMUTABLE);
 
         Intent intent = new Intent(service, MainActivity.class);
         intent.setAction(Intent.ACTION_MAIN);
         intent.addCategory(Intent.CATEGORY_LAUNCHER);
-        PendingIntent pendingIntent = PendingIntent.getActivity(service, 0, intent, 0);
+        PendingIntent pendingIntent = PendingIntent.getActivity(service, 0, intent, PendingIntent.FLAG_IMMUTABLE);
 
         //intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK); TODO: remove commented out code?
         // PendingIntent pendingIntent = PendingIntent.getActivity(service, 0, intent, 0);

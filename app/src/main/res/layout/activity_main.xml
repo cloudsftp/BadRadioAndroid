@@ -40,8 +40,8 @@
             android:layout_marginTop="10dp"
             android:fontFamily="@font/nasalization"
             android:text=" 24/7 PHONK"
-            android:textColor="@color/exomedia_default_controls_button_pressed"
-            android:textSize="20sp" />
+            android:textColor="#e0e0e0"
+            android:textSize="20sp" /> <!-- TODO: remove hardcode -->
     </RelativeLayout>
 
 </RelativeLayout>

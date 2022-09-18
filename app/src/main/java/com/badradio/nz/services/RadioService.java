@@ -154,8 +154,8 @@ public class RadioService extends Service implements Player.EventListener, Audio
                 .build());
         mediaSession.setCallback(mediasSessionCallback);
 
-        telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-        telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
+        // telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        // telephonyManager.listen(phoneStateListener, PhoneStateListener.LISTEN_CALL_STATE);
 
         handler = new Handler();
         DefaultBandwidthMeter bandwidthMeter = new DefaultBandwidthMeter();
