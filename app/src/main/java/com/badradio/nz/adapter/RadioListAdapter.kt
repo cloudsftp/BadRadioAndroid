@@ -1,7 +1,7 @@
 package com.badradio.nz.adapter
 
 import android.content.Context
-import com.badradio.nz.Models.RadioList
+import com.badradio.nz.models.RadioList
 import androidx.recyclerview.widget.RecyclerView
 import android.widget.TextView
 import android.widget.RelativeLayout
@@ -36,11 +36,11 @@ class RadioListAdapter(private val radioLists: List<RadioList>, private val cont
     }
 
     override fun onBindViewHolder(viewHolder: ViewHolder, i: Int) {
-        val StationName = radioLists[i].getName()
-        val StationDesc = radioLists[i].getDesc()
-        val StationImage = radioLists[i].getImageURL()
-        val StationLongDesc = radioLists[i].getLongDesc()
-        val url = radioLists[i].getStreamURL()
+        val StationName = radioLists[i].name
+        val StationDesc = radioLists[i].desc
+        val StationImage = radioLists[i].imageURL
+        val StationLongDesc = radioLists[i].longDesc
+        val url = radioLists[i].streamURL
         viewHolder.tv_Radio_name.text = StationName
         viewHolder.tv_Radio_desc.text = StationDesc
         Picasso.get().load(StationImage).placeholder(R.drawable.badradio_logo).into(viewHolder.img_station)

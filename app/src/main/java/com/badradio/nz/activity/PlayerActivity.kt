@@ -9,7 +9,7 @@ import android.content.Intent
 import com.badradio.nz.utilities.Tools
 import android.media.AudioManager
 import com.badradio.nz.services.RadioManager
-import com.badradio.nz.Models.RadioList
+import com.badradio.nz.models.RadioList
 import com.badradio.nz.services.PlaybackStatus
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.graphics.Bitmap
@@ -367,18 +367,18 @@ class PlayerActivity : AppCompatActivity(), Tools.EventListener {
                 val jsonArray = jsonObject.getJSONArray("station")
                 for (i in 0 until jsonArray.length()) {
                     val o = jsonArray.getJSONObject(i)
-                    val radioList = RadioList(o.getString("name"),
-                            o.getString("streamURL"),
+                    val radioList = RadioList(o.getString("name"),  // TODO: make sure all needed attributes are there
+                            o.getString("streamURL"),               // use mochi for json decoding (or gson)
                             o.getString("imageURL"),
                             o.getString("desc"),
                             o.getString("longDesc"))
                     radioLists!!.add(radioList)
                 }
-                StationName = radioLists!![0].getName()
-                StationDesc = radioLists!![0].getDesc()
-                StationImage = radioLists!![0].getImageURL()
-                StationLongDesc = radioLists!![0].getLongDesc()
-                urlToPlay = radioLists!![0].getStreamURL()
+                StationName = radioLists!![0].name
+                StationDesc = radioLists!![0].desc
+                StationImage = radioLists!![0].imageURL
+                StationLongDesc = radioLists!![0].longDesc
+                urlToPlay = radioLists!![0].streamURL
 
                 //setting station image
                 Picasso.get().load(StationImage).into(binding.imgStationPlaying)

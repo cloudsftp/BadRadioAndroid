@@ -7,7 +7,7 @@ import com.badradio.nz.R
 import android.content.Intent
 import com.badradio.nz.utilities.Tools
 import com.badradio.nz.services.RadioManager
-import com.badradio.nz.Models.RadioList
+import com.badradio.nz.models.RadioList
 import com.badradio.nz.services.PlaybackStatus
 import android.graphics.Bitmap
 import com.karumi.dexter.Dexter
