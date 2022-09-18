@@ -224,18 +224,10 @@ class LandingPageActivity : AppCompatActivity(), Tools.EventListener {
         }
     }
 
-    override fun onMetaDataReceived(meta: Metadata, image: Bitmap) {
-
-        //Getting currently playing station and song details
-        var artist: String? = null
-        var Song: String? = null
-        var channel: String? = null
-        var url: String? = null
-        if (meta != null && meta.artist != null) artist = meta.artist
-        Song = meta.song
-        channel = meta.station
-        url = meta.url
-        updateMediaInfoFromBackground(artist, Song, channel, image)
+    override fun onMetaDataReceived(meta: Metadata, image: Bitmap?) {
+        if (image != null && meta.artist != null) { // TODO: why only check for artist
+            updateMediaInfoFromBackground(meta.artist, meta.song, meta.station, image)
+        }
     }
 
     override fun onStart() {

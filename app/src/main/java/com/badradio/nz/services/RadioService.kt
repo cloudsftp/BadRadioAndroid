@@ -9,7 +9,6 @@ import com.badradio.nz.metadata.ShoutcastMetadataListener
 import com.google.android.exoplayer2.SimpleExoPlayer
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.MediaControllerCompat
-import android.telephony.TelephonyManager
 import android.net.wifi.WifiManager.WifiLock
 import android.media.AudioManager
 import com.badradio.nz.R
@@ -31,6 +30,7 @@ import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.badradio.nz.parser.AlbumArtGetter
 import android.app.Service
 import android.content.*
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Binder
 import android.os.Handler
@@ -254,12 +254,13 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
         editor.putString("song", data.song)
         editor.putString("station", data.station)
         editor.apply()
-        AlbumArtGetter.getImageForQuery(artistAndSong, { art ->
-            if (art != null) { // TODO: handle null art
-                notificationManager!!.startNotify(art, data)
-                onMetaDataReceived(data, art)
+        AlbumArtGetter.getImageForQuery(artistAndSong, object : AlbumArtGetter.AlbumCallback {
+            override fun finished(b: Bitmap?) {
+                notificationManager!!.startNotify(b, data)
+                onMetaDataReceived(data, b)
             }
-        }, this)
+
+        })
     }
 
     val isPlaying: Boolean

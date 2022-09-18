@@ -288,8 +288,10 @@ class PlayerActivity : AppCompatActivity(), Tools.EventListener {
         radioManager!!.bind(applicationContext)
     }
 
-    override fun onMetaDataReceived(meta: Metadata, image: Bitmap) {
-        updateMediaInfoFromBackground(meta.artist, meta.song, image)
+    override fun onMetaDataReceived(meta: Metadata, image: Bitmap?) {
+        this@PlayerActivity.runOnUiThread {
+            updateMediaInfoFromBackground(meta.artist, meta.song, image)
+        }
     }
 
     @Subscribe

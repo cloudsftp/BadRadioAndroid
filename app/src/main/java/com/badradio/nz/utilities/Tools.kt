@@ -223,7 +223,7 @@ object Tools {
     }
 
     @JvmStatic
-    fun onMetaDataReceived(meta: Metadata, image: Bitmap) {
+    fun onMetaDataReceived(meta: Metadata, image: Bitmap?) {
         if (listeners == null) return
         for (listener in listeners!!) {
             listener.onMetaDataReceived(meta, image)
@@ -233,6 +233,6 @@ object Tools {
     interface EventListener {
         fun onEvent(status: String)
         fun onAudioSessionId(i: Int)
-        fun onMetaDataReceived(meta: Metadata, image: Bitmap)
+        fun onMetaDataReceived(meta: Metadata, image: Bitmap?)
     }
 }
