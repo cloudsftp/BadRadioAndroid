@@ -472,10 +472,7 @@ public class PlayerActivity extends AppCompatActivity implements Tools.EventList
     private void requestStoragePermission() {
         //Checking for permissions
         Dexter.withActivity(this)
-                .withPermissions(
-                        Manifest.permission.RECORD_AUDIO,
-                        Manifest.permission.MODIFY_AUDIO_SETTINGS,
-                        Manifest.permission.READ_PHONE_STATE)
+                .withPermissions(Manifest.permission.MODIFY_AUDIO_SETTINGS)
                 .withListener(new MultiplePermissionsListener() {
                     @Override
                     public void onPermissionsChecked(MultiplePermissionsReport report) {
