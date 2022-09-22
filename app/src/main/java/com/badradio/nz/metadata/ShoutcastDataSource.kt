@@ -187,7 +187,7 @@ internal class ShoutcastDataSource(
     private fun makeRequest(dataSpec: DataSpec): Request {
         val allowGzip = dataSpec.flags and DataSpec.FLAG_ALLOW_GZIP != 0
         val url = HttpUrl.parse(dataSpec.uri.toString())
-        val builder = Request.Builder().url(url)
+        val builder = Request.Builder().url(url!!)
         if (cacheControl != null) {
             builder.cacheControl(cacheControl)
         }
@@ -196,7 +196,7 @@ internal class ShoutcastDataSource(
                 builder.addHeader(key, value)
             }
         }
-        builder.addHeader("User-Agent", userAgent)
+        userAgent?.let { builder.addHeader("User-Agent", it) }
         if (!allowGzip) {
             builder.addHeader("Accept-Encoding", "identity")
         }
@@ -217,7 +217,7 @@ internal class ShoutcastDataSource(
                     .toInt()
                 `in` = IcyInputStream(`in`, interval, this)
             }
-            OGG -> `in` = OggInputStream(`in`, this)
+            // OGG -> `in` = OggInputStream(`in`, this) TODO: Do we need this?
         }
         return `in`
     }
