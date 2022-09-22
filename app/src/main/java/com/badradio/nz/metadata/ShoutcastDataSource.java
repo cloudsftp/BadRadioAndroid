@@ -263,7 +263,7 @@ final class ShoutcastDataSource implements HttpDataSource, MetadataListener {
             case AAC:
             case AACP:
                 int interval = Integer.parseInt(response.header(ICY_METAINT));
-                in = new IcyInputStream(in, interval, null, this);
+                in = new IcyInputStream(in, interval, this);
                 break;
             case OGG:
                 in = new OggInputStream(in, this);
