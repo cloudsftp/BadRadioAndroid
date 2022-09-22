@@ -18,15 +18,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.WebActivity"></activity>
-        <activity android:name=".Activity.AboutActivity" />
-        <activity android:name=".Activity.InfoActivity" />
+        <activity android:name=".activity.WebActivity"></activity>
+        <activity android:name=".activity.AboutActivity" />
+        <activity android:name=".activity.InfoActivity" />
 
         <service android:name=".services.RadioService" />
 
-        <activity android:name=".Activity.PlayerActivity" />
-        <activity android:name=".Activity.LandingPageActivity" />
-        <activity android:name=".Activity.MainActivity">
+        <activity android:name=".activity.PlayerActivity" />
+        <activity android:name=".activity.MainActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -34,7 +34,8 @@
             </intent-filter>
         </activity>
 
-        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
+        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
