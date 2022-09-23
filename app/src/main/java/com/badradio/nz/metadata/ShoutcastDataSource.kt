@@ -4,11 +4,9 @@ import android.net.Uri
 import kotlin.Throws
 import com.google.android.exoplayer2.upstream.HttpDataSource.HttpDataSourceException
 import com.google.android.exoplayer2.upstream.HttpDataSource.InvalidResponseCodeException
-import com.google.android.exoplayer2.upstream.HttpDataSource.InvalidContentTypeException
 import com.google.android.exoplayer2.C
 import com.google.android.exoplayer2.upstream.*
 import com.google.android.exoplayer2.util.Assertions
-import com.google.android.exoplayer2.util.Predicate
 import okhttp3.*
 import java.io.EOFException
 import java.io.IOException
@@ -20,12 +18,13 @@ import kotlin.collections.HashMap
 internal class ShoutcastDataSource(
     private val callFactory: Call.Factory,
     private val userAgent: String?,
-    private val contentTypePredicate: Predicate<String?>?,
-    private val transferListener: TransferListener<in ShoutcastDataSource?>?,
+    private var transferListener: TransferListener,
     private val shoutcastMetadataListener: ShoutcastMetadataListener?,
     private val cacheControl: CacheControl?
 ) : HttpDataSource, MetadataListener {
     private val requestProperties: HashMap<String, String> = HashMap()
+
+    private val isNetwork = true
 
     private lateinit var dataSpec: DataSpec
     private lateinit var response: Response
@@ -41,46 +40,9 @@ internal class ShoutcastDataSource(
         private const val MP3 = "audio/mpeg"
         private const val AAC = "audio/aac"
         private const val AACP = "audio/aacp"
-        private const val OGG = "application/ogg"
         private const val ICY_METADATA = "Icy-Metadata"
         private const val ICY_METAINT = "icy-metaint"
         private val skipBufferReference = AtomicReference<ByteArray?>()
-    }
-
-    /**
-     * @param callFactory An [Call.Factory] for use by the source.
-     * @param userAgent The User-Agent string that should be used.
-     * @param contentTypePredicate An optional [Predicate]. If a content type is rejected by the
-     * predicate then a InvalidContentTypeException} is thrown from [.open].
-     */
-    constructor(
-        callFactory: Call.Factory, userAgent: String,
-        contentTypePredicate: Predicate<String?>
-    ) : this(callFactory, userAgent, contentTypePredicate, null, null) {
-    }
-
-    /**
-     * @param callFactory An [Call.Factory] for use by the source.
-     * @param userAgent The User-Agent string that should be used.
-     * @param contentTypePredicate An optional [Predicate]. If a content type is rejected by the
-     * predicate then a [InvalidContentTypeException] is thrown from
-     * [.open].
-     * @param transferListener An optional transferListener.
-     */
-    private constructor(
-        callFactory: Call.Factory,
-        userAgent: String,
-        contentTypePredicate: Predicate<String?>,
-        transferListener: TransferListener<in ShoutcastDataSource?>?,
-        shoutcastMetadataListener: ShoutcastMetadataListener?
-    ) : this(
-        callFactory,
-        userAgent,
-        contentTypePredicate,
-        transferListener,
-        shoutcastMetadataListener,
-        null
-    ) {
     }
 
     override fun getUri(): Uri {
@@ -104,6 +66,10 @@ internal class ShoutcastDataSource(
 
     override fun clearAllRequestProperties() {
         synchronized(requestProperties) { requestProperties.clear() }
+    }
+
+    override fun getResponseCode(): Int {
+        TODO("Not yet implemented")
     }
 
     @Throws(HttpDataSourceException::class)
@@ -137,14 +103,6 @@ internal class ShoutcastDataSource(
             throw exception
         }
 
-        // Check for a valid content type.
-        val mediaType = response.body()!!.contentType()
-        val contentType = mediaType?.toString()
-        if (contentTypePredicate != null && !contentTypePredicate.evaluate(contentType)) {
-            closeConnectionQuietly()
-            throw InvalidContentTypeException(contentType, dataSpec)
-        }
-
         // If we requested a range starting from a non-zero position and received a 200 rather than a
         // 206, then the server does not support partial requests. We'll need to manually skip to the
         // requested position.
@@ -158,7 +116,7 @@ internal class ShoutcastDataSource(
             if (contentLength != -1L) contentLength - bytesToSkip else C.LENGTH_UNSET.toLong()
         }
         opened = true
-        transferListener?.onTransferStart(this, dataSpec)
+        transferListener.onTransferStart(this, dataSpec, isNetwork)
         return bytesToRead
     }
 
@@ -172,11 +130,15 @@ internal class ShoutcastDataSource(
         }
     }
 
+    override fun addTransferListener(transferListener: TransferListener) {
+        this.transferListener = transferListener
+    }
+
     @Throws(HttpDataSourceException::class)
     override fun close() {
         if (opened) {
             opened = false
-            transferListener?.onTransferEnd(this)
+            transferListener.onTransferEnd(this, dataSpec, isNetwork)
             closeConnectionQuietly()
         }
     }
@@ -200,8 +162,8 @@ internal class ShoutcastDataSource(
         if (!allowGzip) {
             builder.addHeader("Accept-Encoding", "identity")
         }
-        if (dataSpec.postBody != null) {
-            builder.post(RequestBody.create(null, dataSpec.postBody))
+        if (dataSpec.httpBody != null) {
+            builder.post(RequestBody.create(null, dataSpec.httpBody))
         }
         return builder.build()
     }
@@ -217,7 +179,6 @@ internal class ShoutcastDataSource(
                     .toInt()
                 `in` = IcyInputStream(`in`, interval, this)
             }
-            // OGG -> `in` = OggInputStream(`in`, this) TODO: Do we need this?
         }
         return `in`
     }
@@ -252,7 +213,7 @@ internal class ShoutcastDataSource(
                 throw EOFException()
             }
             bytesSkipped += read.toLong()
-            transferListener?.onBytesTransferred(this, read)
+            transferListener.onBytesTransferred(this, dataSpec, isNetwork, read)
         }
 
         // Release the shared skip buffer.
@@ -296,7 +257,7 @@ internal class ShoutcastDataSource(
             return C.RESULT_END_OF_INPUT
         }
         bytesRead += read.toLong()
-        transferListener?.onBytesTransferred(this, read)
+        transferListener.onBytesTransferred(this, dataSpec, isNetwork, read)
         return read
     }
 
@@ -348,22 +309,20 @@ internal class ShoutcastDataSource(
 class ShoutcastDataSourceFactory private constructor(
     private val callFactory: Call.Factory,
     private val userAgent: String,
-    private val transferListener: TransferListener<in DataSource?>,
+    private val transferListener: TransferListener,
     private val shoutcastMetadataListener: ShoutcastMetadataListener,
     private val cacheControl: CacheControl?
 ) : HttpDataSource.BaseFactory() {
     constructor(
         callFactory: Call.Factory, userAgent: String,
-        transferListener: TransferListener<in DataSource?>,
+        transferListener: TransferListener,
         shoutcastMetadataListener: ShoutcastMetadataListener
-    ) : this(callFactory, userAgent, transferListener, shoutcastMetadataListener, null) {
-    }
+    ) : this(callFactory, userAgent, transferListener, shoutcastMetadataListener, null)
 
     override fun createDataSourceInternal(requestProperties: HttpDataSource.RequestProperties): HttpDataSource {
         return ShoutcastDataSource(
             callFactory,
             userAgent,
-            null,
             transferListener,
             shoutcastMetadataListener,
             cacheControl

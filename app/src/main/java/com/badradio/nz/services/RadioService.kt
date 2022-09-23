@@ -3,10 +3,8 @@ package com.badradio.nz.services
 import com.badradio.nz.utilities.Tools.onEvent
 import com.badradio.nz.utilities.Tools.onMetaDataReceived
 import android.os.IBinder
-import com.google.android.exoplayer2.Player
 import android.media.AudioManager.OnAudioFocusChangeListener
 import com.badradio.nz.metadata.ShoutcastMetadataListener
-import com.google.android.exoplayer2.SimpleExoPlayer
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.net.wifi.WifiManager.WifiLock
@@ -15,32 +13,25 @@ import com.badradio.nz.R
 import android.net.wifi.WifiManager
 import android.support.v4.media.MediaMetadataCompat
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.ExoPlayerFactory
 import android.text.TextUtils
-import com.google.android.exoplayer2.Timeline
-import com.google.android.exoplayer2.source.TrackGroupArray
-import com.google.android.exoplayer2.trackselection.TrackSelectionArray
-import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.PlaybackParameters
 import com.badradio.nz.metadata.ShoutcastDataSourceFactory
 import okhttp3.OkHttpClient
-import com.google.android.exoplayer2.source.ExtractorMediaSource
 import com.badradio.nz.parser.AlbumArtGetter
 import android.app.Service
 import android.content.*
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Binder
-import android.os.Handler
 import com.badradio.nz.metadata.Metadata
+import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
+import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.util.Util
 
-class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener, ShoutcastMetadataListener {
+class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, ShoutcastMetadataListener {
+    private lateinit var exoPlayer: ExoPlayer
+
     private val iBinder: IBinder = LocalBinder()
-    private var handler: Handler? = null
-    private var exoPlayer: SimpleExoPlayer? = null
     var mediaSession: MediaSessionCompat? = null
         private set
     private var transportControls: MediaControllerCompat.TransportControls? = null
@@ -110,15 +101,41 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
                 .build())
         mediaSession!!.setCallback(mediasSessionCallback)
 
-        handler = Handler()
-        val bandwidthMeter = DefaultBandwidthMeter()
-        val videoTrackSelectionFactory = AdaptiveTrackSelection.Factory(bandwidthMeter)
-        val trackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
-        exoPlayer = ExoPlayerFactory.newSimpleInstance(applicationContext, trackSelector)
-        exoPlayer!!.addListener(this)
-        exoPlayer!!.setPlayWhenReady(true)
+        // val bandwidthMeter = DefaultBandwidthMeter()
+        // val videoTrackSelectionFactory = AdaptiveTrackSelection.Factory(bandwidthMeter)
+        // val trackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
+        // exoPlayer = ExoPlayerFactory.newSimpleInstance(applicationContext, trackSelector)
+
+
+        exoPlayer = ExoPlayer.Builder(applicationContext).build()
+        exoPlayer.addListener(this)
+        exoPlayer.playWhenReady = true
+
         registerReceiver(becomingNoisyReceiver, IntentFilter(AudioManager.ACTION_AUDIO_BECOMING_NOISY))
+
         status = PlaybackStatus.IDLE
+    }
+
+    fun play(streamUrl: String?) {
+        this.streamUrl = streamUrl
+        if (wifiLock != null && !wifiLock!!.isHeld) {
+            wifiLock!!.acquire()
+        }
+
+        val bandwidthMeter = DefaultBandwidthMeter.Builder(applicationContext).build()
+        val dataSourceFactory = ShoutcastDataSourceFactory(
+            OkHttpClient.Builder().build(),
+            Util.getUserAgent(this, javaClass.simpleName),
+            bandwidthMeter,
+            this
+        )
+        val mediaSource = DefaultMediaSourceFactory(applicationContext)
+            .setDataSourceFactory(dataSourceFactory)
+            .createMediaSource(MediaItem.fromUri(Uri.parse(streamUrl)))
+
+        exoPlayer.setMediaSource(mediaSource)
+        exoPlayer.prepare()
+        exoPlayer.playWhenReady = true
     }
 
     override fun onStartCommand(intent: Intent, flags: Int, startId: Int): Int {
@@ -153,8 +170,8 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
 
     override fun onDestroy() {
         pause()
-        exoPlayer!!.release()
-        exoPlayer!!.removeListener(this)
+        exoPlayer.release()
+        exoPlayer.removeListener(this)
         notificationManager!!.cancelNotify()
         mediaSession!!.release()
         unregisterReceiver(becomingNoisyReceiver)
@@ -164,15 +181,16 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
     override fun onAudioFocusChange(focusChange: Int) {
         when (focusChange) {
             AudioManager.AUDIOFOCUS_GAIN -> {
-                exoPlayer!!.volume = 0.8f
+                exoPlayer.volume = 0.8f
                 resume()
             }
             AudioManager.AUDIOFOCUS_LOSS -> stop()
             AudioManager.AUDIOFOCUS_LOSS_TRANSIENT -> if (isPlaying) pause()
-            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> if (isPlaying) exoPlayer!!.volume = 0.1f
+            AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK -> if (isPlaying) exoPlayer.volume = 0.1f
         }
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
         when (playbackState) {
             Player.STATE_BUFFERING -> status = PlaybackStatus.LOADING
@@ -190,27 +208,17 @@ class RadioService : Service(), Player.EventListener, OnAudioFocusChangeListener
 
     override fun onRepeatModeChanged(repeatMode: Int) {}
     override fun onShuffleModeEnabledChanged(shuffleModeEnabled: Boolean) {}
-    override fun onTimelineChanged(timeline: Timeline, manifest: Any?, reason: Int) {}
-    override fun onTracksChanged(trackGroups: TrackGroupArray, trackSelections: TrackSelectionArray) {}
+    override fun onTimelineChanged(timeline: Timeline, reason: Int) {}
+    override fun onTracksChanged(tracks: Tracks) {}
+    @Deprecated("Deprecated in Java")
     override fun onLoadingChanged(isLoading: Boolean) {}
-    override fun onPlayerError(error: ExoPlaybackException) {
+    override fun onPlayerError(error: PlaybackException) {
         onEvent(PlaybackStatus.ERROR)
     }
 
     override fun onPositionDiscontinuity(reason: Int) {}
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {}
     override fun onSeekProcessed() {}
-    fun play(streamUrl: String?) {
-        this.streamUrl = streamUrl
-        if (wifiLock != null && !wifiLock!!.isHeld) {
-            wifiLock!!.acquire()
-        }
-        val bandwidthMeter = DefaultBandwidthMeter()
-        val dataSourceFactory = ShoutcastDataSourceFactory(OkHttpClient.Builder().build(), Util.getUserAgent(this, javaClass.simpleName), bandwidthMeter, this)
-        val mediaSource = ExtractorMediaSource.Factory(dataSourceFactory).createMediaSource(Uri.parse(streamUrl))
-        exoPlayer!!.prepare(mediaSource)
-        exoPlayer!!.playWhenReady = true
-    }
 
     val audioSessionId: Int
         get() = exoPlayer!!.audioSessionId
