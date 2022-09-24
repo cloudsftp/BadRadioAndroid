@@ -204,7 +204,7 @@ internal class ShoutcastDataSource(
             skipBuffer = ByteArray(4096)
         }
         while (bytesSkipped != bytesToSkip) {
-            val readLength = Math.min(bytesToSkip - bytesSkipped, skipBuffer.size.toLong()).toInt()
+            val readLength = (bytesToSkip - bytesSkipped).coerceAtMost(skipBuffer.size.toLong()).toInt()
             val read = responseByteStream!!.read(skipBuffer, 0, readLength)
             if (Thread.interrupted()) {
                 throw InterruptedIOException()

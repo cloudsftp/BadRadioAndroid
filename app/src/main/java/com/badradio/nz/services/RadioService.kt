@@ -26,6 +26,9 @@ import com.badradio.nz.metadata.Metadata
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.source.MediaSource
+import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
+import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
+import com.google.android.exoplayer2.trackselection.TrackSelector
 import com.google.android.exoplayer2.util.Util
 
 class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, ShoutcastMetadataListener {
@@ -35,7 +38,6 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
     var mediaSession: MediaSessionCompat? = null
         private set
     private var transportControls: MediaControllerCompat.TransportControls? = null
-    private var onGoingCall = false
     private var wifiLock: WifiLock? = null
     private var audioManager: AudioManager? = null
     private var notificationManager: MediaNotificationManager? = null
@@ -76,7 +78,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
         }
     }
 
-    override fun onBind(intent: Intent): IBinder? {
+    override fun onBind(intent: Intent): IBinder {
         serviceInUse = true
         return iBinder
     }
@@ -85,7 +87,6 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
         super.onCreate()
         strAppName = resources.getString(R.string.app_name)
         strLiveBroadcast = resources.getString(R.string.notification_playing)
-        onGoingCall = false
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         notificationManager = MediaNotificationManager(this)
         wifiLock = (applicationContext.getSystemService(WIFI_SERVICE) as WifiManager)
@@ -103,11 +104,15 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
 
         // val bandwidthMeter = DefaultBandwidthMeter()
         // val videoTrackSelectionFactory = AdaptiveTrackSelection.Factory(bandwidthMeter)
-        // val trackSelector = DefaultTrackSelector(videoTrackSelectionFactory)
-        // exoPlayer = ExoPlayerFactory.newSimpleInstance(applicationContext, trackSelector)
+        //DefaultBandwidthMeter.Builder(applicationContext).build()
+        //AdaptiveTrackSelection()
+        //TrackSelector.InvalidationListener {  }
+        //val trackSelector = DefaultTrackSelector(applicationContext)//(videoTrackSelectionFactory)
 
 
-        exoPlayer = ExoPlayer.Builder(applicationContext).build()
+        exoPlayer = ExoPlayer.Builder(applicationContext)
+        //    .setTrackSelector(trackSelector)
+            .build()
         exoPlayer.addListener(this)
         exoPlayer.playWhenReady = true
 
@@ -116,7 +121,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
         status = PlaybackStatus.IDLE
     }
 
-    fun play(streamUrl: String?) {
+    private fun play(streamUrl: String?) {
         this.streamUrl = streamUrl
         if (wifiLock != null && !wifiLock!!.isHeld) {
             wifiLock!!.acquire()
@@ -216,25 +221,27 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
         onEvent(PlaybackStatus.ERROR)
     }
 
+    @Deprecated("Deprecated in Java")
     override fun onPositionDiscontinuity(reason: Int) {}
     override fun onPlaybackParametersChanged(playbackParameters: PlaybackParameters) {}
+    @Deprecated("Deprecated in Java")
     override fun onSeekProcessed() {}
 
     val audioSessionId: Int
-        get() = exoPlayer!!.audioSessionId
+        get() = exoPlayer.audioSessionId
 
     fun resume() {
         if (streamUrl != null) play(streamUrl)
     }
 
     fun pause() {
-        exoPlayer!!.playWhenReady = false
+        exoPlayer.playWhenReady = false
         audioManager!!.abandonAudioFocus(this)
         wifiLockRelease()
     }
 
     fun stop() {
-        exoPlayer!!.stop()
+        exoPlayer.stop()
         audioManager!!.abandonAudioFocus(this)
         wifiLockRelease()
     }
