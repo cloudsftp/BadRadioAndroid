@@ -2,7 +2,6 @@ package com.badradio.nz.services
 
 import android.os.IBinder
 import android.media.AudioManager.OnAudioFocusChangeListener
-import com.badradio.nz.metadata.ShoutcastMetadataListener
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.MediaControllerCompat
 import android.net.wifi.WifiManager.WifiLock
@@ -26,16 +25,17 @@ import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.util.Util
 
-class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, ShoutcastMetadataListener {
+class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     private lateinit var exoPlayer: ExoPlayer
 
-    private val iBinder: IBinder = LocalBinder()
+    private lateinit var notificationManager: MediaNotificationManager
+
+    private val binder: IBinder = RadioServiceBinder()
     var mediaSession: MediaSessionCompat? = null
         private set
     private var transportControls: MediaControllerCompat.TransportControls? = null
     private var wifiLock: WifiLock? = null
     private var audioManager: AudioManager? = null
-    private var notificationManager: MediaNotificationManager? = null
     private var serviceInUse = false
     var status: String? = null
         private set
@@ -44,7 +44,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
     var streamUrl: String? = null
         private set
 
-    inner class LocalBinder : Binder() {
+    inner class RadioServiceBinder : Binder() {
         val service: RadioService
             get() = this@RadioService
     }
@@ -64,7 +64,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
         override fun onStop() {
             super.onStop()
             stop()
-            notificationManager!!.cancelNotify()
+            notificationManager.cancelNotify()
         }
 
         override fun onPlay() {
@@ -75,7 +75,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
 
     override fun onBind(intent: Intent): IBinder {
         serviceInUse = true
-        return iBinder
+        return binder
     }
 
     override fun onCreate() {
@@ -126,8 +126,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
         val dataSourceFactory = ShoutcastDataSourceFactory(
             OkHttpClient.Builder().build(),
             Util.getUserAgent(this, javaClass.simpleName),
-            bandwidthMeter,
-            this
+            bandwidthMeter
         )
         val mediaSource = DefaultMediaSourceFactory(applicationContext)
             .setDataSourceFactory(dataSourceFactory)
@@ -256,6 +255,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
         }
     }
 
+    /*
     override fun onMetadataReceived(data: Metadata) {
         val artistAndSong = data.artist + " " + data.song
         val pref = applicationContext.getSharedPreferences("data", 0)
@@ -272,7 +272,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
             }
 
         })
-    }
+    } */
 
     val isPlaying: Boolean
         get() = status == PlaybackStatus.PLAYING

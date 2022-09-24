@@ -17,9 +17,8 @@ internal class ShoutcastDataSource(
     private val callFactory: Call.Factory,
     private val userAgent: String?,
     private var transferListener: TransferListener,
-    private val shoutcastMetadataListener: ShoutcastMetadataListener?,
     private val cacheControl: CacheControl?
-) : HttpDataSource, MetadataListener {
+) : HttpDataSource {
     private val requestProperties: HashMap<String, String> = HashMap()
 
     private val isNetwork = true
@@ -281,48 +280,25 @@ internal class ShoutcastDataSource(
         icyHeader!!.channels = headers["icy-channels"]
         icyHeader!!.bitrate = headers["icy-br"]
     }
-
-    override fun onMetadataReceived(artist: String?, song: String?, show: String?) {
-        if (shoutcastMetadataListener != null) {
-            val metadata = Metadata(
-                artist,
-                song,
-                show,
-                icyHeader!!.channels,
-                icyHeader!!.bitrate,
-                icyHeader!!.station,
-                icyHeader!!.genre,
-                icyHeader!!.url
-            )
-            shoutcastMetadataListener.onMetadataReceived(metadata)
-        }
-    }
 }
 
 class ShoutcastDataSourceFactory private constructor(
     private val callFactory: Call.Factory,
     private val userAgent: String,
     private val transferListener: TransferListener,
-    private val shoutcastMetadataListener: ShoutcastMetadataListener,
     private val cacheControl: CacheControl?
 ) : HttpDataSource.BaseFactory() {
     constructor(
         callFactory: Call.Factory, userAgent: String,
-        transferListener: TransferListener,
-        shoutcastMetadataListener: ShoutcastMetadataListener
-    ) : this(callFactory, userAgent, transferListener, shoutcastMetadataListener, null)
+        transferListener: TransferListener
+    ) : this(callFactory, userAgent, transferListener, null)
 
     override fun createDataSourceInternal(requestProperties: HttpDataSource.RequestProperties): HttpDataSource {
         return ShoutcastDataSource(
             callFactory,
             userAgent,
             transferListener,
-            shoutcastMetadataListener,
             cacheControl
         )
     }
-}
-
-interface ShoutcastMetadataListener {
-    fun onMetadataReceived(data: Metadata)
 }

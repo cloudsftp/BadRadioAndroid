@@ -2,7 +2,7 @@ package com.badradio.nz.services
 
 import com.badradio.nz.utilities.Log.printStackTrace
 import android.os.IBinder
-import com.badradio.nz.services.RadioService.LocalBinder
+import com.badradio.nz.services.RadioService.RadioServiceBinder
 import android.content.*
 import com.badradio.nz.utilities.ListenersManager
 import java.lang.IllegalArgumentException
@@ -43,7 +43,7 @@ class RadioManager private constructor() {
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(arg0: ComponentName, binder: IBinder) {
-            service = (binder as LocalBinder).service
+            service = (binder as RadioServiceBinder).service
             serviceBound = true
         }
 
