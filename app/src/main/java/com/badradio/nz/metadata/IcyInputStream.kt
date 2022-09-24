@@ -19,7 +19,7 @@ internal class IcyInputStream(
     override fun read(): Int {
         val ret = super.read()
         if (--remaining == 0) {
-            getMetadata()
+            // getMetadata() TODO: find another way to load metadata without disturbing stream
         }
         return ret
     }
@@ -28,7 +28,7 @@ internal class IcyInputStream(
     override fun read(buffer: ByteArray, offset: Int, len: Int): Int {
         val ret = `in`.read(buffer, offset, remaining.coerceAtMost(len))
         if (remaining == ret) {
-            getMetadata()
+            // getMetadata()
         } else {
             remaining -= ret
         }

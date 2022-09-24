@@ -38,9 +38,9 @@ dependencies {
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
 
     implementation 'com.google.android.material:material:1.6.1'
-    implementation 'com.google.android.exoplayer:exoplayer-core:2.7.3' // TODO: update exoplayer (need to change code)
-    implementation 'com.google.android.exoplayer:exoplayer-dash:2.7.3'
-    implementation 'com.google.android.exoplayer:exoplayer-ui:2.7.3'
+    implementation 'com.google.android.exoplayer:exoplayer-core:2.18.1'
+    implementation 'com.google.android.exoplayer:exoplayer-dash:2.18.1'
+    implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.1'
 
     implementation 'com.android.volley:volley:1.2.1'
 
