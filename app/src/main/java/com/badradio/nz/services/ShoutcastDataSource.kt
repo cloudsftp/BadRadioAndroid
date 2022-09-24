@@ -17,7 +17,6 @@ internal class ShoutcastDataSource(
     private val callFactory: Call.Factory,
     private val userAgent: String?,
     private var transferListener: TransferListener,
-    private val cacheControl: CacheControl?
 ) : HttpDataSource {
     private val requestProperties: HashMap<String, String> = HashMap()
 
@@ -144,14 +143,13 @@ internal class ShoutcastDataSource(
         val allowGzip = dataSpec.flags and DataSpec.FLAG_ALLOW_GZIP != 0
         val url = HttpUrl.parse(dataSpec.uri.toString())
         val builder = Request.Builder().url(url!!)
-        if (cacheControl != null) {
-            builder.cacheControl(cacheControl)
-        }
+
         synchronized(requestProperties) {
             for ((key, value) in requestProperties) {
                 builder.addHeader(key, value)
             }
         }
+
         userAgent?.let { builder.addHeader("User-Agent", it) }
         if (!allowGzip) {
             builder.addHeader("Accept-Encoding", "identity")
@@ -169,9 +167,7 @@ internal class ShoutcastDataSource(
             throw IOException("Content type \"$contentType\" not supported")
         }
 
-        setIcyHeader(response.headers())
         val responseBody = response.body() ?: throw IOException("HTTP response had no body")
-
         return responseBody.byteStream()
     }
 
@@ -253,52 +249,17 @@ internal class ShoutcastDataSource(
         return read
     }
 
-    /**
-     * Closes the current connection quietly, if there is one.
-     */
     private fun closeConnectionQuietly() {
         response.body()!!.close()
     }
-
-    private inner class IcyHeader {
-        var channels: String? = null
-        var bitrate: String? = null
-        var station: String? = null
-        var genre: String? = null
-        var url: String? = null
-    }
-    private var icyHeader: IcyHeader? = null
-
-
-    private fun setIcyHeader(headers: Headers) {
-        if (icyHeader == null) {
-            icyHeader = IcyHeader()
-        }
-        icyHeader!!.station = headers["icy-name"]
-        icyHeader!!.url = headers["icy-url"]
-        icyHeader!!.genre = headers["icy-genre"]
-        icyHeader!!.channels = headers["icy-channels"]
-        icyHeader!!.bitrate = headers["icy-br"]
-    }
 }
 
-class ShoutcastDataSourceFactory private constructor(
+class ShoutcastDataSourceFactory(
     private val callFactory: Call.Factory,
     private val userAgent: String,
-    private val transferListener: TransferListener,
-    private val cacheControl: CacheControl?
+    private val transferListener: TransferListener
 ) : HttpDataSource.BaseFactory() {
-    constructor(
-        callFactory: Call.Factory, userAgent: String,
-        transferListener: TransferListener
-    ) : this(callFactory, userAgent, transferListener, null)
-
     override fun createDataSourceInternal(requestProperties: HttpDataSource.RequestProperties): HttpDataSource {
-        return ShoutcastDataSource(
-            callFactory,
-            userAgent,
-            transferListener,
-            cacheControl
-        )
+        return ShoutcastDataSource(callFactory, userAgent, transferListener)
     }
 }
