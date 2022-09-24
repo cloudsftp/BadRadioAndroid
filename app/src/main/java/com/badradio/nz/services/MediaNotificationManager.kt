@@ -1,6 +1,5 @@
 package com.badradio.nz.services
 
-import com.badradio.nz.utilities.Tools.onEvent
 import com.badradio.nz.R
 import android.graphics.Bitmap
 import androidx.core.app.NotificationManagerCompat
@@ -14,6 +13,7 @@ import android.content.res.Resources
 import androidx.core.app.NotificationCompat
 import com.badradio.nz.activity.MainActivity
 import com.badradio.nz.metadata.Metadata
+import com.badradio.nz.utilities.ListenersManager
 
 class MediaNotificationManager(private val service: RadioService) {
     private var meta: Metadata? = null
@@ -96,7 +96,7 @@ class MediaNotificationManager(private val service: RadioService) {
     fun cancelNotify() {
         service.stopForeground(true)
         val status = PlaybackStatus.STOPPED
-        onEvent(status)
+        ListenersManager.onEvent(status)
     }
 
     companion object {

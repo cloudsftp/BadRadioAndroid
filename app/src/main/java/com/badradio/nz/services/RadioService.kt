@@ -1,7 +1,5 @@
 package com.badradio.nz.services
 
-import com.badradio.nz.utilities.Tools.onEvent
-import com.badradio.nz.utilities.Tools.onMetaDataReceived
 import android.os.IBinder
 import android.media.AudioManager.OnAudioFocusChangeListener
 import com.badradio.nz.metadata.ShoutcastMetadataListener
@@ -23,12 +21,9 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Binder
 import com.badradio.nz.metadata.Metadata
+import com.badradio.nz.utilities.ListenersManager
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.trackselection.AdaptiveTrackSelection
-import com.google.android.exoplayer2.trackselection.DefaultTrackSelector
-import com.google.android.exoplayer2.trackselection.TrackSelector
 import com.google.android.exoplayer2.util.Util
 
 class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, ShoutcastMetadataListener {
@@ -208,7 +203,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
             else -> status = PlaybackStatus.IDLE
         }
         if (status != PlaybackStatus.IDLE) notificationManager!!.startNotify(status)
-        onEvent(status!!)
+        ListenersManager.onEvent(status!!)
     }
 
     override fun onRepeatModeChanged(repeatMode: Int) {}
@@ -218,7 +213,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
     @Deprecated("Deprecated in Java")
     override fun onLoadingChanged(isLoading: Boolean) {}
     override fun onPlayerError(error: PlaybackException) {
-        onEvent(PlaybackStatus.ERROR)
+        ListenersManager.onEvent(PlaybackStatus.ERROR)
     }
 
     @Deprecated("Deprecated in Java")
@@ -272,7 +267,8 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener, Sho
         AlbumArtGetter.getImageForQuery(artistAndSong, object : AlbumArtGetter.AlbumCallback {
             override fun finished(b: Bitmap?) {
                 notificationManager!!.startNotify(b, data)
-                onMetaDataReceived(data, b)
+                ListenersManager.onSongTitle(data.song!!, data.artist!!)
+                if (b != null) ListenersManager.onAlbumArt(b)
             }
 
         })

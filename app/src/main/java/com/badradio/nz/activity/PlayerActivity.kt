@@ -6,7 +6,6 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.badradio.nz.R
 import android.content.Intent
-import com.badradio.nz.utilities.Tools
 import android.media.AudioManager
 import com.badradio.nz.services.RadioManager
 import com.badradio.nz.models.RadioList
@@ -33,10 +32,11 @@ import com.android.volley.Request
 import com.badradio.nz.Config
 import com.badradio.nz.databinding.ActivityPlayerBinding
 import com.badradio.nz.metadata.Metadata
+import com.badradio.nz.utilities.ListenersManager
 import com.karumi.dexter.listener.PermissionRequest
 import java.util.ArrayList
 
-class PlayerActivity : AppCompatActivity(), Tools.EventListener {
+class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
 
     private lateinit var binding: ActivityPlayerBinding
 
@@ -142,7 +142,7 @@ class PlayerActivity : AppCompatActivity(), Tools.EventListener {
 
         // Changing status as stopped
         val status = PlaybackStatus.STOPPED
-        Tools.onEvent(status)
+        ListenersManager.onEvent(status)
     }
 
     private fun volumeFull() {
@@ -249,33 +249,15 @@ class PlayerActivity : AppCompatActivity(), Tools.EventListener {
         }
     }
 
-    private fun updateMediaInfoFromBackground(artist: String?, song: String?, image: Bitmap?) {
-        if (artist != null && song != null) {
-            binding.tvSongName.text = artist
-            binding.tvArtist.text = song
-        } else {
-            binding.tvSongName.visibility = View.VISIBLE
-            binding.tvSongName.text = StationName
-            binding.tvArtist.visibility = View.VISIBLE
-            binding.tvArtist.text = StationDesc
-        }
-
-        if (image != null) {
-            binding.imgStationPlaying.setImageBitmap(image)
-        } else {
-            Picasso.get().load(StationImage).into(binding.imgStationPlaying)
-        }
-    }
-
     public override fun onStart() {
         super.onStart()
-        Tools.registerAsListener(this)
+        ListenersManager.registerAsListener(this)
         EventBus.getDefault().register(this)
     }
 
     public override fun onStop() {
         super.onStop()
-        Tools.unregisterAsListener(this)
+        ListenersManager.unregisterAsListener(this)
         EventBus.getDefault().unregister(this)
     }
 
@@ -288,33 +270,32 @@ class PlayerActivity : AppCompatActivity(), Tools.EventListener {
         radioManager!!.bind(applicationContext)
     }
 
-    override fun onMetaDataReceived(meta: Metadata, image: Bitmap?) {
-        this@PlayerActivity.runOnUiThread {
-            updateMediaInfoFromBackground(meta.artist, meta.song, image)
-        }
-    }
-
     @Subscribe
     override fun onEvent(status: String) {
-
-        //getting status and updating textviews and buttons accordingly
         when (status) {
             PlaybackStatus.LOADING -> {
-                // loading
                 binding.imgBtnPlay.setImageResource(R.drawable.btnpause)
-                val nowPlayingTitle = findViewById<View>(R.id.tv_songName) as TextView
-                nowPlayingTitle.text = "Loading"
+                binding.tvSongName.text = "Loading"
             }
-            PlaybackStatus.PAUSED ->                 //Paused
-                binding.imgBtnPlay.setImageResource(R.drawable.btnplay)
-            PlaybackStatus.PLAYING ->                 //Playing
-                binding.imgBtnPlay.setImageResource(R.drawable.btnpause)
-            PlaybackStatus.ERROR ->                 //Error
-                Toast.makeText(this, R.string.no_stream, Toast.LENGTH_SHORT).show()
+            PlaybackStatus.PAUSED   -> binding.imgBtnPlay.setImageResource(R.drawable.btnplay)
+            PlaybackStatus.PLAYING  -> binding.imgBtnPlay.setImageResource(R.drawable.btnpause)
+            PlaybackStatus.ERROR    -> Toast.makeText(
+                this,
+                R.string.no_stream,
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
-    override fun onAudioSessionId(i: Int) {}
+    override fun onSongTitle(title: String, artist: String) {
+        binding.tvSongName.text = title
+        binding.tvArtist.text = artist
+    }
+
+    override fun onAlbumArt(art: Bitmap) {
+        binding.imgStationPlaying.setImageBitmap(art)
+    }
+
     private fun requestStoragePermission() {
         //Checking for permissions
         Dexter.withActivity(this)
@@ -382,9 +363,6 @@ class PlayerActivity : AppCompatActivity(), Tools.EventListener {
 
                 //setting station image
                 Picasso.get().load(StationImage).into(binding.imgStationPlaying)
-                if (isPlaying) {
-                    onAudioSessionId(RadioManager.service!!.audioSessionId)
-                }
                 initVolumeBar()
                 updateButtons()
             } catch (e: JSONException) {
