@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - develop
+      - feature/ci
     tags:
       - 'v*'
 
@@ -12,13 +13,25 @@ jobs:
     name: Build Application
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v3+
 
-      - uses: sparkfabrik/android-build-action@v1.0.0
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
         with:
-          project-path: .
-          output-path: badradio.apk
-          gradle-task: assembleRelease
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+        
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'adopt'
+          java-version: '17'
+
+      - run: ./gradlew assembleDebug
+
+      - run: ./gradlew assembleRelease
+        
+      - run: cp app/build/outputs/apk/release/app-release-unsigned.apk badradio.apk
 
       - uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
