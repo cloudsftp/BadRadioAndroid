@@ -18,11 +18,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".activity.WebActivity"></activity>
+        <activity android:name=".activity.WebActivity" />
         <activity android:name=".activity.AboutActivity" />
         <activity android:name=".activity.InfoActivity" />
 
-        <service android:name=".services.RadioService" />
+        <service android:name=".player.RadioService" />
 
         <activity android:name=".activity.PlayerActivity" />
         <activity android:name=".activity.MainActivity"

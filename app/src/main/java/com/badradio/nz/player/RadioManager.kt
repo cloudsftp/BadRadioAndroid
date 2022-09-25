@@ -1,8 +1,8 @@
-package com.badradio.nz.services
+package com.badradio.nz.player
 
 import com.badradio.nz.utilities.Log.printStackTrace
 import android.os.IBinder
-import com.badradio.nz.services.RadioService.RadioServiceBinder
+import com.badradio.nz.player.RadioService.RadioServiceBinder
 import android.content.*
 import com.badradio.nz.utilities.ListenersManager
 import java.lang.IllegalArgumentException

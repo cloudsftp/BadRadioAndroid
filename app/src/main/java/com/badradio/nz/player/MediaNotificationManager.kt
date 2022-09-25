@@ -1,4 +1,4 @@
-package com.badradio.nz.services
+package com.badradio.nz.player
 
 import com.badradio.nz.R
 import android.graphics.Bitmap
@@ -12,7 +12,6 @@ import android.content.*
 import android.content.res.Resources
 import androidx.core.app.NotificationCompat
 import com.badradio.nz.activity.MainActivity
-import com.badradio.nz.metadata.Metadata
 import com.badradio.nz.utilities.ListenersManager
 
 class MediaNotificationManager(private val service: RadioService) {
@@ -71,10 +70,10 @@ class MediaNotificationManager(private val service: RadioService) {
         //PendingIntent pendingIntent = PendingIntent.getActivity(service, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
         NotificationManagerCompat.from(service).cancel(NOTIFICATION_ID)
         val builder = NotificationCompat.Builder(service, NOTIFICATION_CHANNEL_ID)
-        val title = if (meta != null && meta!!.artist != null) meta!!.artist else strLiveBroadcast
-        val subTitle = if (meta != null && meta!!.song != null) meta!!.song else strAppName
-        builder.setContentTitle(title)
-                .setContentText(subTitle)
+        // val title = if (meta != null && meta!!.artist != null) meta!!.artist else strLiveBroadcast
+        // val subTitle = if (meta != null && meta!!.song != null) meta!!.song else strAppName
+        builder.setContentTitle("bla")
+                .setContentText("blub")
                 .setLargeIcon(notifyIcon)
                 .setContentIntent(pendingIntent)
                 .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)

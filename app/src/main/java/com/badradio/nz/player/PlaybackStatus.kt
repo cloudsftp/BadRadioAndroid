@@ -1,4 +1,4 @@
-package com.badradio.nz.services
+package com.badradio.nz.player
 
 object PlaybackStatus {
     const val IDLE = "PlaybackStatus_IDLE"

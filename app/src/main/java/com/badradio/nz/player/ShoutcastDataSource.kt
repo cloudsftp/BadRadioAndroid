@@ -1,4 +1,4 @@
-package com.badradio.nz.metadata
+package com.badradio.nz.player
 
 import android.net.Uri
 import kotlin.Throws

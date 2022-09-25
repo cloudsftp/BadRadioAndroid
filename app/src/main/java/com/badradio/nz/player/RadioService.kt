@@ -1,25 +1,19 @@
-package com.badradio.nz.services
+package com.badradio.nz.player
 
 import android.os.IBinder
 import android.media.AudioManager.OnAudioFocusChangeListener
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.MediaControllerCompat
-import android.net.wifi.WifiManager.WifiLock
 import android.media.AudioManager
 import com.badradio.nz.R
-import android.net.wifi.WifiManager
 import android.support.v4.media.MediaMetadataCompat
 import com.google.android.exoplayer2.upstream.DefaultBandwidthMeter
 import android.text.TextUtils
-import com.badradio.nz.metadata.ShoutcastDataSourceFactory
 import okhttp3.OkHttpClient
-import com.badradio.nz.parser.AlbumArtGetter
 import android.app.Service
 import android.content.*
-import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Binder
-import com.badradio.nz.metadata.Metadata
 import com.badradio.nz.utilities.ListenersManager
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
@@ -27,6 +21,7 @@ import com.google.android.exoplayer2.util.Util
 
 class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     private lateinit var exoPlayer: ExoPlayer
+    lateinit var streamUrl: String
 
     private lateinit var notificationManager: MediaNotificationManager
 
@@ -34,15 +29,12 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     var mediaSession: MediaSessionCompat? = null
         private set
     private var transportControls: MediaControllerCompat.TransportControls? = null
-    private var wifiLock: WifiLock? = null
     private var audioManager: AudioManager? = null
     private var serviceInUse = false
     var status: String? = null
         private set
     private var strAppName: String? = null
     private var strLiveBroadcast: String? = null
-    var streamUrl: String? = null
-        private set
 
     inner class RadioServiceBinder : Binder() {
         val service: RadioService
@@ -80,12 +72,13 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
 
     override fun onCreate() {
         super.onCreate()
+
+        // Register periodic metadata fetcher
+
         strAppName = resources.getString(R.string.app_name)
         strLiveBroadcast = resources.getString(R.string.notification_playing)
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
         notificationManager = MediaNotificationManager(this)
-        wifiLock = (applicationContext.getSystemService(WIFI_SERVICE) as WifiManager)
-                .createWifiLock(WifiManager.WIFI_MODE_FULL, "mcScPAmpLock")
         mediaSession = MediaSessionCompat(this, javaClass.simpleName)
         transportControls = mediaSession!!.controller.transportControls
         mediaSession!!.isActive = true
@@ -97,17 +90,9 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
                 .build())
         mediaSession!!.setCallback(mediasSessionCallback)
 
-        // val bandwidthMeter = DefaultBandwidthMeter()
-        // val videoTrackSelectionFactory = AdaptiveTrackSelection.Factory(bandwidthMeter)
-        //DefaultBandwidthMeter.Builder(applicationContext).build()
-        //AdaptiveTrackSelection()
-        //TrackSelector.InvalidationListener {  }
-        //val trackSelector = DefaultTrackSelector(applicationContext)//(videoTrackSelectionFactory)
+        // Create player
 
-
-        exoPlayer = ExoPlayer.Builder(applicationContext)
-        //    .setTrackSelector(trackSelector)
-            .build()
+        exoPlayer = ExoPlayer.Builder(applicationContext) .build()
         exoPlayer.addListener(this)
         exoPlayer.playWhenReady = true
 
@@ -116,11 +101,8 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         status = PlaybackStatus.IDLE
     }
 
-    private fun play(streamUrl: String?) {
+    private fun play(streamUrl: String) {
         this.streamUrl = streamUrl
-        if (wifiLock != null && !wifiLock!!.isHeld) {
-            wifiLock!!.acquire()
-        }
 
         val bandwidthMeter = DefaultBandwidthMeter.Builder(applicationContext).build()
         val dataSourceFactory = ShoutcastDataSourceFactory(
@@ -171,7 +153,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         pause()
         exoPlayer.release()
         exoPlayer.removeListener(this)
-        notificationManager!!.cancelNotify()
+        notificationManager.cancelNotify()
         mediaSession!!.release()
         unregisterReceiver(becomingNoisyReceiver)
         super.onDestroy()
@@ -195,13 +177,13 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
             Player.STATE_BUFFERING -> status = PlaybackStatus.LOADING
             Player.STATE_ENDED -> {
                 status = PlaybackStatus.STOPPED
-                notificationManager!!.cancelNotify()
+                notificationManager.cancelNotify()
             }
             Player.STATE_IDLE -> status = PlaybackStatus.IDLE
             Player.STATE_READY -> status = if (playWhenReady) PlaybackStatus.PLAYING else PlaybackStatus.PAUSED
             else -> status = PlaybackStatus.IDLE
         }
-        if (status != PlaybackStatus.IDLE) notificationManager!!.startNotify(status)
+        if (status != PlaybackStatus.IDLE) notificationManager.startNotify(status)
         ListenersManager.onEvent(status!!)
     }
 
@@ -225,63 +207,29 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         get() = exoPlayer.audioSessionId
 
     fun resume() {
-        if (streamUrl != null) play(streamUrl)
+        streamUrl?.let { play(it) }
     }
 
     fun pause() {
         exoPlayer.playWhenReady = false
         audioManager!!.abandonAudioFocus(this)
-        wifiLockRelease()
     }
 
     fun stop() {
         exoPlayer.stop()
         audioManager!!.abandonAudioFocus(this)
-        wifiLockRelease()
     }
 
     fun playOrPause(url: String) {
-        if (streamUrl != null && streamUrl == url) {
-            if (!isPlaying) {
-                play(streamUrl)
-            } else {
-                pause()
-            }
+        if (isPlaying) {
+            pause()
         } else {
-            if (isPlaying) {
-                pause()
-            }
             play(url)
         }
     }
 
-    /*
-    override fun onMetadataReceived(data: Metadata) {
-        val artistAndSong = data.artist + " " + data.song
-        val pref = applicationContext.getSharedPreferences("data", 0)
-        val editor = pref.edit()
-        editor.putString("artist", data.artist)
-        editor.putString("song", data.song)
-        editor.putString("station", data.station)
-        editor.apply()
-        AlbumArtGetter.getImageForQuery(artistAndSong, object : AlbumArtGetter.AlbumCallback {
-            override fun finished(b: Bitmap?) {
-                notificationManager!!.startNotify(b, data)
-                ListenersManager.onSongTitle(data.song!!, data.artist!!)
-                if (b != null) ListenersManager.onAlbumArt(b)
-            }
-
-        })
-    } */
-
     val isPlaying: Boolean
         get() = status == PlaybackStatus.PLAYING
-
-    private fun wifiLockRelease() {
-        if (wifiLock != null && wifiLock!!.isHeld) {
-            wifiLock!!.release()
-        }
-    }
 
     companion object {
         const val ACTION_PLAY = "com.app.yoursingleradio.ACTION_PLAY"

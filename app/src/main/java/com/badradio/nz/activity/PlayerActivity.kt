@@ -7,9 +7,9 @@ import android.os.Bundle
 import com.badradio.nz.R
 import android.content.Intent
 import android.media.AudioManager
-import com.badradio.nz.services.RadioManager
+import com.badradio.nz.player.RadioManager
 import com.badradio.nz.models.RadioList
-import com.badradio.nz.services.PlaybackStatus
+import com.badradio.nz.player.PlaybackStatus
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.graphics.Bitmap
 import com.squareup.picasso.Picasso
@@ -31,7 +31,6 @@ import androidx.appcompat.app.AlertDialog
 import com.android.volley.Request
 import com.badradio.nz.Config
 import com.badradio.nz.databinding.ActivityPlayerBinding
-import com.badradio.nz.metadata.Metadata
 import com.badradio.nz.utilities.ListenersManager
 import com.karumi.dexter.listener.PermissionRequest
 import java.util.ArrayList
