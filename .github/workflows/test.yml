@@ -1,0 +1,21 @@
+name: Uni Tests Develop
+
+on:
+  push:
+    branches:
+      - develop
+      - feature/ci
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Test Application
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: sparkfabrik/android-build-action@v1.0.0
+        with:
+          project-path: .
+          gradleTask: test
