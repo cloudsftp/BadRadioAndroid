@@ -18,7 +18,7 @@ jobs:
         with:
           project-path: .
           output-path: badradio.apk
-          gradleTask: assembleRelease
+          gradle-task: assembleRelease
 
       - uses: softprops/action-gh-release@v1
         if: startsWith(github.ref, 'refs/tags/')
