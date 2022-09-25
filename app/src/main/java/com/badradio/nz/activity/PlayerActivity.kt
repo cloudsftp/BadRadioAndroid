@@ -287,12 +287,16 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
     }
 
     override fun onSongTitle(title: String, artist: String) {
-        binding.tvSongName.text = title
-        binding.tvArtist.text = artist
+        runOnUiThread {
+            binding.tvSongName.text = title
+            binding.tvArtist.text = artist
+        }
     }
 
     override fun onAlbumArt(art: Bitmap) {
-        binding.imgStationPlaying.setImageBitmap(art)
+        runOnUiThread {
+            binding.imgStationPlaying.setImageBitmap(art)
+        }
     }
 
     private fun requestStoragePermission() {

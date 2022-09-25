@@ -14,6 +14,7 @@ import android.app.Service
 import android.content.*
 import android.net.Uri
 import android.os.Binder
+import com.badradio.nz.metadata.MetadataReceiver
 import com.badradio.nz.utilities.ListenersManager
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
@@ -73,8 +74,10 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     override fun onCreate() {
         super.onCreate()
 
-        // Register periodic metadata fetcher
+        // Start periodic metadata fetcher
+        MetadataReceiver.start()
 
+        // TODO: clean up this mess
         strAppName = resources.getString(R.string.app_name)
         strLiveBroadcast = resources.getString(R.string.notification_playing)
         audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
@@ -92,7 +95,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
 
         // Create player
 
-        exoPlayer = ExoPlayer.Builder(applicationContext) .build()
+        exoPlayer = ExoPlayer.Builder(applicationContext).build()
         exoPlayer.addListener(this)
         exoPlayer.playWhenReady = true
 
