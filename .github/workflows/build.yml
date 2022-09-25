@@ -21,6 +21,7 @@ jobs:
           path: |
             ~/.gradle/caches
             ~/.gradle/wrapper
+          key: ${{ runner.os }}-build-${{ hashFiles('gradlew') }}
         
       - uses: actions/setup-java@v3
         with:
