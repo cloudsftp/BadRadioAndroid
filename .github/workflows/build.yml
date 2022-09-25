@@ -13,7 +13,7 @@ jobs:
     name: Build Application
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3+
+      - uses: actions/checkout@v3
 
       - name: Cache Gradle packages
         uses: actions/cache@v3
