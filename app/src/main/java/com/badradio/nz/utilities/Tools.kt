@@ -3,6 +3,8 @@ package com.badradio.nz.utilities
 import com.badradio.nz.utilities.Log.v
 import com.badradio.nz.utilities.Log.printStackTrace
 import com.badradio.nz.utilities.Log.e
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.IOException
@@ -77,3 +79,5 @@ object Tools {
         return null
     }
 }
+
+val moshi: Moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()
