@@ -1,0 +1,27 @@
+name: Build Develop
+
+on:
+  push:
+    branches:
+      - develop
+      - feature/ci
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    name: Build Application
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: sparkfabrik/android-build-action@v1.0.0
+        with:
+          project-path: .
+          output-path: badradio.apk
+          gradleTask: assembleRelease
+
+      - uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: badradio.apk
