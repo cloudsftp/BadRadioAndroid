@@ -1,8 +1,6 @@
 package com.badradio.nz.utilities
 
-import com.badradio.nz.utilities.Log.v
-import com.badradio.nz.utilities.Log.printStackTrace
-import com.badradio.nz.utilities.Log.e
+import android.util.Log
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import org.json.JSONObject
@@ -20,7 +18,7 @@ object Tools {
     //Get response from an URL request (GET)
     private fun getDataFromUrl(url: String): String {
         // Making HTTP request
-        v("INFO", "Requesting: $url")
+        Log.v("INFO", "Requesting: $url")
         val chaine = StringBuffer("")
         try {
             val urlCon = URL(url)
@@ -61,7 +59,7 @@ object Tools {
             }
         } catch (e: IOException) {
             // writing exception to log
-            printStackTrace(e)
+            Log.w(TAG, e)
         }
         return chaine.toString()
     }
@@ -73,11 +71,12 @@ object Tools {
         try {
             return JSONObject(data)
         } catch (e: Exception) {
-            e("INFO", "Error parsing JSON. Printing stacktrace now")
-            printStackTrace(e)
+            Log.w(TAG, e)
         }
         return null
     }
+
+    private val TAG = Tools::class.qualifiedName
 }
 
 val moshi: Moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()

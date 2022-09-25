@@ -1,8 +1,8 @@
 package com.badradio.nz.metadata
 
+import android.util.Log
 import com.badradio.nz.Config
 import com.badradio.nz.utilities.ListenersManager
-import com.badradio.nz.utilities.Log
 import okhttp3.*
 import java.io.IOException
 import java.util.*
@@ -30,14 +30,16 @@ class MetadataReceiver : TimerTask(), Callback {
         if (currentSongMetadata != songMetadata) {
             Log.d(TAG, "Loaded new metadata")
             currentSongMetadata = songMetadata
+            Log.d(TAG, "Updating song title and artist")
             ListenersManager.onSongTitle(songMetadata.title, songMetadata.artist)
 
+            // Log.d(TAG, "Updating album art")
             // TODO: Fetch album art and call callback
         }
     }
 
     companion object {
-        private val TAG = MetadataReceiver::class.qualifiedName!!
+        private val TAG = MetadataReceiver::class.qualifiedName
 
         fun start() {
            Timer().scheduleAtFixedRate(MetadataReceiver(), 0L, Config.FETCH_METADATA_INTERVAL)

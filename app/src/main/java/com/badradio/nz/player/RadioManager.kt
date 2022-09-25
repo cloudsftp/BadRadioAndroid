@@ -1,9 +1,9 @@
 package com.badradio.nz.player
 
-import com.badradio.nz.utilities.Log.printStackTrace
 import android.os.IBinder
 import com.badradio.nz.player.RadioService.RadioServiceBinder
 import android.content.*
+import android.util.Log
 import com.badradio.nz.utilities.ListenersManager
 import java.lang.IllegalArgumentException
 
@@ -36,7 +36,7 @@ class RadioManager private constructor() {
                 context.stopService(Intent(context, RadioService::class.java))
                 serviceBound = false
             } catch (e: IllegalArgumentException) {
-                printStackTrace(e)
+                Log.w(TAG, e)
             }
         }
     }
@@ -53,6 +53,8 @@ class RadioManager private constructor() {
     }
 
     companion object {
+        private val TAG = RadioManager::class.qualifiedName
+
         private var instance: RadioManager? = null
         var service: RadioService? = null
             private set
