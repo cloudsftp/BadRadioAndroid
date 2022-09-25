@@ -6,6 +6,8 @@ class SongMetadata(
     val title: String,
     val artist: String
 ) {
+    constructor(): this("No Title", "Unknown")
+
     companion object {
         private val titleRegex = Regex("(.*) - (.*)")
 
@@ -18,5 +20,14 @@ class SongMetadata(
 
             return SongMetadata(title, artist)
         }
+    }
+
+    override fun equals(other: Any?) = other is SongMetadata
+                && this.hashCode() == other.hashCode()
+
+    override fun hashCode(): Int {
+        var result = title.hashCode()
+        result = 31 * result + artist.hashCode()
+        return result
     }
 }
