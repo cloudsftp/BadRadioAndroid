@@ -3,6 +3,7 @@ package com.badradio.nz.utilities
 import android.util.Log
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.OkHttpClient
 import org.json.JSONObject
 import java.io.BufferedReader
 import java.io.IOException
@@ -79,4 +80,5 @@ object Tools {
     private val TAG = Tools::class.qualifiedName
 }
 
+val client: OkHttpClient =  OkHttpClient.Builder().build()
 val moshi: Moshi = Moshi.Builder().addLast(KotlinJsonAdapterFactory()).build()

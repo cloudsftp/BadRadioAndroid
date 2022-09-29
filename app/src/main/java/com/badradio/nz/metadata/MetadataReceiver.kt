@@ -3,13 +3,12 @@ package com.badradio.nz.metadata
 import android.util.Log
 import com.badradio.nz.Config
 import com.badradio.nz.utilities.ListenersManager
+import com.badradio.nz.utilities.client
 import okhttp3.*
 import java.io.IOException
 import java.util.*
 
 class MetadataReceiver : TimerTask(), Callback {
-    private val client =  OkHttpClient.Builder().build()
-
     private var currentSongMetadata = SongMetadata()
 
     override fun run() {
