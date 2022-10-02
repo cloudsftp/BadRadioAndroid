@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-kapt'
 
 android {
     compileSdkVersion 33
@@ -7,8 +8,8 @@ android {
         applicationId "com.badradio.nz"
         minSdkVersion 31
         targetSdkVersion 33
-        versionCode 1
-        versionName "1.0"
+        versionCode 299
+        versionName "3.0.0-pre"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
@@ -34,6 +35,11 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
 
+    implementation 'com.android.volley:volley:1.2.1'
+
+    implementation 'com.squareup.moshi:moshi-kotlin:1.14.0'
+    kapt 'com.squareup.moshi:moshi-kotlin-codegen:1.14.0'
+
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
 
@@ -42,7 +48,6 @@ dependencies {
     implementation 'com.google.android.exoplayer:exoplayer-dash:2.18.1'
     implementation 'com.google.android.exoplayer:exoplayer-ui:2.18.1'
 
-    implementation 'com.android.volley:volley:1.2.1'
 
     implementation 'com.squareup.okhttp3:okhttp:3.10.0'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.5.0'

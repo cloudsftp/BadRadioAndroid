@@ -5,10 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.badradio.nz.R
 import android.content.Intent
-import com.badradio.nz.utilities.Tools
-import com.badradio.nz.services.RadioManager
+import com.badradio.nz.player.RadioManager
 import com.badradio.nz.models.RadioList
-import com.badradio.nz.services.PlaybackStatus
+import com.badradio.nz.player.PlaybackStatus
 import android.graphics.Bitmap
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
@@ -28,13 +27,13 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import com.android.volley.Request
 import com.badradio.nz.adapter.RadioListAdapter
-import com.badradio.nz.metadata.Metadata
+import com.badradio.nz.utilities.ListenersManager
 import com.karumi.dexter.listener.PermissionRequest
 import java.util.ArrayList
 
 // TODO: can be deleted???
 
-class LandingPageActivity : AppCompatActivity(), Tools.EventListener {
+class LandingPageActivity : AppCompatActivity(), ListenersManager.EventListener {
     private var radioLists: MutableList<RadioList> = mutableListOf()
 
     private var rv_stationist: RecyclerView? = null
@@ -211,7 +210,6 @@ class LandingPageActivity : AppCompatActivity(), Tools.EventListener {
         }
     }
 
-    override fun onAudioSessionId(i: Int) {}
     fun updateMediaInfoFromBackground(artist: String?, song: String?, channel: String?, image: Bitmap?) {
         //Updating current playing station and song
         val nowPlayingTitle = findViewById<View>(R.id.tv_nowPlaying) as TextView
@@ -224,15 +222,17 @@ class LandingPageActivity : AppCompatActivity(), Tools.EventListener {
         }
     }
 
-    override fun onMetaDataReceived(meta: Metadata, image: Bitmap?) {
-        if (image != null && meta.artist != null) { // TODO: why only check for artist
-            updateMediaInfoFromBackground(meta.artist, meta.song, meta.station, image)
-        }
+    override fun onSongTitle(title: String, artist: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun onAlbumArt(art: Bitmap) {
+        TODO("Not yet implemented")
     }
 
     override fun onStart() {
         super.onStart()
-        Tools.registerAsListener(this)
+        ListenersManager.registerAsListener(this)
     }
 
     companion object {

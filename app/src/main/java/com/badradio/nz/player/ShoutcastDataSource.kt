@@ -1,17 +1,15 @@
-package com.badradio.nz.metadata
+package com.badradio.nz.player
 
 import android.net.Uri
 import kotlin.Throws
 import com.google.android.exoplayer2.upstream.HttpDataSource.HttpDataSourceException
 import com.google.android.exoplayer2.upstream.HttpDataSource.InvalidResponseCodeException
 import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.upstream.*
 import com.google.android.exoplayer2.util.Assertions
 import okhttp3.*
-import java.io.EOFException
-import java.io.IOException
-import java.io.InputStream
-import java.io.InterruptedIOException
+import java.io.*
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.collections.HashMap
 
@@ -19,9 +17,7 @@ internal class ShoutcastDataSource(
     private val callFactory: Call.Factory,
     private val userAgent: String?,
     private var transferListener: TransferListener,
-    private val shoutcastMetadataListener: ShoutcastMetadataListener?,
-    private val cacheControl: CacheControl?
-) : HttpDataSource, MetadataListener {
+) : HttpDataSource {
     private val requestProperties: HashMap<String, String> = HashMap()
 
     private val isNetwork = true
@@ -38,10 +34,7 @@ internal class ShoutcastDataSource(
 
     companion object {
         private const val MP3 = "audio/mpeg"
-        private const val AAC = "audio/aac"
-        private const val AACP = "audio/aacp"
         private const val ICY_METADATA = "Icy-Metadata"
-        private const val ICY_METAINT = "icy-metaint"
         private val skipBufferReference = AtomicReference<ByteArray?>()
     }
 
@@ -126,7 +119,7 @@ internal class ShoutcastDataSource(
             skipInternal()
             readInternal(buffer, offset, readLength)
         } catch (e: IOException) {
-            throw HttpDataSourceException(e, dataSpec, HttpDataSourceException.TYPE_READ)
+            throw HttpDataSourceException(e, dataSpec, PlaybackException.CUSTOM_ERROR_CODE_BASE, HttpDataSourceException.TYPE_READ)
         }
     }
 
@@ -150,14 +143,13 @@ internal class ShoutcastDataSource(
         val allowGzip = dataSpec.flags and DataSpec.FLAG_ALLOW_GZIP != 0
         val url = HttpUrl.parse(dataSpec.uri.toString())
         val builder = Request.Builder().url(url!!)
-        if (cacheControl != null) {
-            builder.cacheControl(cacheControl)
-        }
+
         synchronized(requestProperties) {
             for ((key, value) in requestProperties) {
                 builder.addHeader(key, value)
             }
         }
+
         userAgent?.let { builder.addHeader("User-Agent", it) }
         if (!allowGzip) {
             builder.addHeader("Accept-Encoding", "identity")
@@ -169,18 +161,14 @@ internal class ShoutcastDataSource(
     }
 
     @Throws(IOException::class)
-    private fun getInputStream(response: Response?): InputStream? {
-        val contentType = response!!.header("Content-Type")
-        setIcyHeader(response.headers())
-        var `in` = response.body()!!.byteStream()
-        when (contentType) {
-            MP3, AAC, AACP -> {
-                val interval = response.header(ICY_METAINT)!!
-                    .toInt()
-                `in` = IcyInputStream(`in`, interval, this)
-            }
+    private fun getInputStream(response: Response): InputStream {
+        val contentType = response.header("Content-Type")
+        if (contentType != MP3) {
+            throw IOException("Content type \"$contentType\" not supported")
         }
-        return `in`
+
+        val responseBody = response.body() ?: throw IOException("HTTP response had no body")
+        return responseBody.byteStream()
     }
 
     /**
@@ -261,75 +249,17 @@ internal class ShoutcastDataSource(
         return read
     }
 
-    /**
-     * Closes the current connection quietly, if there is one.
-     */
     private fun closeConnectionQuietly() {
         response.body()!!.close()
     }
-
-    private inner class IcyHeader {
-        var channels: String? = null
-        var bitrate: String? = null
-        var station: String? = null
-        var genre: String? = null
-        var url: String? = null
-    }
-    private var icyHeader: IcyHeader? = null
-
-
-    private fun setIcyHeader(headers: Headers) {
-        if (icyHeader == null) {
-            icyHeader = IcyHeader()
-        }
-        icyHeader!!.station = headers["icy-name"]
-        icyHeader!!.url = headers["icy-url"]
-        icyHeader!!.genre = headers["icy-genre"]
-        icyHeader!!.channels = headers["icy-channels"]
-        icyHeader!!.bitrate = headers["icy-br"]
-    }
-
-    override fun onMetadataReceived(artist: String?, song: String?, show: String?) {
-        if (shoutcastMetadataListener != null) {
-            val metadata = Metadata(
-                artist,
-                song,
-                show,
-                icyHeader!!.channels,
-                icyHeader!!.bitrate,
-                icyHeader!!.station,
-                icyHeader!!.genre,
-                icyHeader!!.url
-            )
-            shoutcastMetadataListener.onMetadataReceived(metadata)
-        }
-    }
 }
 
-class ShoutcastDataSourceFactory private constructor(
+class ShoutcastDataSourceFactory(
     private val callFactory: Call.Factory,
     private val userAgent: String,
-    private val transferListener: TransferListener,
-    private val shoutcastMetadataListener: ShoutcastMetadataListener,
-    private val cacheControl: CacheControl?
+    private val transferListener: TransferListener
 ) : HttpDataSource.BaseFactory() {
-    constructor(
-        callFactory: Call.Factory, userAgent: String,
-        transferListener: TransferListener,
-        shoutcastMetadataListener: ShoutcastMetadataListener
-    ) : this(callFactory, userAgent, transferListener, shoutcastMetadataListener, null)
-
     override fun createDataSourceInternal(requestProperties: HttpDataSource.RequestProperties): HttpDataSource {
-        return ShoutcastDataSource(
-            callFactory,
-            userAgent,
-            transferListener,
-            shoutcastMetadataListener,
-            cacheControl
-        )
+        return ShoutcastDataSource(callFactory, userAgent, transferListener)
     }
-}
-
-interface ShoutcastMetadataListener {
-    fun onMetadataReceived(data: Metadata)
 }

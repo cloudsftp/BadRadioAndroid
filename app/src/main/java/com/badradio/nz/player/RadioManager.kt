@@ -1,10 +1,10 @@
-package com.badradio.nz.services
+package com.badradio.nz.player
 
-import com.badradio.nz.utilities.Tools.onEvent
-import com.badradio.nz.utilities.Log.printStackTrace
 import android.os.IBinder
-import com.badradio.nz.services.RadioService.LocalBinder
+import com.badradio.nz.player.RadioService.RadioServiceBinder
 import android.content.*
+import android.util.Log
+import com.badradio.nz.utilities.ListenersManager
 import java.lang.IllegalArgumentException
 
 class RadioManager private constructor() {
@@ -18,16 +18,13 @@ class RadioManager private constructor() {
         service!!.stop()
     }
 
-    val isPlaying: Boolean
-        get() = service!!.isPlaying
-
     fun bind(context: Context) {
         //Perhaps also catch a LeakedServiceConnection, and if caught: then call unbind and then try to bind again
         if (!serviceBound) {
             val intent = Intent(context, RadioService::class.java)
             context.startService(intent)
             val bound = context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-            if (service != null) onEvent(service!!.status!!)
+            if (service != null) ListenersManager.onEvent(service!!.status!!)
         }
     }
 
@@ -39,14 +36,14 @@ class RadioManager private constructor() {
                 context.stopService(Intent(context, RadioService::class.java))
                 serviceBound = false
             } catch (e: IllegalArgumentException) {
-                printStackTrace(e)
+                Log.w(TAG, e)
             }
         }
     }
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(arg0: ComponentName, binder: IBinder) {
-            service = (binder as LocalBinder).service
+            service = (binder as RadioServiceBinder).service
             serviceBound = true
         }
 
@@ -56,6 +53,8 @@ class RadioManager private constructor() {
     }
 
     companion object {
+        private val TAG = RadioManager::class.qualifiedName
+
         private var instance: RadioManager? = null
         var service: RadioService? = null
             private set
