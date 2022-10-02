@@ -1,6 +1,5 @@
 package com.badradio.nz.metadata.art
 
-import android.graphics.Bitmap
 import android.util.Log
 import com.badradio.nz.metadata.SongMetadata
 import com.badradio.nz.utilities.ListenersManager
@@ -40,4 +39,17 @@ object AlbumArtGetter {
 interface IAlbumArtGetter {
     @Throws(IOException::class)
     fun getImageURL(songMetadata: SongMetadata): String
+}
+
+fun songMatchesMetadata(song: SoundcloudSong, songMetadata: SongMetadata): Boolean {
+    val title = song.title.lowercase()
+
+    var mtitle = songMetadata.title.lowercase()
+    val mtitleRegex = Regex("(.*) (w/|\\().*")
+    val mtitleMatch = mtitleRegex.matchEntire(mtitle)
+    if (mtitleMatch != null) {
+        mtitle = mtitleMatch.groupValues[1]
+    }
+
+    return title.contains(mtitle)
 }

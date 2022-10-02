@@ -46,24 +46,6 @@ class SoundcloudAlbumGetterTests {
         }
     }
 
-    private fun runSongMatchesMetadata(songTitle: String, metadataTitle: String): Boolean {
-        val song = SoundcloudSong(
-            0, "track", "some_link", songTitle,
-            SoundcloudUser("username")
-        )
-        val metadata = SongMetadata(metadataTitle, "username")
-        return SoundcloudAlbumArtGetter.songMatchesMetadata(song, metadata)
-    }
-
-    @Test
-    fun testSongMatchesMetadata() {
-        assert(runSongMatchesMetadata("testtitle", "testtitle"))
-        assert(!runSongMatchesMetadata("wrongtitle", "righttitle"))
-        assert(runSongMatchesMetadata("thissong w/ collaborator", "thissong"))
-        assert(runSongMatchesMetadata("thissong", "thissong w/ collaborator"))
-        assert(runSongMatchesMetadata("thissong", "thissong (feat. collaborator)"))
-    }
-
     private val comeAndSeeSearchResult = """
 {
     "collection": [

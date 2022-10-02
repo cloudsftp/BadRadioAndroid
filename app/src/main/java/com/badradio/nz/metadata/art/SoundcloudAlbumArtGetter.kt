@@ -2,6 +2,8 @@ package com.badradio.nz.metadata.art
 
 import com.badradio.nz.metadata.SongMetadata
 import com.badradio.nz.utilities.Tools
+import com.badradio.nz.utilities.moshi
+import com.squareup.moshi.JsonAdapter
 import okhttp3.Request
 import java.io.IOException
 import java.net.URLEncoder
@@ -72,19 +74,6 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
         return firstSong.permalink_url
     }
 
-    fun songMatchesMetadata(song: SoundcloudSong, songMetadata: SongMetadata): Boolean {
-        val title = song.title.lowercase()
-
-        var mtitle = songMetadata.title.lowercase()
-        val mtitleRegex = Regex("(.*) (w/|\\().*")
-        val mtitleMatch = mtitleRegex.matchEntire(mtitle)
-        if (mtitleMatch != null) {
-            mtitle = mtitleMatch.groupValues[1]
-        }
-
-        return title.contains(mtitle)
-    }
-
     @Throws(IOException::class)
     fun getImageURLFromSongPage(songPage: String): String {
         val imageURLRegex = Regex(".*<img src=\"([^\"]*)\".*")
@@ -101,3 +90,25 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
 
     private val TAG = SoundcloudAlbumArtGetter::class.qualifiedName!!
 }
+
+data class SoundcloudSearchResults(
+    val collection: List<SoundcloudSong>,
+    val total_results: Int,
+    val query_urn: String,
+)
+
+// Only necessary fields
+data class SoundcloudSong(
+    val id: Int,
+    val kind: String,
+    val permalink_url: String,
+    val title: String,
+    val user: SoundcloudUser,
+)
+
+// Only necessary fields
+data class SoundcloudUser(
+    val username: String,
+)
+
+val soundcloudSearchResultAdapter: JsonAdapter<SoundcloudSearchResults> = moshi.adapter(SoundcloudSearchResults::class.java)
