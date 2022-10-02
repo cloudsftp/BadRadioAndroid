@@ -30,4 +30,8 @@ class SongMetadata(
         result = 31 * result + artist.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return "${SongMetadata::class.qualifiedName}(title=$title, artist=$artist)"
+    }
 }

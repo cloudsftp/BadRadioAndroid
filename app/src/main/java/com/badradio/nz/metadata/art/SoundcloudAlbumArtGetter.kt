@@ -1,10 +1,8 @@
-package com.badradio.nz.metadata
+package com.badradio.nz.metadata.art
 
-import android.util.Log
+import com.badradio.nz.metadata.SongMetadata
 import com.badradio.nz.utilities.Tools
-import com.badradio.nz.utilities.client
 import okhttp3.Request
-import okhttp3.Response
 import java.io.IOException
 import java.net.URLEncoder
 
@@ -13,7 +11,7 @@ import java.net.URLEncoder
  * This API is not intended for outside use.
  * It may break at any given moment! (Also breaking ToS by using it lmao)
  */
-object SoundcloudAlbumArtGetter {
+object SoundcloudAlbumArtGetter : IAlbumArtGetter {
 
     // search query: https://api-v2.soundcloud.com/search/tracks?q=title&client_id=gsPNGqVqXY4QlaFqDv7WBWglYHdTPsh6&limit=1
 
@@ -24,8 +22,8 @@ object SoundcloudAlbumArtGetter {
     private const val numSearchResults = 1
 
     @Throws(IOException::class)
-    fun getImageURL(title: String, artist: String): String {
-        val songURL = getSongURL(title, artist)
+    override fun getImageURL(songMetadata: SongMetadata): String {
+        val songURL = getSongURL(songMetadata)
         val songPageRequest = Request.Builder().url(songURL).build()
 
         val response = Tools.executeRequestAndCheckResponse(songPageRequest, "Song page request (sc api-v2)")
@@ -34,20 +32,23 @@ object SoundcloudAlbumArtGetter {
     }
 
     @Throws(IOException::class)
-    fun getSongURL(title: String, artist: String): String {
-        val searchURL = buildSearchURL(title, artist)
+    fun getSongURL(songMetadata: SongMetadata): String {
+        val searchURL = buildSearchURL(songMetadata)
         val searchRequest = Request.Builder().url(searchURL).build()
 
         val response = Tools.executeRequestAndCheckResponse(searchRequest, "Search request (sc api-v2)")
 
-        return getSongURLFromSearchResult(title, artist, response.body()!!.string())
+        return getSongURLFromSearchResult(songMetadata, response.body()!!.string())
     }
 
-    private fun buildSearchURL(title: String, artist: String): String {
+    private fun buildSearchURL(songMetadata: SongMetadata): String {
         /*
             Don't use Uri.Builder since it won't run in normal unit tests
          */
-        val searchTerm = URLEncoder.encode("$artist $title", "UTF-8")
+        val searchTerm = URLEncoder.encode(
+            "${songMetadata.artist} ${songMetadata.title}",
+            "UTF-8"
+        )
         return "https://$hostname/$searchEndpoint?" +
                 "q=$searchTerm&" +
                 "client_id=$clientID&" +
@@ -55,13 +56,33 @@ object SoundcloudAlbumArtGetter {
     }
 
     @Throws(IOException::class)
-    fun getSongURLFromSearchResult(title: String, artist: String, result: String): String {
+    fun getSongURLFromSearchResult(songMetadata: SongMetadata, result: String): String {
         val searchResults = soundcloudSearchResultAdapter.fromJson(result)
             ?: throw IOException("Could not parse search results from Soundcloud api-v2")
 
-        val firstTrack = searchResults.collection[0]
+        if (searchResults.collection.isEmpty()) {
+            throw IOException("Empty search results")
+        }
 
-        return firstTrack.permalink_url
+        val firstSong = searchResults.collection[0]
+        if (!songMatchesMetadata(firstSong, songMetadata)) {
+            throw IOException("Song $firstSong does not match metadata $songMetadata")
+        }
+
+        return firstSong.permalink_url
+    }
+
+    fun songMatchesMetadata(song: SoundcloudSong, songMetadata: SongMetadata): Boolean {
+        val title = song.title.lowercase()
+
+        var mtitle = songMetadata.title.lowercase()
+        val mtitleRegex = Regex("(.*) (w/|\\().*")
+        val mtitleMatch = mtitleRegex.matchEntire(mtitle)
+        if (mtitleMatch != null) {
+            mtitle = mtitleMatch.groupValues[1]
+        }
+
+        return title.contains(mtitle)
     }
 
     @Throws(IOException::class)
@@ -79,5 +100,4 @@ object SoundcloudAlbumArtGetter {
     }
 
     private val TAG = SoundcloudAlbumArtGetter::class.qualifiedName!!
-
 }

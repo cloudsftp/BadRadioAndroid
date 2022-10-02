@@ -2,6 +2,7 @@ package com.badradio.nz.metadata
 
 import android.util.Log
 import com.badradio.nz.Config
+import com.badradio.nz.metadata.art.AlbumArtGetter
 import com.badradio.nz.utilities.ListenersManager
 import com.badradio.nz.utilities.client
 import okhttp3.*
@@ -32,8 +33,7 @@ class MetadataReceiver : TimerTask(), Callback {
             Log.d(TAG, "Updating song title and artist")
             ListenersManager.onSongTitle(songMetadata.title, songMetadata.artist)
 
-            // Log.d(TAG, "Updating album art")
-            // TODO: Fetch album art and call callback
+            AlbumArtGetter.getAlbumArt(songMetadata)
         }
     }
 

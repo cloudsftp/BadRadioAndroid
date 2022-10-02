@@ -1,4 +1,4 @@
-package com.badradio.nz.metadata
+package com.badradio.nz.metadata.art
 
 import com.badradio.nz.utilities.moshi
 import com.squareup.moshi.JsonAdapter

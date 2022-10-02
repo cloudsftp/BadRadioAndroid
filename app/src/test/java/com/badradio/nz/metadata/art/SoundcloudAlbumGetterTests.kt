@@ -1,5 +1,6 @@
-package com.badradio.nz.metadata
+package com.badradio.nz.metadata.art
 
+import com.badradio.nz.metadata.SongMetadata
 import org.junit.Test
 
 class SoundcloudAlbumGetterTests {
@@ -7,7 +8,7 @@ class SoundcloudAlbumGetterTests {
     @Test
     fun testGetImageURL() {
         val url = SoundcloudAlbumArtGetter.getImageURL(
-            "coma and see", "cassyb, north posse"
+            SongMetadata("come and see", "cassyb, north posse")
         )
         assert(url == "https://i1.sndcdn.com/artworks-tOmHVP9GnI66ky4d-8ZWV8w-t500x500.jpg") {
             println("was $url")
@@ -27,7 +28,7 @@ class SoundcloudAlbumGetterTests {
     @Test
     fun getSongURL() {
         val url = SoundcloudAlbumArtGetter.getSongURL(
-            "come and see", "cassyb, north posse",
+            SongMetadata("come and see", "cassyb, north posse")
         )
         assert(url == "https://soundcloud.com/xxcassyb/come-and-see") {
             println("was $url")
@@ -37,12 +38,30 @@ class SoundcloudAlbumGetterTests {
     @Test
     fun testGetSongURLFromSearchResult() {
         val url = SoundcloudAlbumArtGetter.getSongURLFromSearchResult(
-            "come and see", "cassyb, north posse",
+            SongMetadata("come and see", "cassyb, north posse"),
             comeAndSeeSearchResult
         )
         assert(url == "https://soundcloud.com/xxcassyb/come-and-see") {
             println("was $url")
         }
+    }
+
+    private fun runSongMatchesMetadata(songTitle: String, metadataTitle: String): Boolean {
+        val song = SoundcloudSong(
+            0, "track", "some_link", songTitle,
+            SoundcloudUser("username")
+        )
+        val metadata = SongMetadata(metadataTitle, "username")
+        return SoundcloudAlbumArtGetter.songMatchesMetadata(song, metadata)
+    }
+
+    @Test
+    fun testSongMatchesMetadata() {
+        assert(runSongMatchesMetadata("testtitle", "testtitle"))
+        assert(!runSongMatchesMetadata("wrongtitle", "righttitle"))
+        assert(runSongMatchesMetadata("thissong w/ collaborator", "thissong"))
+        assert(runSongMatchesMetadata("thissong", "thissong w/ collaborator"))
+        assert(runSongMatchesMetadata("thissong", "thissong (feat. collaborator)"))
     }
 
     private val comeAndSeeSearchResult = """
