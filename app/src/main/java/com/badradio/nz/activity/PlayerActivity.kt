@@ -8,32 +8,24 @@ import com.badradio.nz.R
 import android.content.Intent
 import android.media.AudioManager
 import com.badradio.nz.player.RadioManager
-import com.badradio.nz.models.RadioList
 import com.badradio.nz.player.PlaybackStatus
 import android.widget.SeekBar.OnSeekBarChangeListener
 import android.graphics.Bitmap
-import com.squareup.picasso.Picasso
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import com.karumi.dexter.Dexter
 import com.karumi.dexter.listener.multi.MultiplePermissionsListener
 import com.karumi.dexter.MultiplePermissionsReport
 import com.karumi.dexter.PermissionToken
-import com.android.volley.toolbox.StringRequest
-import org.json.JSONObject
-import org.json.JSONException
-import com.android.volley.toolbox.Volley
 import android.net.Uri
 import android.provider.Settings
 import android.view.View
 import android.widget.*
 import androidx.appcompat.app.AlertDialog
-import com.android.volley.Request
 import com.badradio.nz.Config
 import com.badradio.nz.databinding.ActivityPlayerBinding
 import com.badradio.nz.utilities.ListenersManager
 import com.karumi.dexter.listener.PermissionRequest
-import java.util.ArrayList
 
 class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
 
@@ -41,15 +33,12 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
 
     private var audioManager: AudioManager? = null
     private var radioManager: RadioManager? = null
-    private var urlToPlay: String? = null
     private var StationImage: String? = null
     private var StationName: String? = null
     private var StationDesc: String? = null
     private var StationLongDesc: String? = null
     private var current = 0
     private var current2 = 0
-    private var radioLists: MutableList<RadioList>? = null
-    private val nowPlaying: RelativeLayout? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
@@ -57,13 +46,9 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
 
         //initializing views
         radioManager = RadioManager.with()
-        radioLists = ArrayList()
 
         //Checking for permissions.
         requestStoragePermission()
-
-        //Loading stations into recyclerview.
-        loadStation()
 
         binding.imgAbout.setOnClickListener {
             val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
@@ -77,16 +62,6 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
 
         binding.imgBtnPlay.setOnClickListener {
             startStopPlaying()
-
-            //saving station details to show currently playing station
-            val pref = applicationContext.getSharedPreferences("Live", 0)
-            val editor = pref.edit()
-            editor.putString("url", urlToPlay)
-            editor.putString("StationImage", StationImage)
-            editor.putString("StationName", StationName)
-            editor.putString("StationDesc", StationDesc)
-            editor.putString("StationLongDesc", StationLongDesc)
-            editor.commit()
         }
 
         binding.imgBtnMute.setOnClickListener { //Muting volume
@@ -171,47 +146,6 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         }
     }
 
-    private fun initVolumeBar() {
-
-        //initializing volume bar
-        val volumeBar = findViewById<View>(R.id.seekBar) as SeekBar
-
-        //getting current volume and updating it on seekbar
-        audioManager = getSystemService(AUDIO_SERVICE) as AudioManager
-        val volume = audioManager!!.getStreamVolume(AudioManager.STREAM_MUSIC)
-        volumeBar.max = audioManager!!.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-        volumeBar.progress = volume
-        volumeBar.max = 15
-        if (volume == 0) {
-            binding.imgBtnMute.setImageResource(R.drawable.ic_volume_off_blue_24dp)
-        } else if (volume == 15) {
-            binding.imgBtnVolumeUp.setImageResource(R.drawable.ic_volume_up_blue_24dp)
-        } else {
-            binding.imgBtnVolumeUp.setImageResource(R.drawable.ic_volume_up_black_24dp)
-            binding.imgBtnMute.setImageResource(R.drawable.ic_volume_off_black_24dp)
-        }
-
-        //listening to seekbar changes
-        volumeBar.setOnSeekBarChangeListener(object : OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar, progress: Int, b: Boolean) {
-
-                //setting audio manager volume to current seek bar position volume
-                audioManager!!.setStreamVolume(AudioManager.STREAM_MUSIC, progress, 0)
-                if (progress == 0) {
-                    binding.imgBtnMute.setImageResource(R.drawable.ic_volume_off_blue_24dp)
-                } else if (progress == 15) {
-                    binding.imgBtnVolumeUp.setImageResource(R.drawable.ic_volume_up_blue_24dp)
-                } else {
-                    binding.imgBtnVolumeUp.setImageResource(R.drawable.ic_volume_up_black_24dp)
-                    binding.imgBtnMute.setImageResource(R.drawable.ic_volume_off_black_24dp)
-                }
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar) {}
-        })
-    }
-
     //checking if currently radio is playing
     private val isPlaying: Boolean
         private get() =//checking if currently radio is playing
@@ -219,7 +153,7 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
 
     private fun startStopPlaying() {
         //Start the radio playing
-        radioManager!!.playOrPause(urlToPlay)
+        radioManager!!.playOrPause()
     }
 
     fun updateButtons() {
@@ -228,7 +162,7 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         if (isPlaying) {
 
             //If another stream is playing, show this in the layout
-            if (RadioManager.service != null && urlToPlay != null && urlToPlay != RadioManager.service!!.streamUrl) {
+            if (RadioManager.service != null) {
                 binding.imgBtnPlay.setImageResource(R.drawable.btnplay)
                 tvSong.text = StationName
                 tvArtist.text = StationDesc
@@ -342,39 +276,6 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         startActivityForResult(intent, 101)
     }
 
-    private fun loadStation() {
-
-        //Getting radio list and loading into recyclerview.
-        val stringRequest = StringRequest(Request.Method.GET, URL_DATA, { response ->
-            try {
-                val jsonObject = JSONObject(response)
-                val jsonArray = jsonObject.getJSONArray("station")
-                for (i in 0 until jsonArray.length()) {
-                    val o = jsonArray.getJSONObject(i)
-                    val radioList = RadioList(o.getString("name"),  // TODO: make sure all needed attributes are there
-                            o.getString("streamURL"),               // use mochi for json decoding (or gson)
-                            o.getString("imageURL"),
-                            o.getString("desc"),
-                            o.getString("longDesc"))
-                    radioLists!!.add(radioList)
-                }
-                StationName = radioLists!![0].name
-                StationDesc = radioLists!![0].desc
-                StationImage = radioLists!![0].imageURL
-                StationLongDesc = radioLists!![0].longDesc
-                urlToPlay = radioLists!![0].streamURL
-
-                //setting station image
-                Picasso.get().load(StationImage).into(binding.imgStationPlaying)
-                initVolumeBar()
-                updateButtons()
-            } catch (e: JSONException) {
-                e.printStackTrace()
-            }
-        }) { error -> Toast.makeText(applicationContext, error.toString(), Toast.LENGTH_LONG).show() }
-        val requestQueue = Volley.newRequestQueue(this)
-        requestQueue.add(stringRequest)
-    }
 
     @Deprecated("Deprecated in Java", ReplaceWith("exitDialog()"))
     override fun onBackPressed() {
@@ -403,7 +304,6 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
     }
 
     companion object {
-        private const val URL_DATA = "https://badradio.nz/streamingassets/stations.json"
         fun shareApp(context: Context) {
 
             //Sharing app

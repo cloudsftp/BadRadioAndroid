@@ -9,8 +9,8 @@ import java.lang.IllegalArgumentException
 
 class RadioManager private constructor() {
     private var serviceBound = false
-    fun playOrPause(streamUrl: String?) {
-        if (streamUrl == null) service!!.stop() else service!!.playOrPause(streamUrl)
+    fun playOrPause() {
+        service!!.playOrPause()
     }
 
     fun stopServices() {
