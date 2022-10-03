@@ -27,12 +27,14 @@ class MetadataReceiver : TimerTask(), Callback {
 
         val songMetadata = SongMetadata.fromStationTrack(stationStatus.current_track)
 
-        if (currentSongMetadata != songMetadata) {
-            Log.d(TAG, "Loaded new metadata")
-            currentSongMetadata = songMetadata
-            Log.d(TAG, "Updating song title and artist")
-            ListenersManager.onSongTitle(songMetadata.title, songMetadata.artist)
 
+        Log.d(TAG, "Loaded Metadata")
+        currentSongMetadata = songMetadata
+        Log.d(TAG, "Updating song title and artist")
+        ListenersManager.onSongTitle(songMetadata.title, songMetadata.artist)
+
+        if (currentSongMetadata != songMetadata) { // Only search for album art if metadata changed
+            Log.d(TAG, "Metadata changed from before, searching for album art")
             AlbumArtGetter.getAlbumArt(songMetadata)
         }
     }
