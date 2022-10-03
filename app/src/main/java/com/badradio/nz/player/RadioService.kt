@@ -15,11 +15,11 @@ import android.content.*
 import android.net.Uri
 import android.os.Binder
 import com.badradio.nz.metadata.MetadataReceiver
+import com.badradio.nz.notification.MediaNotificationManager
 import com.badradio.nz.utilities.ListenersManager
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
 import com.google.android.exoplayer2.util.Util
-import kotlinx.coroutines.runBlocking
 
 class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     private lateinit var exoPlayer: ExoPlayer
@@ -242,4 +242,14 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         const val ACTION_PAUSE = "com.app.yoursingleradio.ACTION_PAUSE"
         const val ACTION_STOP = "com.app.yoursingleradio.ACTION_STOP"
     }
+}
+
+
+enum class PlaybackStatus {
+    IDLE,
+    LOADING,
+    PLAYING,
+    PAUSED,
+    STOPPED,
+    ERROR,
 }

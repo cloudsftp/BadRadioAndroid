@@ -1,11 +1,10 @@
 package com.badradio.nz.player
 
+import android.app.Service.STOP_FOREGROUND_REMOVE
 import android.os.IBinder
 import com.badradio.nz.player.RadioService.RadioServiceBinder
 import android.content.*
-import android.util.Log
 import com.badradio.nz.utilities.ListenersManager
-import java.lang.IllegalArgumentException
 
 class RadioManager private constructor() {
     private var serviceBound = false
@@ -14,7 +13,7 @@ class RadioManager private constructor() {
     }
 
     fun stopServices() {
-        service!!.stopForeground(true)
+        service!!.stopForeground(STOP_FOREGROUND_REMOVE)
         service!!.stop()
     }
 
@@ -23,21 +22,7 @@ class RadioManager private constructor() {
         if (!serviceBound) {
             val intent = Intent(context, RadioService::class.java)
             context.startService(intent)
-            val bound = context.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
             if (service != null) ListenersManager.onEvent(service!!.status!!)
-        }
-    }
-
-    fun unbind(context: Context) {
-        if (serviceBound) {
-            try {
-                service!!.stop()
-                context.unbindService(serviceConnection)
-                context.stopService(Intent(context, RadioService::class.java))
-                serviceBound = false
-            } catch (e: IllegalArgumentException) {
-                Log.w(TAG, e)
-            }
         }
     }
 
@@ -53,8 +38,6 @@ class RadioManager private constructor() {
     }
 
     companion object {
-        private val TAG = RadioManager::class.qualifiedName
-
         private var instance: RadioManager? = null
         var service: RadioService? = null
             private set
