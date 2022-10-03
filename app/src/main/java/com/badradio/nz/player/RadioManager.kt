@@ -1,28 +1,21 @@
 package com.badradio.nz.player
 
+import android.app.Service.BIND_AUTO_CREATE
 import android.app.Service.STOP_FOREGROUND_REMOVE
 import android.os.IBinder
 import com.badradio.nz.player.RadioService.RadioServiceBinder
 import android.content.*
 import com.badradio.nz.utilities.ListenersManager
 
-class RadioManager private constructor() {
+object RadioManager {
+    lateinit var service: RadioService
     private var serviceBound = false
-    fun playOrPause() {
-        service!!.playOrPause()
-    }
-
-    fun stopServices() {
-        service!!.stopForeground(STOP_FOREGROUND_REMOVE)
-        service!!.stop()
-    }
 
     fun bind(context: Context) {
-        //Perhaps also catch a LeakedServiceConnection, and if caught: then call unbind and then try to bind again
         if (!serviceBound) {
             val intent = Intent(context, RadioService::class.java)
+            context.bindService(intent, serviceConnection, BIND_AUTO_CREATE)
             context.startService(intent)
-            if (service != null) ListenersManager.onEvent(service!!.status!!)
         }
     }
 
@@ -37,14 +30,12 @@ class RadioManager private constructor() {
         }
     }
 
-    companion object {
-        private var instance: RadioManager? = null
-        var service: RadioService? = null
-            private set
+    fun playOrPause() {
+        service.playOrPause()
+    }
 
-        fun with(): RadioManager? {
-            if (instance == null) instance = RadioManager()
-            return instance
-        }
+    fun stopServices() {
+        service.stopForeground(STOP_FOREGROUND_REMOVE)
+        service.stop()
     }
 }

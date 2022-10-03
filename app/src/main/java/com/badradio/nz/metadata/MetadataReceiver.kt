@@ -2,7 +2,7 @@ package com.badradio.nz.metadata
 
 import android.util.Log
 import com.badradio.nz.Config
-import com.badradio.nz.metadata.art.AlbumArtGetter
+import com.badradio.nz.metadata.art.getAlbumArt
 import com.badradio.nz.utilities.ListenersManager
 import com.badradio.nz.utilities.client
 import okhttp3.*
@@ -35,7 +35,7 @@ class MetadataReceiver : TimerTask(), Callback {
 
         if (currentSongMetadata != songMetadata) { // Only search for album art if metadata changed
             Log.d(TAG, "Metadata changed from before, searching for album art")
-            AlbumArtGetter.getAlbumArt(songMetadata)
+            getAlbumArt(songMetadata)
         }
     }
 

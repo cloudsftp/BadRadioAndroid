@@ -6,40 +6,37 @@ import com.badradio.nz.utilities.ListenersManager
 import com.squareup.picasso.Picasso
 import java.io.IOException
 
-object AlbumArtGetter {
+private val albumArtGetters = listOf<IAlbumArtGetter>(
+    SoundcloudAlbumArtGetter
+)
 
-    private val albumArtGetters = listOf<IAlbumArtGetter>(
-        SoundcloudAlbumArtGetter
-    )
+fun getAlbumArt(songMetadata: SongMetadata) {
+    Log.d(TAG, "Searching for album art")
 
-    fun getAlbumArt(songMetadata: SongMetadata) {
-        Log.d(TAG, "Searching for album art")
-
-        for (albumGetter in albumArtGetters) {
-            try {
-                Log.d(TAG, "Try getting album art from ${albumGetter::class.qualifiedName}")
-                val imageURL = albumGetter.getImageURL(songMetadata)
-                val image = Picasso.get().load(imageURL).get()
-                ListenersManager.onAlbumArt(image)
-                break // If successful, don't try other album getters
-            } catch (e: IOException) {
-                Log.e(TAG, "See exception", e)
-                Log.d(TAG, "Could not load album art from ${albumGetter::class.qualifiedName}")
-                /*
-                Encoding normal control flow in exceptions is considered harmful - idgaf
-                Better than returning and checking for null
-                 */
-            }
+    for (albumGetter in albumArtGetters) {
+        try {
+            Log.d(TAG, "Try getting album art from ${albumGetter::class.qualifiedName}")
+            val imageURL = albumGetter.getImageURL(songMetadata)
+            val image = Picasso.get().load(imageURL).get()
+            ListenersManager.onAlbumArt(image)
+            break // If successful, don't try other album getters
+        } catch (e: IOException) {
+            Log.e(TAG, "See exception", e)
+            Log.d(TAG, "Could not load album art from ${albumGetter::class.qualifiedName}")
+            /*
+            Encoding normal control flow in exceptions is considered harmful - idgaf
+            Better than returning and checking for null
+             */
         }
     }
-
-    private val TAG = AlbumArtGetter::class.qualifiedName!!
 }
 
 interface IAlbumArtGetter {
     @Throws(IOException::class)
     fun getImageURL(songMetadata: SongMetadata): String
 }
+
+private const val TAG = "AlbumArtGetter"
 
 fun songMatchesMetadata(song: SoundcloudSong, songMetadata: SongMetadata): Boolean {
     val title = song.title.lowercase()

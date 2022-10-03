@@ -32,7 +32,6 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
     private lateinit var binding: ActivityPlayerBinding
 
     private var audioManager: AudioManager? = null
-    private var radioManager: RadioManager? = null
     private var StationName: String? = null
     private var StationDesc: String? = null
     private var current = 0
@@ -41,9 +40,6 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        //initializing views
-        radioManager = RadioManager.with()
 
         //Checking for permissions.
         requestStoragePermission()
@@ -104,7 +100,7 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
     }
 
     private fun stopPlaying() {
-        radioManager!!.stopServices()
+        RadioManager.stopServices()
 
         // Updating button and song and artist textviews
         binding.imgBtnPlay.setImageResource(R.drawable.btnplay)
@@ -147,11 +143,11 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
     //checking if currently radio is playing
     private val isPlaying: Boolean
         private get() =//checking if currently radio is playing
-            null != radioManager && null != RadioManager.service && RadioManager.service!!.isPlaying
+            null != RadioManager.service && RadioManager.service!!.isPlaying
 
     private fun startStopPlaying() {
         //Start the radio playing
-        radioManager!!.playOrPause()
+        RadioManager.playOrPause()
     }
 
     fun updateButtons() {
@@ -198,7 +194,7 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
 
     override fun onResume() {
         super.onResume()
-        radioManager!!.bind(applicationContext)
+        RadioManager.bind(applicationContext)
     }
 
     @Subscribe
