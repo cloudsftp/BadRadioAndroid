@@ -7,4 +7,6 @@ object Config {
 
     const val FETCH_METADATA_INTERVAL = 2000L // in millis
     const val METADATA_URL = "https://public.radio.co/stations/$STATION_ID/status"
+
+    const val STATION_DATA = "https://badradio.nz/streamingassets/stations.json"
 }

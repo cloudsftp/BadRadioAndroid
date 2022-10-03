@@ -1,6 +1,7 @@
 package com.badradio.nz.utilities;
 
 import android.graphics.Bitmap
+import com.badradio.nz.player.PlaybackStatus
 
 object ListenersManager {
     private var listeners: ArrayList<EventListener> = ArrayList()
@@ -13,7 +14,7 @@ object ListenersManager {
         listeners.remove(listener)
     }
 
-    fun onEvent(status: String) {
+    fun onEvent(status: PlaybackStatus) {
         listeners.forEach { it.onEvent(status) }
     }
 
@@ -26,7 +27,7 @@ object ListenersManager {
     }
 
     interface EventListener {
-        fun onEvent(status: String)
+        fun onEvent(status: PlaybackStatus)
         fun onSongTitle(title: String, artist: String)
         fun onAlbumArt(art: Bitmap)
     }

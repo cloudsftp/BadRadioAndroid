@@ -15,6 +15,7 @@ import android.content.*
 import android.net.Uri
 import android.os.Binder
 import com.badradio.nz.metadata.MetadataReceiver
+import com.badradio.nz.notification.MediaNotificationManager
 import com.badradio.nz.utilities.ListenersManager
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.DefaultMediaSourceFactory
@@ -22,7 +23,7 @@ import com.google.android.exoplayer2.util.Util
 
 class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     private lateinit var exoPlayer: ExoPlayer
-    lateinit var streamUrl: String
+    private lateinit var stationInfo: StationInfo
 
     private lateinit var notificationManager: MediaNotificationManager
 
@@ -32,7 +33,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     private var transportControls: MediaControllerCompat.TransportControls? = null
     private var audioManager: AudioManager? = null
     private var serviceInUse = false
-    var status: String? = null
+    var status: PlaybackStatus? = null
         private set
     private var strAppName: String? = null
     private var strLiveBroadcast: String? = null
@@ -74,6 +75,11 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     override fun onCreate() {
         super.onCreate()
 
+        getStationInfo {
+            stationInfo = it
+            // TODO: enable player here
+        }
+
         // Start periodic metadata fetcher
         MetadataReceiver.start()
 
@@ -104,9 +110,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         status = PlaybackStatus.IDLE
     }
 
-    private fun play(streamUrl: String) {
-        this.streamUrl = streamUrl
-
+    private fun play() {
         val bandwidthMeter = DefaultBandwidthMeter.Builder(applicationContext).build()
         val dataSourceFactory = ShoutcastDataSourceFactory(
             OkHttpClient.Builder().build(),
@@ -115,7 +119,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         )
         val mediaSource = DefaultMediaSourceFactory(applicationContext)
             .setDataSourceFactory(dataSourceFactory)
-            .createMediaSource(MediaItem.fromUri(Uri.parse(streamUrl)))
+            .createMediaSource(MediaItem.fromUri(Uri.parse(stationInfo.streamURL)))
 
         exoPlayer.setMediaSource(mediaSource)
         exoPlayer.prepare()
@@ -210,7 +214,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         get() = exoPlayer.audioSessionId
 
     fun resume() {
-        streamUrl?.let { play(it) }
+        play()
     }
 
     fun pause() {
@@ -223,11 +227,11 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         audioManager!!.abandonAudioFocus(this)
     }
 
-    fun playOrPause(url: String) {
+    fun playOrPause() {
         if (isPlaying) {
             pause()
         } else {
-            play(url)
+            play()
         }
     }
 
@@ -239,4 +243,14 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
         const val ACTION_PAUSE = "com.app.yoursingleradio.ACTION_PAUSE"
         const val ACTION_STOP = "com.app.yoursingleradio.ACTION_STOP"
     }
+}
+
+
+enum class PlaybackStatus {
+    IDLE,
+    LOADING,
+    PLAYING,
+    PAUSED,
+    STOPPED,
+    ERROR,
 }

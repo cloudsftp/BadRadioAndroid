@@ -2,7 +2,7 @@ package com.badradio.nz.metadata
 
 import android.util.Log
 import com.badradio.nz.Config
-import com.badradio.nz.metadata.art.AlbumArtGetter
+import com.badradio.nz.metadata.art.getAlbumArt
 import com.badradio.nz.utilities.ListenersManager
 import com.badradio.nz.utilities.client
 import okhttp3.*
@@ -18,7 +18,7 @@ class MetadataReceiver : TimerTask(), Callback {
     }
 
     override fun onFailure(call: Call, e: IOException) {
-        TODO("Think about what should happen on failure")
+        // TODO: what should happen here?
     }
 
     override fun onResponse(call: Call, response: Response) {
@@ -26,14 +26,12 @@ class MetadataReceiver : TimerTask(), Callback {
             ?: throw IOException("Could not parse API response")
 
         val songMetadata = SongMetadata.fromStationTrack(stationStatus.current_track)
+        ListenersManager.onSongTitle(songMetadata.title, songMetadata.artist)
 
-        if (currentSongMetadata != songMetadata) {
-            Log.d(TAG, "Loaded new metadata")
+        if (currentSongMetadata != songMetadata) { // Only search for album art if metadata changed
             currentSongMetadata = songMetadata
-            Log.d(TAG, "Updating song title and artist")
-            ListenersManager.onSongTitle(songMetadata.title, songMetadata.artist)
-
-            AlbumArtGetter.getAlbumArt(songMetadata)
+            Log.d(TAG, "Metadata changed from before, searching for album art")
+            getAlbumArt(songMetadata)
         }
     }
 

@@ -1,7 +1,7 @@
 package com.badradio.nz.metadata.art
 
 import com.badradio.nz.metadata.SongMetadata
-import com.badradio.nz.utilities.Tools
+import com.badradio.nz.utilities.executeRequestAndCheckResponse
 import com.badradio.nz.utilities.moshi
 import com.squareup.moshi.JsonAdapter
 import okhttp3.Request
@@ -28,7 +28,7 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
         val songURL = getSongURL(songMetadata)
         val songPageRequest = Request.Builder().url(songURL).build()
 
-        val response = Tools.executeRequestAndCheckResponse(songPageRequest, "Song page request (sc api-v2)")
+        val response = executeRequestAndCheckResponse(songPageRequest, "Song page request (sc api-v2)")
 
         return getImageURLFromSongPage(response.body()!!.string())
     }
@@ -38,7 +38,7 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
         val searchURL = buildSearchURL(songMetadata)
         val searchRequest = Request.Builder().url(searchURL).build()
 
-        val response = Tools.executeRequestAndCheckResponse(searchRequest, "Search request (sc api-v2)")
+        val response = executeRequestAndCheckResponse(searchRequest, "Search request (sc api-v2)")
 
         return getSongURLFromSearchResult(songMetadata, response.body()!!.string())
     }
