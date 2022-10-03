@@ -19,10 +19,10 @@ class MediaNotificationManager(private val service: RadioService) {
     private val strAppName: String
     private val strLiveBroadcast: String
     private var notifyIcon: Bitmap? = null
-    private var playbackStatus: String? = null
+    private var playbackStatus: PlaybackStatus? = null
     private val resources: Resources
     private val notificationManager: NotificationManagerCompat
-    fun startNotify(playbackStatus: String?) {
+    fun startNotify(playbackStatus: PlaybackStatus?) {
         this.playbackStatus = playbackStatus
         notifyIcon = BitmapFactory.decodeResource(resources, R.drawable.badradio)
         startNotify()

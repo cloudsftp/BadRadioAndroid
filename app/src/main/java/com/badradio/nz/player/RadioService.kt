@@ -33,7 +33,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
     private var transportControls: MediaControllerCompat.TransportControls? = null
     private var audioManager: AudioManager? = null
     private var serviceInUse = false
-    var status: String? = null
+    var status: PlaybackStatus? = null
         private set
     private var strAppName: String? = null
     private var strLiveBroadcast: String? = null

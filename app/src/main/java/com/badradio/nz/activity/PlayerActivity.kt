@@ -33,10 +33,8 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
 
     private var audioManager: AudioManager? = null
     private var radioManager: RadioManager? = null
-    private var StationImage: String? = null
     private var StationName: String? = null
     private var StationDesc: String? = null
-    private var StationLongDesc: String? = null
     private var current = 0
     private var current2 = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -204,7 +202,7 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
     }
 
     @Subscribe
-    override fun onEvent(status: String) {
+    override fun onEvent(status: PlaybackStatus) {
         when (status) {
             PlaybackStatus.LOADING -> {
                 binding.imgBtnPlay.setImageResource(R.drawable.btnpause)
@@ -217,6 +215,9 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
                 R.string.no_stream,
                 Toast.LENGTH_SHORT
             ).show()
+            else -> {
+                // dont do anythin? TODO: rethink
+            }
         }
     }
 
