@@ -9,14 +9,7 @@ import android.content.Intent
 import android.media.AudioManager
 import com.badradio.nz.player.RadioManager
 import com.badradio.nz.player.PlaybackStatus
-import android.widget.SeekBar.OnSeekBarChangeListener
 import android.graphics.Bitmap
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
 import android.net.Uri
 import android.provider.Settings
 import android.view.View
@@ -25,7 +18,6 @@ import androidx.appcompat.app.AlertDialog
 import com.badradio.nz.Config
 import com.badradio.nz.databinding.ActivityPlayerBinding
 import com.badradio.nz.utilities.ListenersManager
-import com.karumi.dexter.listener.PermissionRequest
 
 class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
 
@@ -40,9 +32,6 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        //Checking for permissions.
-        requestStoragePermission()
 
         binding.imgAbout.setOnClickListener {
             val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
@@ -177,13 +166,11 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
     public override fun onStart() {
         super.onStart()
         ListenersManager.registerAsListener(this)
-        EventBus.getDefault().register(this)
     }
 
     public override fun onStop() {
         super.onStop()
         ListenersManager.unregisterAsListener(this)
-        EventBus.getDefault().unregister(this)
     }
 
     override fun onDestroy() {
@@ -195,7 +182,6 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         RadioManager.bind(applicationContext)
     }
 
-    @Subscribe
     override fun onEvent(status: PlaybackStatus) {
         when (status) {
             PlaybackStatus.LOADING -> {
@@ -226,30 +212,6 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         runOnUiThread {
             binding.imgStationPlaying.setImageBitmap(art)
         }
-    }
-
-    private fun requestStoragePermission() {
-        //Checking for permissions
-        Dexter.withActivity(this)
-                .withPermissions(Manifest.permission.MODIFY_AUDIO_SETTINGS)
-                .withListener(object : MultiplePermissionsListener {
-                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                        // check if all permissions are granted
-                        if (report.areAllPermissionsGranted()) {
-                        }
-                        // check for permanent denial of any permission
-                        if (report.isAnyPermissionPermanentlyDenied) {
-                            // show alert dialog navigating to Settings
-                            showSettingsDialog()
-                        }
-                    }
-
-                    override fun onPermissionRationaleShouldBeShown(permissions: List<PermissionRequest>, token: PermissionToken) {
-                        token.continuePermissionRequest()
-                    }
-                }).withErrorListener { error -> Toast.makeText(applicationContext, "Error occurred! $error", Toast.LENGTH_SHORT).show() }
-                .onSameThread()
-                .check()
     }
 
     private fun showSettingsDialog() {

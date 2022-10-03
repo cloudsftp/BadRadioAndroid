@@ -3,7 +3,6 @@ package com.badradio.nz.player
 import android.app.Service.BIND_AUTO_CREATE
 import android.app.Service.STOP_FOREGROUND_REMOVE
 import android.os.IBinder
-import com.badradio.nz.player.RadioService.RadioServiceBinder
 import android.content.*
 
 object RadioManager {
@@ -20,7 +19,7 @@ object RadioManager {
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(componentName: ComponentName, binder: IBinder) {
-            service = (binder as RadioServiceBinder).service
+            service = (binder as RadioService.RadioServiceBinder).service
             serviceBound = true
         }
 
