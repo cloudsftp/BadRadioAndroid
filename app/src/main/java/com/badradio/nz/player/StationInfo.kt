@@ -14,7 +14,7 @@ fun getStationInfo(callback: (StationInfo) -> Unit) {
 
     client.newCall(stationInfoListRequest).enqueue(object : Callback {
         override fun onFailure(call: Call, e: IOException) {
-            TODO("Think about what should happen on failure")
+            // TODO: what should happen here?
         }
 
         override fun onResponse(call: Call, response: Response) {

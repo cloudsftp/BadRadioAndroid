@@ -18,7 +18,7 @@ class MetadataReceiver : TimerTask(), Callback {
     }
 
     override fun onFailure(call: Call, e: IOException) {
-        TODO("Think about what should happen on failure")
+        // TODO: what should happen here?
     }
 
     override fun onResponse(call: Call, response: Response) {
@@ -26,14 +26,10 @@ class MetadataReceiver : TimerTask(), Callback {
             ?: throw IOException("Could not parse API response")
 
         val songMetadata = SongMetadata.fromStationTrack(stationStatus.current_track)
-
-
-        Log.d(TAG, "Loaded Metadata")
-        currentSongMetadata = songMetadata
-        Log.d(TAG, "Updating song title and artist")
         ListenersManager.onSongTitle(songMetadata.title, songMetadata.artist)
 
         if (currentSongMetadata != songMetadata) { // Only search for album art if metadata changed
+            currentSongMetadata = songMetadata
             Log.d(TAG, "Metadata changed from before, searching for album art")
             getAlbumArt(songMetadata)
         }

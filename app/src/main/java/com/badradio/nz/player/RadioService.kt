@@ -77,6 +77,7 @@ class RadioService : Service(), Player.Listener, OnAudioFocusChangeListener {
 
         getStationInfo {
             stationInfo = it
+            // TODO: enable player here
         }
 
         // Start periodic metadata fetcher

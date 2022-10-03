@@ -55,7 +55,7 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         }
 
         binding.imgBtnPlay.setOnClickListener {
-            startStopPlaying()
+            RadioManager.playOrPause()
         }
 
         binding.imgBtnMute.setOnClickListener { //Muting volume
@@ -140,15 +140,12 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         }
     }
 
+    /*
     //checking if currently radio is playing
     private val isPlaying: Boolean
         private get() =//checking if currently radio is playing
             null != RadioManager.service && RadioManager.service!!.isPlaying
 
-    private fun startStopPlaying() {
-        //Start the radio playing
-        RadioManager.playOrPause()
-    }
 
     fun updateButtons() {
         val tvArtist = findViewById<View>(R.id.tv_Artist) as TextView
@@ -175,6 +172,7 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
             tvArtist.text = StationDesc
         }
     }
+     */
 
     public override fun onStart() {
         super.onStart()
