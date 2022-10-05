@@ -27,11 +27,10 @@ class RadioService : Service(), MetadataObserver {
         }
 
         mediaNotificationManager = MediaNotificationManager(this)
+        registerForPlayerState(mediaNotificationManager)
 
         // Start periodic metadata fetcher
         MetadataReceiver.start(this)
-
-        mediaNotificationManager.onSongTitle("test", "test")
     }
 
     fun playOrPause() {
@@ -53,8 +52,6 @@ class RadioService : Service(), MetadataObserver {
 
     override fun onSongTitle(title: String, artist: String) {
         observers.forEach { it.onSongTitle(title, artist) }
-
-        mediaNotificationManager.onSongTitle(title, artist)
     }
 
     override fun onAlbumArt(art: Bitmap) {

@@ -6,7 +6,6 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
-import android.util.Log
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -19,12 +18,14 @@ import com.badradio.nz.utilities.PlayerStateObserver
 @SuppressLint("ObsoleteSdkInt")
 class MediaNotificationManager(context: Context) : PlayerStateObserver {
     private val channelID = "BADRADIONotificationChannel"
+    private val notificationID = 0
 
-    private val builder = NotificationCompat.Builder(context, channelID)
-    private val metadataBuilder = MediaMetadataCompat.Builder()
+    private val notificationBuilder = NotificationCompat.Builder(context, channelID)
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
 
     private val mediaSession = MediaSessionCompat(context, "RadioService")
+
+    private val metadataBuilder = MediaMetadataCompat.Builder()
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -38,30 +39,35 @@ class MediaNotificationManager(context: Context) : PlayerStateObserver {
     }
 
     override fun onSongTitle(title: String, artist: String) {
-        mediaSession.setMetadata(
-            metadataBuilder
-                .putString(MediaMetadata.METADATA_KEY_TITLE, title)
-                .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
-                .build()
-        )
+        metadataBuilder
+            .putString(MediaMetadata.METADATA_KEY_TITLE, title)
+            .putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
 
-        val mediaStyle = MediaStyle().setMediaSession(mediaSession.sessionToken)
+        render()
+    }
 
-        val notification = builder
-            .setStyle(mediaStyle)
-            .setSilent(true)
-            .setSmallIcon(R.drawable.ic_radio_black_24dp)
-            .build()
+    override fun onAlbumArt(art: Bitmap) {
+        metadataBuilder
+            .putBitmap(MediaMetadata.METADATA_KEY_ART, art)
 
-        notificationManager.notify(0, notification)
+        render()
     }
 
     override fun onStateChange(state: PlayerState) {
         TODO("Not yet implemented")
     }
 
-    override fun onAlbumArt(art: Bitmap) {
-        TODO("Not yet implemented")
+    private fun render() {
+        mediaSession.setMetadata(metadataBuilder.build())
+        val mediaStyle = MediaStyle().setMediaSession(mediaSession.sessionToken)
+
+        val notification = notificationBuilder
+            .setStyle(mediaStyle)
+            .setSilent(true)
+            .setSmallIcon(R.drawable.ic_radio_black_24dp)
+            .build()
+
+        notificationManager.notify(notificationID, notification)
     }
 
 }
