@@ -29,6 +29,8 @@ fun getAlbumArt(songMetadata: SongMetadata, metadataObserver: MetadataObserver) 
              */
         }
     }
+
+    // TODO: if no hit, take standard pic
 }
 
 interface IAlbumArtGetter {
