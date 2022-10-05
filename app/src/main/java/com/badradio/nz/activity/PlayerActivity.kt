@@ -1,6 +1,5 @@
 package com.badradio.nz.activity
 
-import android.Manifest
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,7 +7,7 @@ import com.badradio.nz.R
 import android.content.Intent
 import android.media.AudioManager
 import com.badradio.nz.player.RadioManager
-import com.badradio.nz.player.PlaybackStatus
+import com.badradio.nz.player.PlayerState
 import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.Settings
@@ -17,9 +16,9 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import com.badradio.nz.Config
 import com.badradio.nz.databinding.ActivityPlayerBinding
-import com.badradio.nz.utilities.ListenersManager
+import com.badradio.nz.utilities.PlayerStateObserver
 
-class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
+class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
     private lateinit var binding: ActivityPlayerBinding
 
@@ -98,8 +97,8 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         binding.tvArtist.text = StationDesc
 
         // Changing status as stopped
-        val status = PlaybackStatus.STOPPED
-        ListenersManager.onEvent(status)
+        val status = PlayerState.STOPPED
+        // ListenersManager.onEvent(status)
     }
 
     private fun volumeFull() {
@@ -165,12 +164,12 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
 
     public override fun onStart() {
         super.onStart()
-        ListenersManager.registerAsListener(this)
+        // ListenersManager.registerAsListener(this)
     }
 
     public override fun onStop() {
         super.onStop()
-        ListenersManager.unregisterAsListener(this)
+        // ListenersManager.unregisterAsListener(this)
     }
 
     override fun onDestroy() {
@@ -182,15 +181,15 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         RadioManager.bind(applicationContext)
     }
 
-    override fun onEvent(status: PlaybackStatus) {
+    /*fun onEvent(status: PlayerState) {
         when (status) {
-            PlaybackStatus.LOADING -> {
+            PlayerState.LOADING -> {
                 binding.imgBtnPlay.setImageResource(R.drawable.btnpause)
                 binding.tvSongName.text = "Loading"
             }
-            PlaybackStatus.PAUSED   -> binding.imgBtnPlay.setImageResource(R.drawable.btnplay)
-            PlaybackStatus.PLAYING  -> binding.imgBtnPlay.setImageResource(R.drawable.btnpause)
-            PlaybackStatus.ERROR    -> Toast.makeText(
+            PlayerState.PAUSED   -> binding.imgBtnPlay.setImageResource(R.drawable.btnplay)
+            PlayerState.PLAYING  -> binding.imgBtnPlay.setImageResource(R.drawable.btnpause)
+            PlayerState.ERROR    -> Toast.makeText(
                 this,
                 R.string.no_stream,
                 Toast.LENGTH_SHORT
@@ -199,7 +198,8 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
                 // dont do anythin? TODO: rethink
             }
         }
-    }
+    }*/
+
 
     override fun onSongTitle(title: String, artist: String) {
         runOnUiThread {
@@ -212,6 +212,10 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         runOnUiThread {
             binding.imgStationPlaying.setImageBitmap(art)
         }
+    }
+
+    override fun onStateChange(state: PlayerState) {
+        // TODO("Not yet implemented")
     }
 
     private fun showSettingsDialog() {
