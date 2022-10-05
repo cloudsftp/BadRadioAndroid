@@ -1,21 +1,43 @@
 package com.badradio.nz.notification
 
-import android.app.Notification
+import android.annotation.SuppressLint
 import android.content.Context
-import android.media.session.MediaSession
+import android.os.Build
+import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
+import androidx.core.app.NotificationChannelCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import com.badradio.nz.R
 
-object MediaNotificationManager {
+class MediaNotificationManager(private val context: Context) {
+    private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
 
-    fun startNotify(context: Context, mediaSession: MediaSession) {
-        val mediaStyle = Notification.MediaStyle().setMediaSession(mediaSession.sessionToken)
-        val notification = Notification.Builder(context, "BADRADIO")
+    private val channelID = "BADRADIONotificationChannel"
+
+    @SuppressLint("ObsoleteSdkInt")
+    fun createChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val importance = NotificationManagerCompat.IMPORTANCE_DEFAULT
+            val channel = NotificationChannelCompat
+                .Builder(channelID, importance)
+                .setName("BADRADIO notification channel")
+                .build()
+            notificationManager.createNotificationChannel(channel)
+        }
+    }
+
+    fun startNotify(mediaSession: MediaSessionCompat) {
+
+        val mediaStyle = androidx.media.app.NotificationCompat.MediaStyle().setMediaSession(mediaSession.sessionToken)
+        val notification = NotificationCompat.Builder(context, channelID)
             .setStyle(mediaStyle)
+            .setSmallIcon(R.drawable.ic_radio_black_24dp)
             .build()
 
-        Log.d("MediaNotificationManager", "Started to notify")
+        notificationManager.notify(0, notification)
 
-        // TODO: implement https://developer.android.com/guide/topics/media/media-controls#mediabrowserservice_implementation
+        Log.d("MediaNotificationManager", "Started to notify")
     }
 
 }

@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!-- required permission for radio streaming and visualizer -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
 
@@ -20,6 +21,13 @@
         <activity android:name=".activity.InfoActivity" />
 
         <service android:name=".player.RadioService" />
+
+        <receiver android:name="androidx.media.session.MediaButtonReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MEDIA_BUTTON" />
+            </intent-filter>
+        </receiver>
 
         <activity android:name=".activity.PlayerActivity" />
         <activity android:name=".activity.MainActivity"
