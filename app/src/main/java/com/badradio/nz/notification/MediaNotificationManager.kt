@@ -1,7 +1,9 @@
 package com.badradio.nz.notification
 
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.app.PendingIntent
+import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
@@ -24,30 +26,24 @@ class MediaNotificationManager(context: Context, mediaSession: MediaSessionCompa
     private val channelID = "BADRADIO Notification Channel"
     private val notificationID = 0
 
-    private val mediaStyle = MediaStyle().setMediaSession(mediaSession.sessionToken)
+    private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
 
+    private val mediaStyle = MediaStyle().setMediaSession(mediaSession.sessionToken)
     private val notification = NotificationCompat.Builder(context, channelID).apply {
         setStyle(mediaStyle)
         setSilent(true)
         setSmallIcon(R.drawable.ic_radio_black_24dp)
-    }.build()
 
-    private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
-
-
-    init {
         val sessionIntent = Intent(context, PlayerActivity::class.java)
-        val sessionActivityPendingIntent = PendingIntent.getActivity(
-            context,
-            0,
-            sessionIntent,
-            PendingIntent.FLAG_IMMUTABLE
-        )
-
-        mediaSession.apply {
-            setSessionActivity(sessionActivityPendingIntent)
+        val pendingIntent: PendingIntent = TaskStackBuilder.create(context).run {
+            addNextIntentWithParentStack(sessionIntent)
+            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         }
 
+        setContentIntent(pendingIntent)
+    }.build()
+
+    init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManagerCompat.IMPORTANCE_DEFAULT
             val channel = NotificationChannelCompat

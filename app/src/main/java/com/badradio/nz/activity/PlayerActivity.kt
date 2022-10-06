@@ -98,7 +98,6 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         binding.tvArtist.text = StationDesc
 
         // Changing status as stopped
-        val status = PlaybackState.STOPPED
         // ListenersManager.onEvent(status)
     }
 
