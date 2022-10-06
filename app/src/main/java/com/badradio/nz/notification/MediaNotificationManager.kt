@@ -1,12 +1,10 @@
 package com.badradio.nz.notification
 
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -17,16 +15,18 @@ import androidx.media.app.NotificationCompat.MediaStyle
 import androidx.media2.common.MediaMetadata
 import com.badradio.nz.R
 import com.badradio.nz.activity.PlayerActivity
-import com.badradio.nz.player.PlaybackState
 import com.badradio.nz.player.PlayerState
 import com.badradio.nz.utilities.PlayerStateObserver
 
 @SuppressLint("ObsoleteSdkInt")
-class MediaNotificationManager(context: Context, mediaSession: MediaSessionCompat) : PlayerStateObserver {
+class MediaNotificationManager(context: Context) : PlayerStateObserver {
     private val channelID = "BADRADIO Notification Channel"
     private val notificationID = 0
 
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
+
+    private val metadataBuilder = MediaMetadataCompat.Builder()
+    private val mediaSession = MediaSessionCompat(context, "BADRADIO Media Session")
 
     private val mediaStyle = MediaStyle().setMediaSession(mediaSession.sessionToken)
     private val notification = NotificationCompat.Builder(context, channelID).apply {
@@ -43,6 +43,8 @@ class MediaNotificationManager(context: Context, mediaSession: MediaSessionCompa
         setContentIntent(pendingIntent)
     }.build()
 
+    private val userInputObserver = context
+
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManagerCompat.IMPORTANCE_DEFAULT
@@ -55,6 +57,14 @@ class MediaNotificationManager(context: Context, mediaSession: MediaSessionCompa
     }
 
     override fun onStateChange(state: PlayerState) {
+        metadataBuilder.apply {
+            putString(MediaMetadata.METADATA_KEY_TITLE, state.metadata.title)
+            putString(MediaMetadata.METADATA_KEY_ARTIST, state.metadata.artist)
+            putBitmap(MediaMetadata.METADATA_KEY_ART, state.art)
+        }
+
+        mediaSession.setMetadata(metadataBuilder.build())
+
         notificationManager.notify(notificationID, notification)
     }
 

@@ -11,9 +11,6 @@ import android.net.wifi.WifiManager
 import android.os.Binder
 import android.os.IBinder
 import android.os.PowerManager
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.MediaSessionCompat
-import androidx.media2.common.MediaMetadata
 import com.badradio.nz.R
 import com.badradio.nz.metadata.MetadataReceiver
 import com.badradio.nz.metadata.SongMetadata
@@ -28,8 +25,6 @@ class RadioService : Service(), MetadataObserver {
 
     private lateinit var mediaPlayer: MediaPlayer
 
-    private val metadataBuilder = MediaMetadataCompat.Builder()
-    private lateinit var mediaSession: MediaSessionCompat
     private lateinit var mediaNotificationManager: MediaNotificationManager
 
     private lateinit var wifiLock: WifiManager.WifiLock
@@ -50,8 +45,7 @@ class RadioService : Service(), MetadataObserver {
             createPlayer(it)
         }
 
-        mediaSession = MediaSessionCompat(this, "BADRADIO Media Session")
-        mediaNotificationManager = MediaNotificationManager(this, mediaSession)
+        mediaNotificationManager = MediaNotificationManager(this)
         registerPlayerStateObserver(mediaNotificationManager)
 
         // Start periodic metadata fetcher
@@ -102,10 +96,6 @@ class RadioService : Service(), MetadataObserver {
     }
 
     override fun onSongTitle(title: String, artist: String) {
-        metadataBuilder.apply {
-            putString(MediaMetadata.METADATA_KEY_TITLE, title)
-            putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
-        }
 
         state.metadata.title = title
         state.metadata.artist = artist
@@ -114,17 +104,12 @@ class RadioService : Service(), MetadataObserver {
     }
 
     override fun onAlbumArt(art: Bitmap) {
-        metadataBuilder.apply {
-            putBitmap(MediaMetadata.METADATA_KEY_ART, art)
-        }
-
         state.art = art
 
         metadataUpdated()
     }
 
     private fun metadataUpdated() {
-        mediaSession.setMetadata(metadataBuilder.build())
         notifyPlayerStateObservers()
     }
 
