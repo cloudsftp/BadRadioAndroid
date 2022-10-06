@@ -11,7 +11,7 @@ private val albumArtGetters = listOf<IAlbumArtGetter>(
 )
 
 fun getAlbumArt(songMetadata: SongMetadata, metadataObserver: MetadataObserver) {
-    Log.d(TAG, "Searching for album art")
+    Log.d(TAG, "Searching for album art for $songMetadata")
 
     for (albumGetter in albumArtGetters) {
         try {

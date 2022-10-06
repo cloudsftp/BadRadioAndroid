@@ -1,7 +1,7 @@
 package com.badradio.nz.utilities;
 
 import android.graphics.Bitmap
-import com.badradio.nz.player.PlayerState
+import com.badradio.nz.player.PlaybackState
 
 /*
 object ListenersManager {
@@ -40,5 +40,5 @@ interface MetadataObserver {
 }
 
 interface PlayerStateObserver : MetadataObserver {
-    fun onStateChange(state: PlayerState)
+    fun onStateChange(state: PlaybackState)
 }

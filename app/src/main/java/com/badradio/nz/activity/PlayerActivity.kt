@@ -7,7 +7,7 @@ import com.badradio.nz.R
 import android.content.Intent
 import android.media.AudioManager
 import com.badradio.nz.player.RadioManager
-import com.badradio.nz.player.PlayerState
+import com.badradio.nz.player.PlaybackState
 import android.graphics.Bitmap
 import android.net.Uri
 import android.provider.Settings
@@ -97,7 +97,7 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         binding.tvArtist.text = StationDesc
 
         // Changing status as stopped
-        val status = PlayerState.STOPPED
+        val status = PlaybackState.STOPPED
         // ListenersManager.onEvent(status)
     }
 
@@ -214,7 +214,7 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         }
     }
 
-    override fun onStateChange(state: PlayerState) {
+    override fun onStateChange(state: PlaybackState) {
         // TODO("Not yet implemented")
     }
 
