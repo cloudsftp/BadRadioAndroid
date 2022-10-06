@@ -16,6 +16,7 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import com.badradio.nz.Config
 import com.badradio.nz.databinding.ActivityPlayerBinding
+import com.badradio.nz.player.PlayerState
 import com.badradio.nz.utilities.PlayerStateObserver
 
 class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
@@ -200,7 +201,7 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         }
     }*/
 
-
+/*
     override fun onSongTitle(title: String, artist: String) {
         runOnUiThread {
             binding.tvSongName.text = title
@@ -216,7 +217,7 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
     override fun onStateChange(state: PlaybackState) {
         // TODO("Not yet implemented")
-    }
+    } */
 
     private fun showSettingsDialog() {
         val builder = AlertDialog.Builder(applicationContext)
@@ -276,5 +277,9 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(sendIntent)
         }
+    }
+
+    override fun onStateChange(state: PlayerState) {
+        // TODO("Not yet implemented")
     }
 }

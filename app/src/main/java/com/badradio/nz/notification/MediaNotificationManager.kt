@@ -16,14 +16,14 @@ import androidx.media2.common.MediaMetadata
 import com.badradio.nz.R
 import com.badradio.nz.activity.PlayerActivity
 import com.badradio.nz.player.PlaybackState
+import com.badradio.nz.player.PlayerState
 import com.badradio.nz.utilities.PlayerStateObserver
 
 @SuppressLint("ObsoleteSdkInt")
-class MediaNotificationManager(context: Context) : PlayerStateObserver {
+class MediaNotificationManager(context: Context, mediaSession: MediaSessionCompat) : PlayerStateObserver {
     private val channelID = "BADRADIO Notification Channel"
     private val notificationID = 0
 
-    private val mediaSession = MediaSessionCompat(context, "BADRADIO Media Session")
     private val mediaStyle = MediaStyle().setMediaSession(mediaSession.sessionToken)
 
     private val notification = NotificationCompat.Builder(context, channelID).apply {
@@ -34,7 +34,6 @@ class MediaNotificationManager(context: Context) : PlayerStateObserver {
 
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
 
-    private val metadataBuilder = MediaMetadataCompat.Builder()
 
     init {
         val sessionIntent = Intent(context, PlayerActivity::class.java)
@@ -44,6 +43,7 @@ class MediaNotificationManager(context: Context) : PlayerStateObserver {
             sessionIntent,
             PendingIntent.FLAG_IMMUTABLE
         )
+
         mediaSession.apply {
             setSessionActivity(sessionActivityPendingIntent)
         }
@@ -58,30 +58,7 @@ class MediaNotificationManager(context: Context) : PlayerStateObserver {
         }
     }
 
-    override fun onSongTitle(title: String, artist: String) {
-        metadataBuilder.apply {
-            putString(MediaMetadata.METADATA_KEY_TITLE, title)
-            putString(MediaMetadata.METADATA_KEY_ARTIST, artist)
-        }
-
-        render()
-    }
-
-    override fun onAlbumArt(art: Bitmap) {
-        metadataBuilder.apply {
-            putBitmap(MediaMetadata.METADATA_KEY_ART, art)
-        }
-
-        render()
-    }
-
-    override fun onStateChange(state: PlaybackState) {
-        TODO("Not yet implemented")
-    }
-
-    private fun render() {
-        mediaSession.setMetadata(metadataBuilder.build())
-
+    override fun onStateChange(state: PlayerState) {
         notificationManager.notify(notificationID, notification)
     }
 

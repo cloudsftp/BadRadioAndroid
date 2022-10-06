@@ -2,6 +2,7 @@ package com.badradio.nz.utilities;
 
 import android.graphics.Bitmap
 import com.badradio.nz.player.PlaybackState
+import com.badradio.nz.player.PlayerState
 
 /*
 object ListenersManager {
@@ -28,17 +29,11 @@ object ListenersManager {
     }
     */
 
-interface UserInputObserver {
-    fun onPlay()
-    fun onPause()
-    fun onForward()
-}
-
 interface MetadataObserver {
     fun onSongTitle(title: String, artist: String)
     fun onAlbumArt(art: Bitmap)
 }
 
-interface PlayerStateObserver : MetadataObserver {
-    fun onStateChange(state: PlaybackState)
+interface PlayerStateObserver {
+    fun onStateChange(state: PlayerState)
 }
