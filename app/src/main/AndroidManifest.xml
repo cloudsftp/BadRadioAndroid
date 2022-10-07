@@ -29,6 +29,8 @@
             </intent-filter>
         </receiver>
 
+        <receiver android:name=".notification.MediaNotificationBroadcastReceiver" />
+
         <activity android:name=".activity.PlayerActivity" />
         <activity android:name=".activity.MainActivity"
             android:exported="true">

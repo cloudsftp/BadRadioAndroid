@@ -44,7 +44,6 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         }
 
         binding.imgBtnPlay.setOnClickListener {
-            RadioManager.playOrPause()
         }
 
         binding.imgBtnMute.setOnClickListener { //Muting volume
@@ -89,7 +88,6 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
     }
 
     private fun stopPlaying() {
-        RadioManager.stopServices()
 
         // Updating button and song and artist textviews
         binding.imgBtnPlay.setImageResource(R.drawable.btnplay)

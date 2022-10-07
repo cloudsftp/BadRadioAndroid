@@ -20,7 +20,7 @@ import com.badradio.nz.utilities.PlayerStateObserver
 import com.badradio.nz.utilities.UserInputObserver
 
 
-class RadioService : Service(), MetadataObserver {
+class RadioService : Service(), MetadataObserver, UserInputObserver {
     private val observers: MutableList<PlayerStateObserver> = mutableListOf()
     private lateinit var state: PlayerState
 
@@ -32,6 +32,8 @@ class RadioService : Service(), MetadataObserver {
 
     override fun onCreate() {
         super.onCreate()
+
+        RadioManager.bind(this)
 
         state = PlayerState(
             PlaybackState.NOT_READY,
@@ -111,11 +113,13 @@ class RadioService : Service(), MetadataObserver {
         }
     }
 
-    /*
     override fun onPlay() {
         if (!mediaPlayer.isPlaying) {
             wifiLock.acquire()
             mediaPlayer.start()
+
+            state.playback = PlaybackState.PLAYING
+            notifyPlayerStateObservers()
         }
     }
 
@@ -123,8 +127,11 @@ class RadioService : Service(), MetadataObserver {
         if (mediaPlayer.isPlaying) {
             mediaPlayer.pause()
             wifiLock.release()
+
+            state.playback = PlaybackState.PAUSED
+            notifyPlayerStateObservers()
         }
-    } */
+    }
 }
 
 enum class PlaybackState {

@@ -4,8 +4,9 @@ import android.app.Service.BIND_AUTO_CREATE
 import android.app.Service.STOP_FOREGROUND_REMOVE
 import android.os.IBinder
 import android.content.*
+import com.badradio.nz.utilities.UserInputObserver
 
-object RadioManager {
+object RadioManager : UserInputObserver {
     private lateinit var service: RadioService
     private var serviceBound = false
 
@@ -28,10 +29,13 @@ object RadioManager {
         }
     }
 
-    fun playOrPause() {
+
+    override fun onPlay() {
+        service.onPlay()
     }
 
-    fun stopServices() {
-        service.stopForeground(STOP_FOREGROUND_REMOVE)
+    override fun onPause() {
+        service.onPause()
     }
+
 }
