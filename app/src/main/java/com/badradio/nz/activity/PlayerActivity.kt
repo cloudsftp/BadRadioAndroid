@@ -1,6 +1,5 @@
 package com.badradio.nz.activity
 
-import android.Manifest
 import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -8,15 +7,8 @@ import com.badradio.nz.R
 import android.content.Intent
 import android.media.AudioManager
 import com.badradio.nz.player.RadioManager
-import com.badradio.nz.player.PlaybackStatus
-import android.widget.SeekBar.OnSeekBarChangeListener
+import com.badradio.nz.player.PlaybackState
 import android.graphics.Bitmap
-import org.greenrobot.eventbus.EventBus
-import org.greenrobot.eventbus.Subscribe
-import com.karumi.dexter.Dexter
-import com.karumi.dexter.listener.multi.MultiplePermissionsListener
-import com.karumi.dexter.MultiplePermissionsReport
-import com.karumi.dexter.PermissionToken
 import android.net.Uri
 import android.provider.Settings
 import android.view.View
@@ -24,10 +16,10 @@ import android.widget.*
 import androidx.appcompat.app.AlertDialog
 import com.badradio.nz.Config
 import com.badradio.nz.databinding.ActivityPlayerBinding
-import com.badradio.nz.utilities.ListenersManager
-import com.karumi.dexter.listener.PermissionRequest
+import com.badradio.nz.player.PlayerState
+import com.badradio.nz.utilities.PlayerStateObserver
 
-class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
+class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
     private lateinit var binding: ActivityPlayerBinding
 
@@ -41,9 +33,6 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        //Checking for permissions.
-        requestStoragePermission()
-
         binding.imgAbout.setOnClickListener {
             val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
             startActivity(intent)
@@ -55,7 +44,6 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         }
 
         binding.imgBtnPlay.setOnClickListener {
-            RadioManager.playOrPause()
         }
 
         binding.imgBtnMute.setOnClickListener { //Muting volume
@@ -100,7 +88,6 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
     }
 
     private fun stopPlaying() {
-        RadioManager.stopServices()
 
         // Updating button and song and artist textviews
         binding.imgBtnPlay.setImageResource(R.drawable.btnplay)
@@ -109,8 +96,7 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         binding.tvArtist.text = StationDesc
 
         // Changing status as stopped
-        val status = PlaybackStatus.STOPPED
-        ListenersManager.onEvent(status)
+        // ListenersManager.onEvent(status)
     }
 
     private fun volumeFull() {
@@ -176,14 +162,12 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
 
     public override fun onStart() {
         super.onStart()
-        ListenersManager.registerAsListener(this)
-        EventBus.getDefault().register(this)
+        // ListenersManager.registerAsListener(this)
     }
 
     public override fun onStop() {
         super.onStop()
-        ListenersManager.unregisterAsListener(this)
-        EventBus.getDefault().unregister(this)
+        // ListenersManager.unregisterAsListener(this)
     }
 
     override fun onDestroy() {
@@ -195,16 +179,15 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         RadioManager.bind(applicationContext)
     }
 
-    @Subscribe
-    override fun onEvent(status: PlaybackStatus) {
+    /*fun onEvent(status: PlayerState) {
         when (status) {
-            PlaybackStatus.LOADING -> {
+            PlayerState.LOADING -> {
                 binding.imgBtnPlay.setImageResource(R.drawable.btnpause)
                 binding.tvSongName.text = "Loading"
             }
-            PlaybackStatus.PAUSED   -> binding.imgBtnPlay.setImageResource(R.drawable.btnplay)
-            PlaybackStatus.PLAYING  -> binding.imgBtnPlay.setImageResource(R.drawable.btnpause)
-            PlaybackStatus.ERROR    -> Toast.makeText(
+            PlayerState.PAUSED   -> binding.imgBtnPlay.setImageResource(R.drawable.btnplay)
+            PlayerState.PLAYING  -> binding.imgBtnPlay.setImageResource(R.drawable.btnpause)
+            PlayerState.ERROR    -> Toast.makeText(
                 this,
                 R.string.no_stream,
                 Toast.LENGTH_SHORT
@@ -213,8 +196,9 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
                 // dont do anythin? TODO: rethink
             }
         }
-    }
+    }*/
 
+/*
     override fun onSongTitle(title: String, artist: String) {
         runOnUiThread {
             binding.tvSongName.text = title
@@ -228,29 +212,9 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
         }
     }
 
-    private fun requestStoragePermission() {
-        //Checking for permissions
-        Dexter.withActivity(this)
-                .withPermissions(Manifest.permission.MODIFY_AUDIO_SETTINGS)
-                .withListener(object : MultiplePermissionsListener {
-                    override fun onPermissionsChecked(report: MultiplePermissionsReport) {
-                        // check if all permissions are granted
-                        if (report.areAllPermissionsGranted()) {
-                        }
-                        // check for permanent denial of any permission
-                        if (report.isAnyPermissionPermanentlyDenied) {
-                            // show alert dialog navigating to Settings
-                            showSettingsDialog()
-                        }
-                    }
-
-                    override fun onPermissionRationaleShouldBeShown(permissions: List<PermissionRequest>, token: PermissionToken) {
-                        token.continuePermissionRequest()
-                    }
-                }).withErrorListener { error -> Toast.makeText(applicationContext, "Error occurred! $error", Toast.LENGTH_SHORT).show() }
-                .onSameThread()
-                .check()
-    }
+    override fun onStateChange(state: PlaybackState) {
+        // TODO("Not yet implemented")
+    } */
 
     private fun showSettingsDialog() {
         val builder = AlertDialog.Builder(applicationContext)
@@ -310,5 +274,9 @@ class PlayerActivity : AppCompatActivity(), ListenersManager.EventListener {
             sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(sendIntent)
         }
+    }
+
+    override fun onStateChange(state: PlayerState) {
+        // TODO("Not yet implemented")
     }
 }

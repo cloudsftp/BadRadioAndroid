@@ -3,8 +3,8 @@ package com.badradio.nz.metadata
 import java.io.IOException
 
 class SongMetadata(
-    val title: String,
-    val artist: String
+    var title: String,
+    var artist: String
 ) {
     constructor(): this("No Title", "Unknown")
 

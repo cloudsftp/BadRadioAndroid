@@ -3,10 +3,10 @@ package com.badradio.nz.player
 import android.app.Service.BIND_AUTO_CREATE
 import android.app.Service.STOP_FOREGROUND_REMOVE
 import android.os.IBinder
-import com.badradio.nz.player.RadioService.RadioServiceBinder
 import android.content.*
+import com.badradio.nz.utilities.UserInputObserver
 
-object RadioManager {
+object RadioManager : UserInputObserver {
     private lateinit var service: RadioService
     private var serviceBound = false
 
@@ -20,7 +20,7 @@ object RadioManager {
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(componentName: ComponentName, binder: IBinder) {
-            service = (binder as RadioServiceBinder).service
+            service = (binder as RadioService.RadioServiceBinder).service
             serviceBound = true
         }
 
@@ -29,12 +29,13 @@ object RadioManager {
         }
     }
 
-    fun playOrPause() {
-        service.playOrPause()
+
+    override fun onPlay() {
+        service.onPlay()
     }
 
-    fun stopServices() {
-        service.stopForeground(STOP_FOREGROUND_REMOVE)
-        service.stop()
+    override fun onPause() {
+        service.onPause()
     }
+
 }

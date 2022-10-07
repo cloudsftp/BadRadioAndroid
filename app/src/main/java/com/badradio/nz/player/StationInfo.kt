@@ -3,6 +3,7 @@ package com.badradio.nz.player
 import com.badradio.nz.Config
 import com.badradio.nz.utilities.client
 import com.badradio.nz.utilities.moshi
+import com.squareup.moshi.JsonAdapter
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Request
@@ -46,4 +47,4 @@ data class StationInfo(
     val longDesc: String,
 )
 
-val stationListAdapter = moshi.adapter(StationInfoList::class.java)
+val stationListAdapter: JsonAdapter<StationInfoList> = moshi.adapter(StationInfoList::class.java)
