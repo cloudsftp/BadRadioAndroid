@@ -37,7 +37,7 @@
         </RelativeLayout>
 
         <ImageView
-            android:id="@+id/img_station_playing"
+            android:id="@+id/img_album_art"
             android:layout_width="180dp"
             android:layout_height="180dp"
             android:layout_below="@id/rlt_appbar"
@@ -49,7 +49,7 @@
             android:id="@+id/lnr_layout"
             android:layout_width="150dp"
             android:layout_height="56dp"
-            android:layout_below="@id/img_station_playing"
+            android:layout_below="@id/img_album_art"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="60dp"
             android:orientation="horizontal">
@@ -79,7 +79,7 @@
             android:layout_below="@id/lnr_layout">
 
             <TextView
-                android:id="@+id/tv_songName"
+                android:id="@+id/text_song_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
@@ -92,10 +92,10 @@
                 android:textSize="20sp" />
 
             <TextView
-                android:id="@+id/tv_Artist"
+                android:id="@+id/text_artist"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/tv_songName"
+                android:layout_below="@id/text_song_name"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:fontFamily="@font/lato"
