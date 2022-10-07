@@ -15,21 +15,34 @@ import androidx.media.app.NotificationCompat.MediaStyle
 import androidx.media2.common.MediaMetadata
 import com.badradio.nz.R
 import com.badradio.nz.activity.PlayerActivity
+import com.badradio.nz.player.PlaybackState
 import com.badradio.nz.player.PlayerState
+import com.badradio.nz.player.RadioService
 import com.badradio.nz.utilities.PlayerStateObserver
 
 @SuppressLint("ObsoleteSdkInt")
-class MediaNotificationManager(context: Context) : PlayerStateObserver {
+class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
+    private val activityRequestCode   = 0
+    private val actionRequestCode     = 1
+
+    val playActionCode = "com.badradio.nz.PLAY"
+    val pauseActionCode = "com.badradio.nz.PAUSE"
+
     private val channelID = "BADRADIO Notification Channel"
     private val notificationID = 0
 
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
 
+    private val playAction = createAction(context, playActionCode, R.drawable.ic_play_arrow_black_24dp, "Play")
+    private val pauseAction = createAction(context, pauseActionCode, R.drawable.ic_pause_black_24dp, "Pause")
+
     private val metadataBuilder = MediaMetadataCompat.Builder()
     private val mediaSession = MediaSessionCompat(context, "BADRADIO Media Session")
 
-    private val mediaStyle = MediaStyle().setMediaSession(mediaSession.sessionToken)
-    private val notification = NotificationCompat.Builder(context, channelID).apply {
+    private val mediaStyle = MediaStyle()
+        .setMediaSession(mediaSession.sessionToken)
+
+    private val notificationBuilder = NotificationCompat.Builder(context, channelID).apply {
         setStyle(mediaStyle)
         setSilent(true)
         setSmallIcon(R.drawable.ic_radio_black_24dp)
@@ -37,13 +50,14 @@ class MediaNotificationManager(context: Context) : PlayerStateObserver {
         val sessionIntent = Intent(context, PlayerActivity::class.java)
         val pendingIntent: PendingIntent = TaskStackBuilder.create(context).run {
             addNextIntentWithParentStack(sessionIntent)
-            getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
+            getPendingIntent(
+                activityRequestCode,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+            )
         }
 
         setContentIntent(pendingIntent)
-    }.build()
-
-    private val userInputObserver = context
+    }
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -65,7 +79,33 @@ class MediaNotificationManager(context: Context) : PlayerStateObserver {
 
         mediaSession.setMetadata(metadataBuilder.build())
 
-        notificationManager.notify(notificationID, notification)
+        notificationBuilder.apply {
+            clearActions()
+
+            if (state.playback == PlaybackState.PLAYING) {
+                addAction(pauseAction)
+            } else if (state.playback == PlaybackState.PAUSED) {
+                addAction(playAction)
+            }
+        }
+
+        notificationManager.notify(notificationID, notificationBuilder.build())
     }
 
+    private fun createAction(context: Context, actionId: String, iconId: Int, title: String): NotificationCompat.Action {
+        val intent = Intent(context, RadioService::class.java).apply {
+            putExtra("action", actionId)
+        }
+
+        val pendingIntent = PendingIntent.getBroadcast(
+            context,
+            actionRequestCode,
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        return NotificationCompat.Action(
+            iconId, title, pendingIntent
+        )
+    }
 }

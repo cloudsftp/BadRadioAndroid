@@ -17,6 +17,7 @@ import com.badradio.nz.metadata.SongMetadata
 import com.badradio.nz.notification.MediaNotificationManager
 import com.badradio.nz.utilities.MetadataObserver
 import com.badradio.nz.utilities.PlayerStateObserver
+import com.badradio.nz.utilities.UserInputObserver
 
 
 class RadioService : Service(), MetadataObserver {
@@ -37,6 +38,7 @@ class RadioService : Service(), MetadataObserver {
             SongMetadata("Phonk Radio", "BADRADIO"),
             BitmapFactory.decodeResource(resources, R.drawable.badradio)
         )
+        notifyPlayerStateObservers()
 
         val wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
         wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "BADRADIO Wifi Lock")
@@ -66,24 +68,10 @@ class RadioService : Service(), MetadataObserver {
             prepareAsync()
 
             setOnPreparedListener {
-                playOrPause()
-                // TODO: enable player here
+                state.playback = PlaybackState.PAUSED
+                notifyPlayerStateObservers()
             }
         }
-    }
-
-    fun playOrPause() {
-        if (!mediaPlayer.isPlaying) {
-            wifiLock.acquire()
-            mediaPlayer.start()
-        } else {
-            mediaPlayer.pause()
-            wifiLock.release()
-        }
-    }
-
-    fun stop() {
-        wifiLock.release()
     }
 
     inner class RadioServiceBinder : Binder() {
@@ -123,7 +111,20 @@ class RadioService : Service(), MetadataObserver {
         }
     }
 
-    private val TAG = RadioService::class.qualifiedName
+    /*
+    override fun onPlay() {
+        if (!mediaPlayer.isPlaying) {
+            wifiLock.acquire()
+            mediaPlayer.start()
+        }
+    }
+
+    override fun onPause() {
+        if (mediaPlayer.isPlaying) {
+            mediaPlayer.pause()
+            wifiLock.release()
+        }
+    } */
 }
 
 enum class PlaybackState {

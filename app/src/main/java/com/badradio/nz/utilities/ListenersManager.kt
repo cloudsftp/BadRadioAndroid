@@ -37,3 +37,8 @@ interface MetadataObserver {
 interface PlayerStateObserver {
     fun onStateChange(state: PlayerState)
 }
+
+interface UserInputObserver {
+    fun onPlay()
+    fun onPause()
+}

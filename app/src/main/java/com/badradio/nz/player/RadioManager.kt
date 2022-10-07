@@ -29,11 +29,9 @@ object RadioManager {
     }
 
     fun playOrPause() {
-        service.playOrPause()
     }
 
     fun stopServices() {
         service.stopForeground(STOP_FOREGROUND_REMOVE)
-        service.stop()
     }
 }
