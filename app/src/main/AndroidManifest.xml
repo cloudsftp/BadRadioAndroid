@@ -16,6 +16,14 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
 
+        <activity
+            android:name=".activity.PlayerActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".activity.WebActivity" />
         <activity android:name=".activity.AboutActivity" />
         <activity android:name=".activity.InfoActivity" />
@@ -23,23 +31,13 @@
         <service android:name=".player.RadioService" />
 
         <receiver android:name="androidx.media.session.MediaButtonReceiver"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
 
         <receiver android:name=".notification.MediaNotificationBroadcastReceiver" />
-
-        <activity android:name=".activity.PlayerActivity" />
-        <activity android:name=".activity.MainActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
 
         <meta-data
             android:name="preloaded_fonts"

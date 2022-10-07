@@ -33,8 +33,6 @@ class RadioService : Service(), MetadataObserver, UserInputObserver {
     override fun onCreate() {
         super.onCreate()
 
-        RadioManager.bind(this)
-
         state = PlayerState(
             PlaybackState.NOT_READY,
             SongMetadata("Phonk Radio", "BADRADIO"),
