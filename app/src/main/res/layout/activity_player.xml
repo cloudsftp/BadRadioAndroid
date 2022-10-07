@@ -12,9 +12,71 @@
         android:background="#000000">
 
         <RelativeLayout
+            android:id="@+id/rlt_appbar"
+            android:layout_width="match_parent"
+            android:layout_height="56dp">
+
+            <ImageButton
+                android:id="@+id/img_about"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_centerVertical="true"
+                android:layout_marginStart="14dp"
+                android:background="@android:color/transparent"
+                app:srcCompat="@drawable/ic_menu_black_24dp" />
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:fontFamily="@font/nasalization"
+                android:text="badradio"
+                android:textColor="@android:color/white"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </RelativeLayout>
+
+        <ImageView
+            android:id="@+id/img_station_playing"
+            android:layout_width="180dp"
+            android:layout_height="180dp"
+            android:layout_below="@id/rlt_appbar"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="80dp"
+            tools:srcCompat="@tools:sample/avatars" />
+
+        <LinearLayout
+            android:id="@+id/lnr_layout"
+            android:layout_width="150dp"
+            android:layout_height="56dp"
+            android:layout_below="@id/img_station_playing"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="60dp"
+            android:orientation="horizontal">
+
+            <ImageButton
+                android:id="@+id/imgBtn_play"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/btnplay" />
+
+            <!---ImageButton
+                android:id="@+id/imgBtn_stop"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:background="@android:color/transparent"
+                android:scaleType="fitCenter"
+                app:srcCompat="@drawable/btnstop" /-->
+        </LinearLayout>
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@id/rlt_volume">
+            android:layout_below="@id/lnr_layout">
 
             <TextView
                 android:id="@+id/tv_songName"
@@ -73,105 +135,6 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginStart="14dp"
-                android:fontFamily="@font/nasalization"
-                android:text="badradio"
-                android:textColor="@android:color/white"
-                android:textSize="24sp"
-                android:textStyle="bold" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rlt_volume"
-            android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:layout_below="@id/lnr_layout"
-            android:layout_marginTop="20dp">
-
-            <SeekBar
-                android:id="@+id/seekBar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toStartOf="@id/imgBtn_volumeUp"
-                android:layout_toEndOf="@id/imgBtn_mute" />
-
-            <ImageButton
-                android:id="@+id/imgBtn_mute"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_centerHorizontal="false"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="14dp"
-                android:background="@android:color/transparent"
-                app:srcCompat="@drawable/ic_volume_off_black_24dp" />
-
-            <ImageButton
-                android:id="@+id/imgBtn_volumeUp"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerHorizontal="false"
-                android:layout_centerVertical="true"
-                android:layout_marginEnd="14dp"
-                android:background="@android:color/transparent"
-                app:srcCompat="@drawable/ic_volume_up_black_24dp" />
-        </RelativeLayout>
-
-        <LinearLayout
-            android:id="@+id/lnr_layout"
-            android:layout_width="150dp"
-            android:layout_height="56dp"
-            android:layout_below="@id/img_station_playing"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="60dp"
-            android:orientation="horizontal">
-
-            <ImageButton
-                android:id="@+id/imgBtn_play"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/btnplay" />
-
-            <ImageButton
-                android:id="@+id/imgBtn_stop"
-                android:layout_width="56dp"
-                android:layout_height="56dp"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:scaleType="fitCenter"
-                app:srcCompat="@drawable/btnstop" />
-        </LinearLayout>
-
-        <ImageView
-            android:id="@+id/img_station_playing"
-            android:layout_width="180dp"
-            android:layout_height="180dp"
-            android:layout_below="@id/rlt_appbar"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="80dp"
-            tools:srcCompat="@tools:sample/avatars" />
-
-        <RelativeLayout
-            android:id="@+id/rlt_appbar"
-            android:layout_width="match_parent"
-            android:layout_height="56dp">
-
-            <ImageButton
-                android:id="@+id/img_about"
-                android:layout_width="35dp"
-                android:layout_height="35dp"
-                android:layout_centerVertical="true"
-                android:layout_marginStart="14dp"
-                android:background="@android:color/transparent"
-                app:srcCompat="@drawable/ic_menu_black_24dp" />
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
                 android:fontFamily="@font/nasalization"
                 android:text="badradio"
                 android:textColor="@android:color/white"

@@ -46,46 +46,10 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         binding.imgBtnPlay.setOnClickListener {
         }
 
-        binding.imgBtnMute.setOnClickListener { //Muting volume
-            volumeMute()
-        }
-
-        binding.imgBtnVolumeUp.setOnClickListener { //Setting volume to full
-            volumeFull()
-        }
-
-        binding.imgBtnStop.setOnClickListener { //stopping radio
-            stopPlaying()
-        }
 
         binding.imgBtnShare.setOnClickListener { shareApp(applicationContext) }
     }
 
-    private fun volumeMute() {
-        val volumeBar = findViewById<View>(R.id.seekBar) as SeekBar
-
-        //checking whether mute button is on or off
-        if (current == 0) {
-            binding.imgBtnMute.setImageResource(R.drawable.ic_volume_off_blue_24dp)
-            binding.imgBtnVolumeUp.setImageResource(R.drawable.ic_volume_up_black_24dp)
-
-            //mute button in off state
-            audioManager!!.setStreamVolume(AudioManager.STREAM_MUSIC, 0, 0)
-
-            volumeBar.progress = 0
-            current = 1
-            current2 = 0
-        } else if (current == 1) {
-            binding.imgBtnMute.setImageResource(R.drawable.ic_volume_off_black_24dp)
-
-            // Mute button in on state
-            audioManager!!.setStreamVolume(AudioManager.STREAM_MUSIC, Config.DEFAULT_VOLUME, 0)
-            val volume = audioManager!!.getStreamVolume(AudioManager.STREAM_MUSIC)
-            volumeBar.max = audioManager!!.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-            volumeBar.progress = volume
-            current = 0
-        }
-    }
 
     private fun stopPlaying() {
 
@@ -97,33 +61,6 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
         // Changing status as stopped
         // ListenersManager.onEvent(status)
-    }
-
-    private fun volumeFull() {
-        val volumeBar = findViewById<View>(R.id.seekBar) as SeekBar
-
-        //checking if full volume button is on or off
-        if (current2 == 0) {
-            binding.imgBtnMute.setImageResource(R.drawable.ic_volume_off_black_24dp)
-            binding.imgBtnVolumeUp.setImageResource(R.drawable.ic_volume_up_blue_24dp)
-
-            volumeBar.progress = 100
-
-            //full volume button off
-            audioManager!!.setStreamVolume(AudioManager.STREAM_MUSIC, audioManager!!.getStreamMaxVolume(AudioManager.STREAM_MUSIC), 0)
-            current2 = 1
-            current = 0
-        } else if (current2 == 1) {
-            binding.imgBtnVolumeUp.setImageResource(R.drawable.ic_volume_up_black_24dp)
-
-            //full volume button on
-            audioManager!!.setStreamVolume(AudioManager.STREAM_MUSIC, Config.DEFAULT_VOLUME, 0)
-            current2 = 0
-            audioManager!!.setStreamVolume(AudioManager.STREAM_MUSIC, Config.DEFAULT_VOLUME, 0)
-            val volume = audioManager!!.getStreamVolume(AudioManager.STREAM_MUSIC)
-            volumeBar.max = audioManager!!.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
-            volumeBar.progress = volume
-        }
     }
 
     /*
