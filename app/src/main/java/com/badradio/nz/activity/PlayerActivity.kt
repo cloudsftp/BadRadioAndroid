@@ -8,11 +8,8 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import com.badradio.nz.player.RadioManager
 import com.badradio.nz.player.PlaybackState
-import android.net.Uri
 import android.os.Handler
 import android.os.Looper
-import android.provider.Settings
-import androidx.appcompat.app.AlertDialog
 import com.badradio.nz.databinding.ActivityPlayerBinding
 import com.badradio.nz.metadata.SongMetadata
 import com.badradio.nz.player.PlayerState
@@ -44,14 +41,14 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         }
 
         binding.imgBtnPlay.setOnClickListener {
-            RadioManager.onPlay()
+            togglePlayer()
         }
 
-        /*binding.imgBtnInfo.setOnClickListener {
+        binding.imgBtnInfo.setOnClickListener {
             val intent = Intent(this@PlayerActivity, InfoActivity::class.java)
             startActivity(intent)
-        } */
-        //binding.imgBtnShare.setOnClickListener { shareApp(applicationContext) }
+        }
+        binding.imgBtnShare.setOnClickListener { shareApp(applicationContext) }
     }
 
     private fun tryRegisterAsPlayerStateObserver() {
@@ -64,7 +61,15 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         }
     }
 
-    private val lastPlaybackState = PlaybackState.NOT_READY
+    private fun togglePlayer() {
+        when (playbackState) {
+            PlaybackState.PAUSED -> RadioManager.onPlay()
+            PlaybackState.PLAYING -> RadioManager.onPause()
+            else -> {}
+        }
+    }
+
+    private var playbackState: PlaybackState? = null
 
     override fun onStateChange(state: PlayerState) {
         runOnUiThread {
@@ -72,65 +77,36 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
             binding.textSongName.text = state.metadata.title
             binding.textArtist.text = state.metadata.artist
+
+            if (playbackState != state.playback) {
+                when (state.playback) {
+                    PlaybackState.NOT_READY -> {
+                        binding.imgBtnPlay.setImageResource(R.drawable.ic_play_white)
+                        binding.imgBtnPlay.imageAlpha = 50
+                    }
+                    PlaybackState.PAUSED -> {
+                        binding.imgBtnPlay.setImageResource(R.drawable.ic_play_white)
+                        binding.imgBtnPlay.imageAlpha = 1000
+                    }
+                    PlaybackState.PLAYING -> {
+                        binding.imgBtnPlay.setImageResource(R.drawable.ic_pause_white)
+                        binding.imgBtnPlay.imageAlpha = 1000
+                    }
+                }
+
+                playbackState = state.playback
+            }
         }
     }
 
-    public override fun onStart() {
-        super.onStart()
-        // ListenersManager.registerAsListener(this)
-    }
-
-    public override fun onStop() {
-        super.onStop()
-        // ListenersManager.unregisterAsListener(this)
-    }
-
-    private fun openSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS)
-        val uri = Uri.fromParts("package", applicationContext.packageName, null)
-        intent.data = uri
-        startActivityForResult(intent, 101)
-    }
-
-
-    @Deprecated("Deprecated in Java", ReplaceWith("exitDialog()"))
-    override fun onBackPressed() {
-        exitDialog()
-    }
-
-    fun exitDialog() {
-        val dialog = AlertDialog.Builder(this)
-        dialog.setIcon(R.mipmap.ic_launcher)
-        dialog.setTitle(R.string.app_name)
-        dialog.setMessage(resources.getString(R.string.message))
-        dialog.setPositiveButton(resources.getString(R.string.quit)) { _, _ ->
-            onPause()
-            finish()
+    private fun shareApp(context: Context) {
+        val appPackageName = context.packageName
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, "Check out the App at: https://play.google.com/store/apps/details?id=$appPackageName")
+            type = "text/plain"
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
         }
-        dialog.setNegativeButton(resources.getString(R.string.minimize)) { _, _ -> minimizeApp() }
-        dialog.setNeutralButton(resources.getString(R.string.cancel)) { _, _ -> }
-        dialog.show()
+        context.startActivity(sendIntent)
     }
-
-    private fun minimizeApp() {
-        val intent = Intent(Intent.ACTION_MAIN)
-        intent.addCategory(Intent.CATEGORY_HOME)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        startActivity(intent)
-    }
-
-    /*
-    companion object {
-        fun shareApp(context: Context) {
-
-            //Sharing app
-            val appPackageName = context.packageName
-            val sendIntent = Intent()
-            sendIntent.action = Intent.ACTION_SEND
-            sendIntent.putExtra(Intent.EXTRA_TEXT, "Check out the App at: https://play.google.com/store/apps/details?id=$appPackageName")
-            sendIntent.type = "text/plain"
-            sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-            context.startActivity(sendIntent)
-        }
-    } */
 }
