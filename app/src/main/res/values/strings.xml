@@ -1,11 +1,18 @@
 <resources>
     <string name="app_name">badradio</string>
+
+    <string name="default_song_name">24/7 Phonk Radio</string>
+    <string name="default_artist">BADRADIO</string>
+
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="action_settings">Settings</string>
 
     <string name="no_stream">Radio station couldn\'t stream!</string>
     <string name="live_broadcast">On Air</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 

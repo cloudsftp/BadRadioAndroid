@@ -31,7 +31,7 @@ class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
 
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
 
-    private val playAction = createAction(context, PLAY_ACTION, playRequestCode, R.drawable.ic_play_arrow_black_24dp, "Play")
+    private val playAction = createAction(context, PLAY_ACTION, playRequestCode, R.drawable.ic_play_black, "Play")
     private val pauseAction = createAction(context, PAUSE_ACTION, pauseRequestCode, R.drawable.ic_pause_black_24dp, "Pause")
 
     private val metadataBuilder = MediaMetadataCompat.Builder()

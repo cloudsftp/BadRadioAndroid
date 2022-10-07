@@ -16,7 +16,6 @@ import androidx.appcompat.app.AlertDialog
 import com.badradio.nz.databinding.ActivityPlayerBinding
 import com.badradio.nz.metadata.SongMetadata
 import com.badradio.nz.player.PlayerState
-import com.badradio.nz.player.RadioService
 import com.badradio.nz.utilities.PlayerStateObserver
 
 class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
@@ -44,16 +43,15 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             startActivity(intent)
         }
 
-        binding.imgBtnInfo.setOnClickListener {
-            val intent = Intent(this@PlayerActivity, InfoActivity::class.java)
-            startActivity(intent)
-        }
-
         binding.imgBtnPlay.setOnClickListener {
             RadioManager.onPlay()
         }
 
-        binding.imgBtnShare.setOnClickListener { shareApp(applicationContext) }
+        /*binding.imgBtnInfo.setOnClickListener {
+            val intent = Intent(this@PlayerActivity, InfoActivity::class.java)
+            startActivity(intent)
+        } */
+        //binding.imgBtnShare.setOnClickListener { shareApp(applicationContext) }
     }
 
     private fun tryRegisterAsPlayerStateObserver() {
@@ -121,6 +119,7 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         startActivity(intent)
     }
 
+    /*
     companion object {
         fun shareApp(context: Context) {
 
@@ -133,5 +132,5 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             sendIntent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
             context.startActivity(sendIntent)
         }
-    }
+    } */
 }
