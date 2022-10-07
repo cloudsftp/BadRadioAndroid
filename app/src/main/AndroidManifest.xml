@@ -7,40 +7,37 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!-- required permission for radio streaming and visualizer -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
 
     <application
-        android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher"
-        android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:usesCleartextTraffic="true">
-        <activity android:name=".Activity.WebActivity"></activity>
-        <activity android:name=".Activity.AboutActivity" />
-        <activity android:name=".Activity.InfoActivity" />
+        android:theme="@style/AppTheme" >
 
-        <service android:name=".services.RadioService" />
-
-        <activity android:name=".Activity.PlayerActivity" />
-        <activity android:name=".Activity.LandingPageActivity" />
-        <activity android:name=".Activity.MainActivity">
+        <activity
+            android:name=".activity.PlayerActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activity.WebActivity" />
+        <activity android:name=".activity.AboutActivity" />
+        <activity android:name=".activity.InfoActivity" />
 
-        <receiver android:name="android.support.v4.media.session.MediaButtonReceiver">
+        <service android:name=".player.RadioService" />
+
+        <receiver android:name="androidx.media.session.MediaButtonReceiver"
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
+
+        <receiver android:name=".notification.MediaNotificationBroadcastReceiver" />
 
         <meta-data
             android:name="preloaded_fonts"

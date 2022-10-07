@@ -1,11 +1,18 @@
 <resources>
     <string name="app_name">badradio</string>
+
+    <string name="default_song_name">24/7 Phonk Radio</string>
+    <string name="default_artist">BADRADIO</string>
+
+
+
+    <!-- TODO: Remove or change this placeholder text -->
+
     <string name="action_settings">Settings</string>
 
     <string name="no_stream">Radio station couldn\'t stream!</string>
     <string name="live_broadcast">On Air</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
@@ -44,7 +51,7 @@
     <string name="about_app_copyright">Copyright</string>
     <string name="about_app_rate">Rate</string>
     <string name="about_app_more">More</string>
-    <string name="sub_about_app_version">Version 3.2.1</string>
+    <string name="sub_about_app_version">Version 3.0.0-pre</string>
     <string name="sub_about_app_copyright">Copyright &#169; Bad radio \n All rights reserved</string>
     <string name="sub_about_app_rate">Give your rate and feedback</string>
     <string name="sub_about_app_more">More apps from developer</string>

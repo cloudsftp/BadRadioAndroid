@@ -7,7 +7,7 @@
     android:background="#000000"
     tools:context=".AboutActivity">
 
-    <android.support.v7.widget.CardView
+    <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="220dp"
         android:layout_centerVertical="true"
@@ -25,7 +25,6 @@
                 android:layout_height="30dp"
                 android:layout_marginStart="14dp"
                 android:layout_marginTop="14dp"
-                android:background="@drawable/close"
                 app:srcCompat="@drawable/ic_close_black_24dp" />
 
             <TextView
@@ -94,6 +93,6 @@
                     android:textColor="@android:color/white" />
             </LinearLayout>
         </RelativeLayout>
-    </android.support.v7.widget.CardView>
+    </androidx.cardview.widget.CardView>
 
 </RelativeLayout>
