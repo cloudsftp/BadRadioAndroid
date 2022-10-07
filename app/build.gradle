@@ -8,8 +8,8 @@ android {
         applicationId "com.badradio.nz"
         minSdkVersion 31
         targetSdkVersion 33
-        versionCode 299
-        versionName "3.0.0-pre"
+        versionCode 300
+        versionName "3.0.0-alpha0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
@@ -34,7 +34,6 @@ dependencies {
     implementation 'androidx.cardview:cardview:1.0.0'
     implementation 'androidx.recyclerview:recyclerview:1.2.1'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.5.1'
-    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.1'
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.1'
