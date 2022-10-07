@@ -3,13 +3,13 @@ package com.badradio.nz.metadata
 import android.util.Log
 import com.badradio.nz.Config
 import com.badradio.nz.metadata.art.getAlbumArt
-import com.badradio.nz.utilities.MetadataObserver
+import com.badradio.nz.player.RadioService
 import com.badradio.nz.utilities.client
 import okhttp3.*
 import java.io.IOException
 import java.util.*
 
-class MetadataReceiver(private val metadataObserver: MetadataObserver) : TimerTask(), Callback {
+class MetadataReceiver(private val radioService: RadioService) : TimerTask(), Callback {
     private var currentSongMetadata = SongMetadata()
 
     override fun run() {
@@ -29,8 +29,8 @@ class MetadataReceiver(private val metadataObserver: MetadataObserver) : TimerTa
 
         if (currentSongMetadata != songMetadata) {
             Log.d(TAG, "Metadata changed from before, notifying and searching for album art")
-            metadataObserver.onSongTitle(songMetadata.title, songMetadata.artist)
-            getAlbumArt(songMetadata, metadataObserver)
+            radioService.onSongTitle(songMetadata.title, songMetadata.artist)
+            getAlbumArt(songMetadata, radioService)
 
             currentSongMetadata = songMetadata
         }
@@ -39,8 +39,8 @@ class MetadataReceiver(private val metadataObserver: MetadataObserver) : TimerTa
     companion object {
         private val TAG = MetadataReceiver::class.qualifiedName
 
-        fun start(metadataObserver: MetadataObserver) {
-           Timer().scheduleAtFixedRate(MetadataReceiver(metadataObserver), 0L, Config.FETCH_METADATA_INTERVAL)
+        fun start(radioService: RadioService) {
+           Timer().scheduleAtFixedRate(MetadataReceiver(radioService), 0L, Config.FETCH_METADATA_INTERVAL)
         }
     }
 }

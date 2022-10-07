@@ -7,6 +7,7 @@ class SongMetadata(
     var artist: String
 ) {
     constructor(): this("No Title", "Unknown")
+    val isBadradioTag = artist == "BADRADIO"
 
     companion object {
         private val titleRegex = Regex("(.*) - (.*)")
@@ -31,7 +32,5 @@ class SongMetadata(
         return result
     }
 
-    override fun toString(): String {
-        return "${SongMetadata::class.qualifiedName}(title=$title, artist=$artist)"
-    }
+    override fun toString() = "SongMetadata(title=$title, artist=$artist)"
 }

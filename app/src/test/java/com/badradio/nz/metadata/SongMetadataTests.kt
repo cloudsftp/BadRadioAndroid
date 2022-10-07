@@ -34,4 +34,11 @@ class SongMetadataTests {
         assert(meta.artist == "ROLAND JONES, EMUNE & PHARMACIST") { print(meta.artist) }
     }
 
+    @Test
+    fun recognizeBadradioTags() {
+        assert(SongMetadata("All Day, All Night", "BADRADIO").isBadradioTag)
+        // assert(SongMetadata("", "BADRADIO").isBadradioTag) TODO: other Tag?
+        assert(!SongMetadata("All Day", "someproducer").isBadradioTag)
+    }
+
 }
