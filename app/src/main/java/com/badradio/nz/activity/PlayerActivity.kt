@@ -5,13 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.badradio.nz.R
 import android.content.Intent
-import android.graphics.BitmapFactory
 import com.badradio.nz.player.RadioManager
-import com.badradio.nz.player.PlaybackState
-import android.os.Handler
-import android.os.Looper
 import com.badradio.nz.databinding.ActivityPlayerBinding
-import com.badradio.nz.metadata.SongMetadata
 import com.badradio.nz.player.PlayerState
 import com.badradio.nz.utilities.PlayerStateObserver
 
@@ -25,14 +20,6 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        onStateChange(
-            PlayerState(
-                PlaybackState.NOT_READY,
-                SongMetadata("24/7 Phonk Radio", "BADRADIO"),
-                BitmapFactory.decodeResource(resources, R.drawable.badradio)
-            )
-        )
 
         binding.imgAbout.setOnClickListener {
             val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
@@ -52,33 +39,41 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
     override fun onResume() {
         super.onResume()
-        tryRegisterAsPlayerStateObserver()
+        RadioManager.addObserver(this)
     }
 
     override fun onPause() {
         super.onPause()
-        RadioManager.unregisterPlayerStateObserver(this)
+        RadioManager.removeObserver(this)
     }
 
-    private fun tryRegisterAsPlayerStateObserver() {
-        if (RadioManager.ready) {
-            RadioManager.registerPlayerStateObserver(this)
+    /*
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        val res = if (isPlaying) {
+            R.drawable.ic_pause_white
         } else {
-            Handler(Looper.getMainLooper()).postDelayed({
-                tryRegisterAsPlayerStateObserver()
-            }, 100)
+            R.drawable.ic_play_white
+        }
+
+        runOnUiThread {
+            binding.imgBtnPlay.setImageResource(res)
         }
     }
+
+    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+        runOnUiThread {
+            binding.textSongName.text = mediaMetadata.title
+            binding.textArtist.text = mediaMetadata.artist
+        }
+    }
+
+     */
 
     private fun togglePlayer() {
-        when (playbackState) {
-            PlaybackState.PAUSED -> RadioManager.onPlay()
-            PlaybackState.PLAYING -> RadioManager.onPause()
-            else -> {}
-        }
+        RadioManager.onPlay()
     }
 
-    private var playbackState: PlaybackState? = null
+    private var latestPlaybackState: Boolean? = null
 
     override fun onStateChange(state: PlayerState) {
         runOnUiThread {
@@ -87,23 +82,16 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             binding.textSongName.text = state.metadata.title
             binding.textArtist.text = state.metadata.artist
 
-            if (playbackState != state.playback) {
-                when (state.playback) {
-                    PlaybackState.NOT_READY -> {
-                        binding.imgBtnPlay.setImageResource(R.drawable.ic_play_white)
-                        binding.imgBtnPlay.imageAlpha = 50
-                    }
-                    PlaybackState.PAUSED -> {
-                        binding.imgBtnPlay.setImageResource(R.drawable.ic_play_white)
-                        binding.imgBtnPlay.imageAlpha = 1000
-                    }
-                    PlaybackState.PLAYING -> {
-                        binding.imgBtnPlay.setImageResource(R.drawable.ic_pause_white)
-                        binding.imgBtnPlay.imageAlpha = 1000
-                    }
+            if (latestPlaybackState != state.playing) {
+                val res = if (state.playing) {
+                    R.drawable.ic_pause_white
+                } else {
+                    R.drawable.ic_play_white
                 }
 
-                playbackState = state.playback
+                binding.imgBtnPlay.setImageResource(res)
+
+                latestPlaybackState = state.playing
             }
         }
     }
@@ -118,4 +106,6 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         }
         context.startActivity(sendIntent)
     }
+
+    private val tag = "PlayerActivity"
 }
