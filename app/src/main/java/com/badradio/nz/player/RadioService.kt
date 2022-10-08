@@ -1,75 +1,80 @@
 package com.badradio.nz.player
 
 import android.app.Service
-import android.content.Context
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.AudioAttributes
-import android.media.MediaPlayer
-import android.net.wifi.WifiManager
+import android.net.Uri
 import android.os.Binder
+import android.os.Handler
 import android.os.IBinder
-import android.os.PowerManager
+import android.os.Looper
+import android.util.Log
 import com.badradio.nz.R
-import com.badradio.nz.metadata.MetadataReceiver
 import com.badradio.nz.metadata.SongMetadata
+import com.badradio.nz.metadata.art.getAlbumArt
 import com.badradio.nz.notification.MediaNotificationManager
-import com.badradio.nz.utilities.MetadataObserver
 import com.badradio.nz.utilities.PlayerStateObserver
 import com.badradio.nz.utilities.UserInputObserver
+import com.badradio.nz.utilities.client
+import com.google.android.exoplayer2.*
+import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import kotlinx.coroutines.*
+import java.lang.Runnable
 
+class RadioService : Service(), Player.Listener, UserInputObserver {
+    private lateinit var mediaPlayer: ExoPlayer
 
-class RadioService : Service(), MetadataObserver, UserInputObserver {
+    private lateinit var playerState: PlayerState
     private val observers: MutableList<PlayerStateObserver> = mutableListOf()
-    private lateinit var state: PlayerState
 
-    private lateinit var mediaPlayer: MediaPlayer
+    private val audioAttributes = AudioAttributes.Builder().apply {
+        setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+        setUsage(C.USAGE_MEDIA)
+    }.build()
 
-    private lateinit var mediaNotificationManager: MediaNotificationManager
-
-    private lateinit var wifiLock: WifiManager.WifiLock
+    private val okHttpDataSourceFactory = OkHttpDataSource.Factory(client).apply {
+        setDefaultRequestProperties(
+            mutableMapOf(
+                Pair("Icy-Metadata", "1")
+            )
+        )
+    }
 
     override fun onCreate() {
         super.onCreate()
 
-        state = PlayerState(
-            PlaybackState.NOT_READY,
-            SongMetadata("Phonk Radio", "BADRADIO"),
+        val mediaNotificationManager = MediaNotificationManager(this)
+        addObserver(mediaNotificationManager)
+
+        playerState = PlayerState(
+            false,
+            SongMetadata(
+                resources.getString(R.string.default_song_name),
+                resources.getString(R.string.default_artist)
+            ),
             BitmapFactory.decodeResource(resources, R.drawable.badradio)
         )
-        notifyPlayerStateObservers()
-
-        val wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
-        wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "BADRADIO Wifi Lock")
+        notifyObservers()
 
         getStationInfo {
             createPlayer(it)
         }
-
-        mediaNotificationManager = MediaNotificationManager(this)
-        registerPlayerStateObserver(mediaNotificationManager)
-
-        // Start periodic metadata fetcher
-        MetadataReceiver.start(this)
     }
 
     private fun createPlayer(stationInfo: StationInfo) {
-        mediaPlayer = MediaPlayer().apply {
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .build()
-            )
-            setWakeMode(applicationContext, PowerManager.PARTIAL_WAKE_LOCK)
+        mediaPlayer = ExoPlayer.Builder(applicationContext).apply {
+            setAudioAttributes(audioAttributes, true)
+            setWakeMode(C.WAKE_MODE_NETWORK)
+            setMediaSourceFactory(ProgressiveMediaSource.Factory(okHttpDataSourceFactory))
+        }.build()
 
-            setDataSource(stationInfo.streamURL)
-            prepareAsync()
-
-            setOnPreparedListener {
-                state.playback = PlaybackState.PAUSED
-                notifyPlayerStateObservers()
+        runWhenPlayerInitialized { // for main loop
+            mediaPlayer.apply {
+                setMediaItem(MediaItem.fromUri(Uri.parse(stationInfo.streamURL)))
+                addListener(this@RadioService)
+                prepare()
             }
         }
     }
@@ -83,57 +88,74 @@ class RadioService : Service(), MetadataObserver, UserInputObserver {
         return RadioServiceBinder()
     }
 
-    override fun onSongTitle(title: String, artist: String) {
-
-        state.metadata.title = title
-        state.metadata.artist = artist
-
-        metadataUpdated()
-    }
-
-    override fun onAlbumArt(art: Bitmap) {
-        state.art = art
-
-        metadataUpdated()
-    }
-
-    private fun metadataUpdated() {
-        notifyPlayerStateObservers()
-    }
-
-    fun registerPlayerStateObserver(observer: PlayerStateObserver) {
-        observers.add(observer)
-    }
-
-    private fun notifyPlayerStateObservers() {
-        observers.forEach {
-            it.onStateChange(state)
-        }
-    }
-
-    override fun onPlay() {
+    override fun onPlay() = runWhenPlayerInitialized {
         if (!mediaPlayer.isPlaying) {
-            wifiLock.acquire()
-            mediaPlayer.start()
-
-            state.playback = PlaybackState.PLAYING
-            notifyPlayerStateObservers()
+            mediaPlayer.play()
         }
     }
 
-    override fun onPause() {
+    override fun onPause() = runWhenPlayerInitialized {
         if (mediaPlayer.isPlaying) {
             mediaPlayer.pause()
-            wifiLock.release()
-
-            state.playback = PlaybackState.PAUSED
-            notifyPlayerStateObservers()
         }
     }
-}
 
-enum class PlaybackState {
-    NOT_READY,
-    PLAYING,
-    PAUSED,
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        playerState.playing = isPlaying
+        notifyObservers()
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+        val rawTitle = mediaMetadata.title ?: return
+        val metadata = SongMetadata.fromRawTitle(rawTitle.toString())
+
+        playerState.metadata = metadata
+
+        GlobalScope.launch { // synchronous network in this function
+            playerState.art = getAlbumArt(metadata, this@RadioService)
+            notifyObservers()
+        }
+    }
+
+    fun addObserver(observer: PlayerStateObserver) {
+        observers.add(observer)
+        notifyObservers()
+    }
+
+    fun removeObserver(observer: PlayerStateObserver) {
+        val success = observers.remove(observer)
+
+        if (!success) {
+            Log.w(tag, "Tried to remove observer $observer, was not added")
+        }
+    }
+
+    private fun notifyObservers() {
+        if (::playerState.isInitialized) {
+            observers.forEach {
+                it.onStateChange(playerState)
+            }
+        }
+    }
+
+    // Helpers
+
+    private fun runWhenPlayerInitialized(r: Runnable) {
+        Handler(Looper.getMainLooper()).post {
+            runWhenPlayerInitializedInternal(r)
+        }
+    }
+
+    private fun runWhenPlayerInitializedInternal(r: Runnable) {
+        if (::mediaPlayer.isInitialized) {
+            r.run()
+        } else {
+            Handler(Looper.getMainLooper()).postDelayed({
+                runWhenPlayerInitialized(r)
+            }, 100)
+        }
+    }
+
+    private val tag = "RadioService"
 }
