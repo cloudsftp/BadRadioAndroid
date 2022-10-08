@@ -103,6 +103,7 @@ class RadioService : Service(), MetadataObserver, UserInputObserver {
 
     fun registerPlayerStateObserver(observer: PlayerStateObserver) {
         observers.add(observer)
+        notifyPlayerStateObservers()
     }
 
     private fun notifyPlayerStateObservers() {

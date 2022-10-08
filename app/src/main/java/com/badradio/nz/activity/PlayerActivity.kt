@@ -18,11 +18,15 @@ import com.badradio.nz.utilities.PlayerStateObserver
 class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
     private lateinit var binding: ActivityPlayerBinding
 
+    override fun onResume() {
+        super.onResume()
+        tryRegisterAsPlayerStateObserver()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         RadioManager.bind(applicationContext)
-        tryRegisterAsPlayerStateObserver()
 
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
