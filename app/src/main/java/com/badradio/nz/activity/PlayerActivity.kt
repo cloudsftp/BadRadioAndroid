@@ -5,17 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.badradio.nz.R
 import android.content.Intent
-import android.graphics.BitmapFactory
+import android.util.Log
 import com.badradio.nz.player.RadioManager
-import com.badradio.nz.player.PlaybackState
-import android.os.Handler
-import android.os.Looper
 import com.badradio.nz.databinding.ActivityPlayerBinding
-import com.badradio.nz.metadata.SongMetadata
-import com.badradio.nz.player.PlayerState
-import com.badradio.nz.utilities.PlayerStateObserver
+import com.google.android.exoplayer2.Player
 
-class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
+class PlayerActivity : AppCompatActivity(), Player.Listener {
     private lateinit var binding: ActivityPlayerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -25,14 +20,6 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        onStateChange(
-            PlayerState(
-                PlaybackState.NOT_READY,
-                SongMetadata("24/7 Phonk Radio", "BADRADIO"),
-                BitmapFactory.decodeResource(resources, R.drawable.badradio)
-            )
-        )
 
         binding.imgAbout.setOnClickListener {
             val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
@@ -52,34 +39,31 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
     override fun onResume() {
         super.onResume()
-        tryRegisterAsPlayerStateObserver()
+        RadioManager.addListener(this)
     }
 
     override fun onPause() {
         super.onPause()
-        RadioManager.unregisterPlayerStateObserver(this)
+        RadioManager.removeListener(this)
     }
 
-    private fun tryRegisterAsPlayerStateObserver() {
-        if (RadioManager.ready) {
-            RadioManager.registerPlayerStateObserver(this)
+    override fun onIsPlayingChanged(isPlaying: Boolean) {
+        val res = if (isPlaying) {
+            R.drawable.ic_pause_white
         } else {
-            Handler(Looper.getMainLooper()).postDelayed({
-                tryRegisterAsPlayerStateObserver()
-            }, 100)
+            R.drawable.ic_play_white
+        }
+
+        runOnUiThread {
+            binding.imgBtnPlay.setImageResource(res)
         }
     }
 
     private fun togglePlayer() {
-        when (playbackState) {
-            PlaybackState.PAUSED -> RadioManager.onPlay()
-            PlaybackState.PLAYING -> RadioManager.onPause()
-            else -> {}
-        }
+        RadioManager.onPlay()
     }
 
-    private var playbackState: PlaybackState? = null
-
+    /*
     override fun onStateChange(state: PlayerState) {
         runOnUiThread {
             binding.imgAlbumArt.setImageBitmap(state.art)
@@ -107,6 +91,7 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             }
         }
     }
+     */
 
     private fun shareApp(context: Context) {
         val appPackageName = context.packageName
@@ -118,4 +103,6 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         }
         context.startActivity(sendIntent)
     }
+
+    private val tag = "PlayerActivity"
 }

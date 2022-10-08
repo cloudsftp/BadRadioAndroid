@@ -29,7 +29,6 @@ class MetadataReceiver(private val radioService: RadioService) : TimerTask(), Ca
 
         if (currentSongMetadata != songMetadata) {
             Log.d(TAG, "Metadata changed from before, notifying and searching for album art")
-            radioService.onSongTitle(songMetadata.title, songMetadata.artist)
             getAlbumArt(songMetadata, radioService)
 
             currentSongMetadata = songMetadata

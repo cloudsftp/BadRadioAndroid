@@ -27,7 +27,7 @@ fun getAlbumArt(songMetadata: SongMetadata, radioService: RadioService) {
             Log.d(TAG, "Try getting album art from ${it::class.qualifiedName}")
             val imageURL = it.getImageURL(songMetadata)
             val image = Picasso.get().load(imageURL).get()
-            radioService.onAlbumArt(image)
+            // radioService.onAlbumArt(image)
             foundAlbumArt = true
         } catch (e: IOException) {
             Log.e(TAG, "See exception", e)
@@ -44,7 +44,7 @@ fun getAlbumArt(songMetadata: SongMetadata, radioService: RadioService) {
             (radioService as Context).resources,
             R.drawable.badradio
         )
-        radioService.onAlbumArt(badradioArt)
+        // radioService.onAlbumArt(badradioArt)
     }
 }
 

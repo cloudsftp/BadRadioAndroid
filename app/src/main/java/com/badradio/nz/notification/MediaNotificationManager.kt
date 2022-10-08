@@ -15,7 +15,6 @@ import androidx.media.app.NotificationCompat.MediaStyle
 import androidx.media2.common.MediaMetadata
 import com.badradio.nz.R
 import com.badradio.nz.activity.PlayerActivity
-import com.badradio.nz.player.PlaybackState
 import com.badradio.nz.player.PlayerState
 import com.badradio.nz.player.RadioService
 import com.badradio.nz.utilities.PlayerStateObserver
@@ -69,7 +68,6 @@ class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
         }
     }
 
-    private var lastPlaybackState = PlaybackState.NOT_READY
 
     override fun onStateChange(state: PlayerState) {
         metadataBuilder.apply {
@@ -80,22 +78,8 @@ class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
 
         mediaSession.setMetadata(metadataBuilder.build())
 
-        if (lastPlaybackState != state.playback) {
-            notificationBuilder.apply {
-                clearActions()
-
-                if (state.playback == PlaybackState.PLAYING) {
-                    addAction(pauseAction)
-                } else if (state.playback == PlaybackState.PAUSED) {
-                    addAction(playAction)
-                }
-            }
-
-            lastPlaybackState = state.playback
         }
 
-        notificationManager.notify(notificationID, notificationBuilder.build())
-    }
 
     private fun createAction(context: Context, actionId: String, requestCode: Int, iconId: Int, title: String): NotificationCompat.Action {
         val intent = Intent(context, MediaNotificationBroadcastReceiver::class.java).apply {
