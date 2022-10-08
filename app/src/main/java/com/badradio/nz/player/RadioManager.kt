@@ -35,4 +35,7 @@ object RadioManager : UserInputObserver {
     fun registerPlayerStateObserver(observer: PlayerStateObserver)
         = service.registerPlayerStateObserver(observer)
 
+    fun unregisterPlayerStateObserver(observer: PlayerStateObserver)
+        = service.unregisterPlayerStateObserver(observer)
+
 }

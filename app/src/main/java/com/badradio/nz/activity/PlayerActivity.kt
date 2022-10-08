@@ -22,7 +22,6 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         super.onCreate(savedInstanceState)
 
         RadioManager.bind(applicationContext)
-        tryRegisterAsPlayerStateObserver()
 
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -49,6 +48,16 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             startActivity(intent)
         }
         binding.imgBtnShare.setOnClickListener { shareApp(applicationContext) }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        tryRegisterAsPlayerStateObserver()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        RadioManager.unregisterPlayerStateObserver(this)
     }
 
     private fun tryRegisterAsPlayerStateObserver() {
