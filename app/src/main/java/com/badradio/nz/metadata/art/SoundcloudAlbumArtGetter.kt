@@ -87,8 +87,6 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
 
         throw IOException("Could not find image in Soundcloud song page.")
     }
-
-    private val TAG = SoundcloudAlbumArtGetter::class.qualifiedName!!
 }
 
 data class SoundcloudSearchResults(

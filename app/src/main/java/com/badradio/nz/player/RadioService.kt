@@ -2,6 +2,7 @@ package com.badradio.nz.player
 
 import android.app.Service
 import android.content.Intent
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Binder
@@ -11,6 +12,7 @@ import android.os.Looper
 import android.util.Log
 import com.badradio.nz.R
 import com.badradio.nz.metadata.SongMetadata
+import com.badradio.nz.metadata.art.getAlbumArt
 import com.badradio.nz.utilities.PlayerStateObserver
 import com.badradio.nz.utilities.UserInputObserver
 import com.badradio.nz.utilities.client
@@ -18,6 +20,8 @@ import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
+import kotlinx.coroutines.*
+import java.lang.Runnable
 
 class RadioService : Service(), Player.Listener, UserInputObserver {
     private lateinit var mediaPlayer: ExoPlayer
@@ -110,13 +114,17 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
         notifyObservers()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
         val rawTitle = mediaMetadata.title ?: return
         val metadata = SongMetadata.fromRawTitle(rawTitle.toString())
 
         playerState.metadata = metadata
 
-        notifyObservers()
+        GlobalScope.launch { // synchronous network in this function
+            playerState.art = getAlbumArt(metadata, this@RadioService)
+            notifyObservers()
+        }
     }
 
     private fun notifyObservers() {
