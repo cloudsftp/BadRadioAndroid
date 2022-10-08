@@ -30,7 +30,7 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
 
         val response = executeRequestAndCheckResponse(songPageRequest, "Song page request (sc api-v2)")
 
-        return getImageURLFromSongPage(response.body()!!.string())
+        return getImageURLFromSongPage(response.body!!.string())
     }
 
     @Throws(IOException::class)
@@ -40,7 +40,7 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
 
         val response = executeRequestAndCheckResponse(searchRequest, "Search request (sc api-v2)")
 
-        return getSongURLFromSearchResult(songMetadata, response.body()!!.string())
+        return getSongURLFromSearchResult(songMetadata, response.body!!.string())
     }
 
     private fun buildSearchURL(songMetadata: SongMetadata): String {

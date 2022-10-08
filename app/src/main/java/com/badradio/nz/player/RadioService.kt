@@ -1,16 +1,14 @@
 package com.badradio.nz.player
 
 import android.app.Service
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.AudioAttributes
-import android.media.MediaPlayer
-import android.net.wifi.WifiManager
+import android.net.Uri
 import android.os.Binder
+import android.os.Handler
 import android.os.IBinder
-import android.os.PowerManager
+import android.os.Looper
 import android.util.Log
 import com.badradio.nz.R
 import com.badradio.nz.metadata.MetadataReceiver
@@ -19,17 +17,35 @@ import com.badradio.nz.notification.MediaNotificationManager
 import com.badradio.nz.utilities.MetadataObserver
 import com.badradio.nz.utilities.PlayerStateObserver
 import com.badradio.nz.utilities.UserInputObserver
+import com.badradio.nz.utilities.client
+import com.google.android.exoplayer2.C
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.audio.AudioAttributes
+import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
+import com.google.android.exoplayer2.source.ProgressiveMediaSource
 
 
 class RadioService : Service(), MetadataObserver, UserInputObserver {
     private val observers: MutableList<PlayerStateObserver> = mutableListOf()
     private lateinit var state: PlayerState
 
-    private lateinit var mediaPlayer: MediaPlayer
+    private lateinit var mediaPlayer: ExoPlayer
 
     private lateinit var mediaNotificationManager: MediaNotificationManager
 
-    private lateinit var wifiLock: WifiManager.WifiLock
+    private val audioAttributes = AudioAttributes.Builder().apply {
+        setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+        setUsage(C.USAGE_MEDIA)
+    }.build()
+
+    private val okHttpDataSourceFactory = OkHttpDataSource.Factory(client).apply {
+        setDefaultRequestProperties(
+            mutableMapOf(
+                Pair("Icy-Metadata", "1")
+            )
+        )
+    }
 
     override fun onCreate() {
         super.onCreate()
@@ -40,9 +56,6 @@ class RadioService : Service(), MetadataObserver, UserInputObserver {
             BitmapFactory.decodeResource(resources, R.drawable.badradio)
         )
         notifyPlayerStateObservers()
-
-        val wifiManager = getSystemService(Context.WIFI_SERVICE) as WifiManager
-        wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "BADRADIO Wifi Lock")
 
         getStationInfo {
             createPlayer(it)
@@ -56,22 +69,19 @@ class RadioService : Service(), MetadataObserver, UserInputObserver {
     }
 
     private fun createPlayer(stationInfo: StationInfo) {
-        mediaPlayer = MediaPlayer().apply {
-            setAudioAttributes(
-                AudioAttributes.Builder()
-                    .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                    .setUsage(AudioAttributes.USAGE_MEDIA)
-                    .build()
+        mediaPlayer = ExoPlayer.Builder(applicationContext).apply {
+            setAudioAttributes(audioAttributes, true)
+            setWakeMode(C.WAKE_MODE_NETWORK)
+            setMediaSourceFactory(ProgressiveMediaSource.Factory(okHttpDataSourceFactory))
+        }.build()
+
+        Handler(Looper.getMainLooper()).post {
+            mediaPlayer.setMediaItem(
+                MediaItem.fromUri(Uri.parse(stationInfo.streamURL))
             )
-            setWakeMode(applicationContext, PowerManager.PARTIAL_WAKE_LOCK)
 
-            setDataSource(stationInfo.streamURL)
-            prepareAsync()
-
-            setOnPreparedListener {
-                state.playback = PlaybackState.PAUSED
-                notifyPlayerStateObservers()
-            }
+            mediaPlayer.playWhenReady = true
+            mediaPlayer.prepare()
         }
     }
 
@@ -123,8 +133,7 @@ class RadioService : Service(), MetadataObserver, UserInputObserver {
 
     override fun onPlay() {
         if (!mediaPlayer.isPlaying) {
-            wifiLock.acquire()
-            mediaPlayer.start()
+            mediaPlayer.play()
 
             state.playback = PlaybackState.PLAYING
             notifyPlayerStateObservers()
@@ -134,7 +143,6 @@ class RadioService : Service(), MetadataObserver, UserInputObserver {
     override fun onPause() {
         if (mediaPlayer.isPlaying) {
             mediaPlayer.pause()
-            wifiLock.release()
 
             state.playback = PlaybackState.PAUSED
             notifyPlayerStateObservers()

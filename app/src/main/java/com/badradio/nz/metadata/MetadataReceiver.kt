@@ -22,7 +22,7 @@ class MetadataReceiver(private val radioService: RadioService) : TimerTask(), Ca
     }
 
     override fun onResponse(call: Call, response: Response) {
-        val stationStatus = stationStatusAdapter.fromJson(response.body()!!.source())
+        val stationStatus = stationStatusAdapter.fromJson(response.body!!.source())
             ?: throw IOException("Could not parse API response")
 
         val songMetadata = SongMetadata.fromStationTrack(stationStatus.current_track)

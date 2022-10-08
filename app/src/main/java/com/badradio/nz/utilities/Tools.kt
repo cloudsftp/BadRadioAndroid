@@ -18,12 +18,12 @@ fun executeRequestAndCheckResponse(request: Request, name: String): Response {
     }
 
     if (!response.isSuccessful) {
-        val e = IOException("$name returned not OK: ${response.code()}")
+        val e = IOException("$name returned not OK: ${response.code}")
         Log.e(TAG, "See exception", e)
         throw e
     }
 
-    if (response.body() == null) {
+    if (response.body == null) {
         val e = IOException("$name had no body")
         Log.e(TAG, "See exception", e)
         throw e
