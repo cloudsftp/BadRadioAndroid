@@ -8,8 +8,8 @@ android {
         applicationId "com.badradio.nz"
         minSdkVersion 31
         targetSdkVersion 33
-        versionCode 300
-        versionName "3.0.0-alpha0"
+        versionCode 301
+        versionName "3.0.0-alpha1"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {
