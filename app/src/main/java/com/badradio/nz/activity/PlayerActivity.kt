@@ -47,33 +47,16 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         RadioManager.removeObserver(this)
     }
 
-    /*
-    override fun onIsPlayingChanged(isPlaying: Boolean) {
-        val res = if (isPlaying) {
-            R.drawable.ic_pause_white
-        } else {
-            R.drawable.ic_play_white
-        }
-
-        runOnUiThread {
-            binding.imgBtnPlay.setImageResource(res)
-        }
-    }
-
-    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-        runOnUiThread {
-            binding.textSongName.text = mediaMetadata.title
-            binding.textArtist.text = mediaMetadata.artist
-        }
-    }
-
-     */
+    private var isPlaying: Boolean = false
 
     private fun togglePlayer() {
-        RadioManager.onPlay()
+        if (isPlaying) {
+            RadioManager.onPause()
+        } else {
+            RadioManager.onPlay()
+        }
     }
 
-    private var latestPlaybackState: Boolean? = null
 
     override fun onStateChange(state: PlayerState) {
         runOnUiThread {
@@ -82,7 +65,7 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             binding.textSongName.text = state.metadata.title
             binding.textArtist.text = state.metadata.artist
 
-            if (latestPlaybackState != state.playing) {
+            if (isPlaying != state.playing) {
                 val res = if (state.playing) {
                     R.drawable.quantum_ic_pause_circle_filled_white_36
                 } else {
@@ -91,7 +74,7 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
                 binding.imgBtnPlay.setImageResource(res)
 
-                latestPlaybackState = state.playing
+                isPlaying = state.playing
             }
         }
     }
@@ -106,6 +89,4 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         }
         context.startActivity(sendIntent)
     }
-
-    private val tag = "PlayerActivity"
 }
