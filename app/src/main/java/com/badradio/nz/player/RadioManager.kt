@@ -3,6 +3,8 @@ package com.badradio.nz.player
 import android.app.Service.BIND_AUTO_CREATE
 import android.os.IBinder
 import android.content.*
+import android.os.Handler
+import android.os.Looper
 import com.badradio.nz.utilities.PlayerStateObserver
 import com.badradio.nz.utilities.UserInputObserver
 
@@ -29,13 +31,30 @@ object RadioManager : UserInputObserver {
         }
     }
 
-    override fun onPlay() = service.onPlay()
-    override fun onPause() = service.onPause()
+    override fun onPlay() = executeWhenServiceBound {
+        service.onPlay()
+    }
 
-    fun registerPlayerStateObserver(observer: PlayerStateObserver)
-        = service.registerPlayerStateObserver(observer)
+    override fun onPause() = executeWhenServiceBound {
+        service.onPause()
+    }
 
-    fun unregisterPlayerStateObserver(observer: PlayerStateObserver)
-        = service.unregisterPlayerStateObserver(observer)
+    fun addObserver(observer: PlayerStateObserver) = executeWhenServiceBound {
+        service.addObserver(observer)
+    }
+
+    fun removeObserver(observer: PlayerStateObserver) = executeWhenServiceBound {
+        service.removeObserver(observer)
+    }
+
+    private fun executeWhenServiceBound(r: Runnable) {
+        if (ready) {
+            r.run()
+        } else {
+            Handler(Looper.getMainLooper()).postDelayed({
+                executeWhenServiceBound(r)
+            }, 100)
+        }
+    }
 
 }

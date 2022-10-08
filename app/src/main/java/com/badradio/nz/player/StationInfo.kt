@@ -19,11 +19,11 @@ fun getStationInfo(callback: (StationInfo) -> Unit) {
         }
 
         override fun onResponse(call: Call, response: Response) {
-            if (response.body() == null) {
+            if (response.body == null) {
                 throw IOException("Station info response has no body")
             }
 
-            val stationInfoList = stationListAdapter.fromJson(response.body()!!.string())
+            val stationInfoList = stationListAdapter.fromJson(response.body!!.string())
                 ?: throw IOException("Could not read station info list from response body")
 
             if (stationInfoList.station.size != 1) {
