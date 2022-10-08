@@ -5,12 +5,12 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.badradio.nz.R
 import android.content.Intent
-import android.util.Log
 import com.badradio.nz.player.RadioManager
 import com.badradio.nz.databinding.ActivityPlayerBinding
-import com.google.android.exoplayer2.Player
+import com.badradio.nz.player.PlayerState
+import com.badradio.nz.utilities.PlayerStateObserver
 
-class PlayerActivity : AppCompatActivity(), Player.Listener {
+class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
     private lateinit var binding: ActivityPlayerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -47,6 +47,7 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         RadioManager.removeListener(this)
     }
 
+    /*
     override fun onIsPlayingChanged(isPlaying: Boolean) {
         val res = if (isPlaying) {
             R.drawable.ic_pause_white
@@ -59,11 +60,21 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
         }
     }
 
+    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
+        runOnUiThread {
+            binding.textSongName.text = mediaMetadata.title
+            binding.textArtist.text = mediaMetadata.artist
+        }
+    }
+
+     */
+
     private fun togglePlayer() {
         RadioManager.onPlay()
     }
 
-    /*
+    private var latestPlaybackState: Boolean? = null
+
     override fun onStateChange(state: PlayerState) {
         runOnUiThread {
             binding.imgAlbumArt.setImageBitmap(state.art)
@@ -71,27 +82,19 @@ class PlayerActivity : AppCompatActivity(), Player.Listener {
             binding.textSongName.text = state.metadata.title
             binding.textArtist.text = state.metadata.artist
 
-            if (playbackState != state.playback) {
-                when (state.playback) {
-                    PlaybackState.NOT_READY -> {
-                        binding.imgBtnPlay.setImageResource(R.drawable.ic_play_white)
-                        binding.imgBtnPlay.imageAlpha = 50
-                    }
-                    PlaybackState.PAUSED -> {
-                        binding.imgBtnPlay.setImageResource(R.drawable.ic_play_white)
-                        binding.imgBtnPlay.imageAlpha = 1000
-                    }
-                    PlaybackState.PLAYING -> {
-                        binding.imgBtnPlay.setImageResource(R.drawable.ic_pause_white)
-                        binding.imgBtnPlay.imageAlpha = 1000
-                    }
+            if (latestPlaybackState != state.playing) {
+                val res = if (state.playing) {
+                    R.drawable.ic_pause_white
+                } else {
+                    R.drawable.ic_play_white
                 }
 
-                playbackState = state.playback
+                binding.imgBtnPlay.setImageResource(res)
+
+                latestPlaybackState = state.playing
             }
         }
     }
-     */
 
     private fun shareApp(context: Context) {
         val appPackageName = context.packageName

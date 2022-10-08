@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import com.badradio.nz.metadata.SongMetadata
 
 data class PlayerState(
-    val metadata: SongMetadata,
+    var playing: Boolean,
+    var metadata: SongMetadata,
     var art: Bitmap,
 )

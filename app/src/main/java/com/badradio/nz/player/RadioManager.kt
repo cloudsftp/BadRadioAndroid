@@ -5,6 +5,7 @@ import android.os.IBinder
 import android.content.*
 import android.os.Handler
 import android.os.Looper
+import com.badradio.nz.utilities.PlayerStateObserver
 import com.badradio.nz.utilities.UserInputObserver
 import com.google.android.exoplayer2.Player
 
@@ -34,12 +35,12 @@ object RadioManager : UserInputObserver {
     override fun onPlay() = service.onPlay()
     override fun onPause() = service.onPause()
 
-    fun addListener(listener: Player.Listener) = executeWhenServiceBound {
-        service.addListener(listener)
+    fun addListener(observer: PlayerStateObserver) = executeWhenServiceBound {
+        service.addListener(observer)
     }
 
-    fun removeListener(listener: Player.Listener) = executeWhenServiceBound {
-        service.removeListener(listener)
+    fun removeListener(observer: PlayerStateObserver) = executeWhenServiceBound {
+        service.removeListener(observer)
     }
 
     private fun executeWhenServiceBound(r: Runnable) {
