@@ -18,11 +18,6 @@ import com.badradio.nz.utilities.PlayerStateObserver
 class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
     private lateinit var binding: ActivityPlayerBinding
 
-    override fun onResume() {
-        super.onResume()
-        tryRegisterAsPlayerStateObserver()
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -53,6 +48,16 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             startActivity(intent)
         }
         binding.imgBtnShare.setOnClickListener { shareApp(applicationContext) }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        tryRegisterAsPlayerStateObserver()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        RadioManager.unregisterPlayerStateObserver(this)
     }
 
     private fun tryRegisterAsPlayerStateObserver() {

@@ -11,6 +11,7 @@ import android.net.wifi.WifiManager
 import android.os.Binder
 import android.os.IBinder
 import android.os.PowerManager
+import android.util.Log
 import com.badradio.nz.R
 import com.badradio.nz.metadata.MetadataReceiver
 import com.badradio.nz.metadata.SongMetadata
@@ -106,6 +107,14 @@ class RadioService : Service(), MetadataObserver, UserInputObserver {
         notifyPlayerStateObservers()
     }
 
+    fun unregisterPlayerStateObserver(observer: PlayerStateObserver) {
+        val success = observers.remove(observer)
+
+        if (!success) {
+            Log.w(tag, "Tried to unregister observer $observer, was not registered in the first place")
+        }
+    }
+
     private fun notifyPlayerStateObservers() {
         observers.forEach {
             it.onStateChange(state)
@@ -131,6 +140,8 @@ class RadioService : Service(), MetadataObserver, UserInputObserver {
             notifyPlayerStateObservers()
         }
     }
+
+    private val tag = "RadioService"
 }
 
 enum class PlaybackState {
