@@ -95,7 +95,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:background="@android:color/transparent"
-        app:srcCompat="@drawable/ic_play_white"/>
+        app:srcCompat="@drawable/quantum_ic_play_circle_filled_white_36"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_info"
