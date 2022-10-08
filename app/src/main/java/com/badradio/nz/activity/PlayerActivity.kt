@@ -39,12 +39,12 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
     override fun onResume() {
         super.onResume()
-        RadioManager.addListener(this)
+        RadioManager.addObserver(this)
     }
 
     override fun onPause() {
         super.onPause()
-        RadioManager.removeListener(this)
+        RadioManager.removeObserver(this)
     }
 
     /*

@@ -2,7 +2,6 @@ package com.badradio.nz.player
 
 import android.app.Service
 import android.content.Intent
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Binder
@@ -13,6 +12,7 @@ import android.util.Log
 import com.badradio.nz.R
 import com.badradio.nz.metadata.SongMetadata
 import com.badradio.nz.metadata.art.getAlbumArt
+import com.badradio.nz.notification.MediaNotificationManager
 import com.badradio.nz.utilities.PlayerStateObserver
 import com.badradio.nz.utilities.UserInputObserver
 import com.badradio.nz.utilities.client
@@ -44,6 +44,9 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
 
     override fun onCreate() {
         super.onCreate()
+
+        val mediaNotificationManager = MediaNotificationManager(this)
+        addObserver(mediaNotificationManager)
 
         playerState = PlayerState(
             false,
@@ -85,18 +88,6 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
         return RadioServiceBinder()
     }
 
-    fun addListener(observer: PlayerStateObserver) {
-        observers.add(observer)
-    }
-
-    fun removeListener(observer: PlayerStateObserver) {
-        val success = observers.remove(observer)
-
-        if (!success) {
-            Log.w(tag, "Tried to remove observer $observer, was not added")
-        }
-    }
-
     override fun onPlay() = runWhenPlayerInitialized {
         if (!mediaPlayer.isPlaying) {
             mediaPlayer.play()
@@ -127,9 +118,24 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
         }
     }
 
+    fun addObserver(observer: PlayerStateObserver) {
+        observers.add(observer)
+        notifyObservers()
+    }
+
+    fun removeObserver(observer: PlayerStateObserver) {
+        val success = observers.remove(observer)
+
+        if (!success) {
+            Log.w(tag, "Tried to remove observer $observer, was not added")
+        }
+    }
+
     private fun notifyObservers() {
-        observers.forEach {
-            it.onStateChange(playerState)
+        if (::playerState.isInitialized) {
+            observers.forEach {
+                it.onStateChange(playerState)
+            }
         }
     }
 

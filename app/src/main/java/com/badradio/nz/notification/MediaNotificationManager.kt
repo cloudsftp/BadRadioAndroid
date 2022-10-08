@@ -68,6 +68,7 @@ class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
         }
     }
 
+    private var lastPlaybackState = false
 
     override fun onStateChange(state: PlayerState) {
         metadataBuilder.apply {
@@ -78,8 +79,22 @@ class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
 
         mediaSession.setMetadata(metadataBuilder.build())
 
+        if (lastPlaybackState != state.playing) {
+            notificationBuilder.apply {
+                clearActions()
+
+                if (state.playing) {
+                    addAction(pauseAction)
+                } else {
+                    addAction(playAction)
+                }
+            }
+
+            lastPlaybackState = state.playing
         }
 
+        notificationManager.notify(notificationID, notificationBuilder.build())
+    }
 
     private fun createAction(context: Context, actionId: String, requestCode: Int, iconId: Int, title: String): NotificationCompat.Action {
         val intent = Intent(context, MediaNotificationBroadcastReceiver::class.java).apply {
