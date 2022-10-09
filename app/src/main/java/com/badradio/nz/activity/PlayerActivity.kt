@@ -67,9 +67,9 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
             if (isPlaying != state.playing) {
                 val res = if (state.playing) {
-                    R.drawable.ic_play_black
+                    R.drawable.ic_pause_btn
                 } else {
-                    R.drawable.ic_play_black
+                    R.drawable.ic_play_btn
                 }
 
                 binding.imgBtnPlay.setImageResource(res)

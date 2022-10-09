@@ -94,7 +94,7 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         android:background="@android:color/transparent"
-        app:srcCompat="@drawable/ic_play_black"/>
+        app:srcCompat="@drawable/ic_play_btn"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_info"
