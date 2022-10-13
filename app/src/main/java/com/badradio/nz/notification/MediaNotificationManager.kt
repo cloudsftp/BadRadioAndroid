@@ -58,6 +58,12 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
         setContentIntent(pendingIntent)
     }
 
+    private val defaultAlbumArtRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        R.drawable.badradio_background
+    } else {
+        R.drawable.badradio
+    }
+
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManagerCompat.IMPORTANCE_DEFAULT
@@ -72,10 +78,8 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
     private var lastPlaybackState = false
 
     override fun onStateChange(state: PlayerState) {
-        var artToDisplay = state.art
-        if (artToDisplay == null) {
-            artToDisplay = BitmapFactory.decodeResource(context.resources, R.drawable.badradio_background)
-        }
+        val artToDisplay = state.art
+            ?: BitmapFactory.decodeResource(context.resources, defaultAlbumArtRes)
 
         metadataBuilder.apply {
             putString(MediaMetadata.METADATA_KEY_TITLE, state.metadata.title)
