@@ -5,6 +5,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.badradio.nz.R
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import com.badradio.nz.player.RadioManager
 import com.badradio.nz.databinding.ActivityPlayerBinding
 import com.badradio.nz.player.PlayerState
@@ -60,7 +62,7 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
     override fun onStateChange(state: PlayerState) {
         runOnUiThread {
-            binding.imgAlbumArt.setImageBitmap(state.art)
+            updateAlbumArt(state.art)
 
             binding.textSongName.text = state.metadata.title
             binding.textArtist.text = state.metadata.artist
@@ -77,6 +79,15 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
                 isPlaying = state.playing
             }
         }
+    }
+
+    private fun updateAlbumArt(art: Bitmap?) {
+        var toDisplay = art
+        if (toDisplay == null) {
+            toDisplay = BitmapFactory.decodeResource(resources, R.drawable.badradio)
+        }
+
+        binding.imgAlbumArt.setImageBitmap(toDisplay)
     }
 
     private fun shareApp(context: Context) {

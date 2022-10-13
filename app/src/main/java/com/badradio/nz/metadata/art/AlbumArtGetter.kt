@@ -14,7 +14,8 @@ private val albumArtGetters = listOf<IAlbumArtGetter>(
     SoundcloudAlbumArtGetter
 )
 
-fun getAlbumArt(songMetadata: SongMetadata, radioService: RadioService): Bitmap {
+//                                          radioService needed later - don't delete
+fun getAlbumArt(songMetadata: SongMetadata, radioService: RadioService): Bitmap? {
     Log.d(TAG, "Searching for album art for $songMetadata")
 
     albumArtGetters.forEach {
@@ -32,10 +33,13 @@ fun getAlbumArt(songMetadata: SongMetadata, radioService: RadioService): Bitmap 
         }
     }
 
-    return BitmapFactory.decodeResource(
+    return null
+
+    /*BitmapFactory.decodeResource(
         (radioService as Context).resources,
         R.drawable.badradio
     )
+     */
 }
 
 interface IAlbumArtGetter {

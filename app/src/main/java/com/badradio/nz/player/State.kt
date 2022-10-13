@@ -6,5 +6,5 @@ import com.badradio.nz.metadata.SongMetadata
 data class PlayerState(
     var playing: Boolean,
     var metadata: SongMetadata,
-    var art: Bitmap,
+    var art: Bitmap?,
 )
