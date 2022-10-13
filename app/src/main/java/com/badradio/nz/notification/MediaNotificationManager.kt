@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -20,7 +21,7 @@ import com.badradio.nz.player.RadioService
 import com.badradio.nz.utilities.PlayerStateObserver
 
 @SuppressLint("ObsoleteSdkInt")
-class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
+class MediaNotificationManager(private val context: RadioService) : PlayerStateObserver {
     private val activityRequestCode   = 0
     private val playRequestCode       = 1
     private val pauseRequestCode      = 2
@@ -57,6 +58,12 @@ class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
         setContentIntent(pendingIntent)
     }
 
+    private val defaultAlbumArtRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        R.drawable.badradio_background
+    } else {
+        R.drawable.badradio
+    }
+
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val importance = NotificationManagerCompat.IMPORTANCE_DEFAULT
@@ -71,10 +78,13 @@ class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
     private var lastPlaybackState = false
 
     override fun onStateChange(state: PlayerState) {
+        val artToDisplay = state.art
+            ?: BitmapFactory.decodeResource(context.resources, defaultAlbumArtRes)
+
         metadataBuilder.apply {
             putString(MediaMetadata.METADATA_KEY_TITLE, state.metadata.title)
             putString(MediaMetadata.METADATA_KEY_ARTIST, state.metadata.artist)
-            putBitmap(MediaMetadata.METADATA_KEY_ART, state.art)
+            putBitmap(MediaMetadata.METADATA_KEY_ART, artToDisplay)
         }
 
         mediaSession.setMetadata(metadataBuilder.build())
