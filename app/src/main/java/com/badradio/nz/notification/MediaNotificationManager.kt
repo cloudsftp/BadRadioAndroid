@@ -1,6 +1,7 @@
 package com.badradio.nz.notification
 
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
@@ -21,7 +22,11 @@ import com.badradio.nz.player.RadioService
 import com.badradio.nz.utilities.PlayerStateObserver
 
 @SuppressLint("ObsoleteSdkInt")
-class MediaNotificationManager(private val context: RadioService) : PlayerStateObserver {
+class MediaNotificationManager(
+    private val context: RadioService,
+    // private val notificationListener: NotificationListener,
+) : PlayerStateObserver {
+
     private val activityRequestCode   = 0
     private val playRequestCode       = 1
     private val pauseRequestCode      = 2
@@ -42,8 +47,9 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
         .setShowActionsInCompactView(0)
 
     private val notificationBuilder = NotificationCompat.Builder(context, channelID).apply {
-        setStyle(mediaStyle)
+        setOngoing(true)
         setSilent(true)
+        setStyle(mediaStyle)
         setSmallIcon(R.drawable.ic_radio_black_24dp)
 
         val sessionIntent = Intent(context, PlayerActivity::class.java)
@@ -54,7 +60,6 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         }
-
         setContentIntent(pendingIntent)
     }
 
@@ -103,7 +108,10 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
             lastPlaybackState = state.playing
         }
 
-        notificationManager.notify(notificationID, notificationBuilder.build())
+        val notification = notificationBuilder.build()
+
+        notificationManager.notify(notificationID, notification)
+        // context.startForeground(notificationID, notification)
     }
 
     private fun createAction(context: Context, actionId: String, requestCode: Int, iconId: Int, title: String): NotificationCompat.Action {
@@ -121,5 +129,10 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
         return NotificationCompat.Action(
             iconId, title, pendingIntent
         )
+    }
+
+    interface NotificationListener {
+        fun onNotificationPosted(notificationId: Int, notification: Notification)
+        fun onNotificationCancelled()
     }
 }
