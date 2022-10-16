@@ -9,6 +9,8 @@ import android.os.Handler
 import android.os.IBinder
 import android.os.Looper
 import android.util.Log
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
 import com.badradio.nz.R
 import com.badradio.nz.metadata.SongMetadata
 import com.badradio.nz.metadata.art.getAlbumArt
@@ -25,6 +27,8 @@ import java.lang.Runnable
 
 class RadioService : Service(), Player.Listener, UserInputObserver {
     private lateinit var mediaPlayer: ExoPlayer
+
+    private var isForegroundService = false
 
     private lateinit var playerState: PlayerState
     private val observers: MutableList<PlayerStateObserver> = mutableListOf()
