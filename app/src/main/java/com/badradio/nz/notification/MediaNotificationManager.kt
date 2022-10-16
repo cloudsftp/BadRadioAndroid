@@ -43,7 +43,6 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
         .setShowActionsInCompactView(0)
 
     private val notificationBuilder = NotificationCompat.Builder(context, channelID).apply {
-        setOngoing(true)
         setSilent(true)
         setStyle(mediaStyle)
         setSmallIcon(R.drawable.ic_radio_black_24dp)
