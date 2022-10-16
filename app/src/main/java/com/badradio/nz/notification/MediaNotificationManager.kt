@@ -22,17 +22,13 @@ import com.badradio.nz.player.RadioService
 import com.badradio.nz.utilities.PlayerStateObserver
 
 @SuppressLint("ObsoleteSdkInt")
-class MediaNotificationManager(
-    private val context: RadioService,
-    // private val notificationListener: NotificationListener,
-) : PlayerStateObserver {
-
+class MediaNotificationManager(private val context: RadioService) : PlayerStateObserver {
     private val activityRequestCode   = 0
     private val playRequestCode       = 1
     private val pauseRequestCode      = 2
 
     private val channelID = "BADRADIO Notification Channel"
-    private val notificationID = 0
+    private val notificationID = 1
 
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
 
@@ -111,7 +107,7 @@ class MediaNotificationManager(
         val notification = notificationBuilder.build()
 
         notificationManager.notify(notificationID, notification)
-        // context.startForeground(notificationID, notification)
+        context.startForeground(notificationID, notification)
     }
 
     private fun createAction(context: Context, actionId: String, requestCode: Int, iconId: Int, title: String): NotificationCompat.Action {

@@ -49,13 +49,6 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
     override fun onCreate() {
         super.onCreate()
 
-        val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(this)
-        val notification = NotificationCompat.Builder(this, "BADRADIO Notification Channel").apply {
-            setSmallIcon(R.drawable.ic_radio_black_24dp)
-        }.build()
-        notificationManager.notify(100, notification)
-        startForeground(100, notification)
-
         val mediaNotificationManager = MediaNotificationManager(this)
         addObserver(mediaNotificationManager)
 
