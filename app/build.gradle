@@ -9,7 +9,7 @@ android {
         minSdkVersion 31
         targetSdkVersion 33
         versionCode 302
-        versionName "3.0.0-alpha2"
+        versionName "3.0.0-beta0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     buildTypes {

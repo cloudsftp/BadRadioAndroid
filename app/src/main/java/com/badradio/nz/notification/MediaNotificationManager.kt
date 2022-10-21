@@ -1,10 +1,12 @@
 package com.badradio.nz.notification
 
 import android.annotation.SuppressLint
+import android.app.Notification
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Build
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
@@ -20,13 +22,13 @@ import com.badradio.nz.player.RadioService
 import com.badradio.nz.utilities.PlayerStateObserver
 
 @SuppressLint("ObsoleteSdkInt")
-class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
+class MediaNotificationManager(private val context: RadioService) : PlayerStateObserver {
     private val activityRequestCode   = 0
     private val playRequestCode       = 1
     private val pauseRequestCode      = 2
 
     private val channelID = "BADRADIO Notification Channel"
-    private val notificationID = 0
+    private val notificationID = 1
 
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
 
@@ -41,8 +43,8 @@ class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
         .setShowActionsInCompactView(0)
 
     private val notificationBuilder = NotificationCompat.Builder(context, channelID).apply {
-        setStyle(mediaStyle)
         setSilent(true)
+        setStyle(mediaStyle)
         setSmallIcon(R.drawable.ic_radio_black_24dp)
 
         val sessionIntent = Intent(context, PlayerActivity::class.java)
@@ -53,8 +55,13 @@ class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
                 PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
             )
         }
-
         setContentIntent(pendingIntent)
+    }
+
+    private val defaultAlbumArtRes = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        R.drawable.badradio_background
+    } else {
+        R.drawable.badradio
     }
 
     init {
@@ -71,10 +78,13 @@ class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
     private var lastPlaybackState = false
 
     override fun onStateChange(state: PlayerState) {
+        val artToDisplay = state.art
+            ?: BitmapFactory.decodeResource(context.resources, defaultAlbumArtRes)
+
         metadataBuilder.apply {
             putString(MediaMetadata.METADATA_KEY_TITLE, state.metadata.title)
             putString(MediaMetadata.METADATA_KEY_ARTIST, state.metadata.artist)
-            putBitmap(MediaMetadata.METADATA_KEY_ART, state.art)
+            putBitmap(MediaMetadata.METADATA_KEY_ART, artToDisplay)
         }
 
         mediaSession.setMetadata(metadataBuilder.build())
@@ -93,7 +103,10 @@ class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
             lastPlaybackState = state.playing
         }
 
-        notificationManager.notify(notificationID, notificationBuilder.build())
+        val notification = notificationBuilder.build()
+
+        notificationManager.notify(notificationID, notification)
+        context.startForeground(notificationID, notification)
     }
 
     private fun createAction(context: Context, actionId: String, requestCode: Int, iconId: Int, title: String): NotificationCompat.Action {
@@ -111,5 +124,10 @@ class MediaNotificationManager(context: RadioService) : PlayerStateObserver {
         return NotificationCompat.Action(
             iconId, title, pendingIntent
         )
+    }
+
+    interface NotificationListener {
+        fun onNotificationPosted(notificationId: Int, notification: Notification)
+        fun onNotificationCancelled()
     }
 }
