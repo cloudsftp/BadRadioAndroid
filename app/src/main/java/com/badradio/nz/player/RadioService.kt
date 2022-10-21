@@ -93,6 +93,8 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
     }
 
     override fun onPlay() = runWhenPlayerInitialized {
+        mediaPlayer.seekForward()
+
         if (!mediaPlayer.isPlaying) {
             mediaPlayer.play()
         }
