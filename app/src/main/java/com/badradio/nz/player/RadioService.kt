@@ -53,7 +53,7 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
         addObserver(mediaNotificationManager)
 
         playerState = PlayerState(
-            false,
+            PlaybackStatus.STOPPED,
             SongMetadata(
                 resources.getString(R.string.default_song_name),
                 resources.getString(R.string.default_artist)
@@ -94,8 +94,15 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
 
     override fun onPlay() = runWhenPlayerInitialized {
         if (!mediaPlayer.isPlaying) {
+            if (playerState.playbackStatus == PlaybackStatus.STOPPED) {
+                mediaPlayer.prepare()
+            }
             mediaPlayer.play()
         }
+    }
+
+    override fun onStop() {
+        mediaPlayer.stop()
     }
 
     override fun onPause() = runWhenPlayerInitialized {
@@ -105,7 +112,16 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-        playerState.playing = isPlaying
+        playerState.playbackStatus = if (isPlaying) {
+            PlaybackStatus.PLAYING
+        } else {
+            if (mediaPlayer.playbackState == Player.STATE_IDLE) {
+                PlaybackStatus.STOPPED
+            } else {
+                PlaybackStatus.PAUSED
+            }
+        }
+
         notifyObservers()
     }
 
