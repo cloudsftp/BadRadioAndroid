@@ -38,13 +38,8 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
     private val metadataBuilder = MediaMetadataCompat.Builder()
     private val mediaSession = MediaSessionCompat(context, "BADRADIO Media Session")
 
-    private val mediaStyle = MediaStyle()
-        .setMediaSession(mediaSession.sessionToken)
-        .setShowActionsInCompactView(0)
-
     private val notificationBuilder = NotificationCompat.Builder(context, channelID).apply {
         setSilent(true)
-        setStyle(mediaStyle)
         setSmallIcon(R.drawable.ic_radio_black_24dp)
 
         val sessionIntent = Intent(context, PlayerActivity::class.java)
@@ -98,6 +93,12 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
                 } else {
                     addAction(playAction)
                 }
+
+                setStyle(
+                    MediaStyle()
+                        .setMediaSession(mediaSession.sessionToken)
+                        .setShowActionsInCompactView(0)
+                )
             }
 
             lastPlaybackState = state.playing
