@@ -27,6 +27,7 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
     private val activityRequestCode   = 0
     private val playRequestCode       = 1
     private val pauseRequestCode      = 2
+    private val stopRequestCode       = 3
 
     private val channelID = "BADRADIO Notification Channel"
     private val notificationID = 1
@@ -35,6 +36,7 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
 
     private val playAction = createAction(context, PLAY_ACTION, playRequestCode, R.drawable.icn_notification_play, "Play")
     private val pauseAction = createAction(context, PAUSE_ACTION, pauseRequestCode, R.drawable.icn_notification_pause, "Pause")
+    private val stopAction = createAction(context, STOP_ACTION, stopRequestCode, R.drawable.vec_stop, "Stop")
 
     private val metadataBuilder = MediaMetadataCompat.Builder()
     private val mediaSession = MediaSessionCompat(context, "BADRADIO Media Session")
@@ -75,8 +77,6 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
         }
     }
 
-    private var lastPlaybackState = false
-
     override fun onStateChange(state: PlayerState) {
         val artToDisplay = state.art
             ?: BitmapFactory.decodeResource(context.resources, defaultAlbumArtRes)
@@ -99,6 +99,8 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
 
         notificationBuilder.apply {
             clearActions()
+
+            addAction(stopAction)
 
             if (state.playbackStatus == PlaybackStatus.PLAYING) {
                 addAction(pauseAction)
