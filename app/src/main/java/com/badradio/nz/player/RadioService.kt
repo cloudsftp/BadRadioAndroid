@@ -28,8 +28,6 @@ import java.lang.Runnable
 class RadioService : Service(), Player.Listener, UserInputObserver {
     private lateinit var mediaPlayer: ExoPlayer
 
-    private var isForegroundService = false
-
     private lateinit var playerState: PlayerState
     private val observers: MutableList<PlayerStateObserver> = mutableListOf()
 
@@ -58,7 +56,7 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
                 resources.getString(R.string.default_song_name),
                 resources.getString(R.string.default_artist)
             ),
-            BitmapFactory.decodeResource(resources, R.drawable.badradio)
+            null
         )
         notifyObservers()
 
