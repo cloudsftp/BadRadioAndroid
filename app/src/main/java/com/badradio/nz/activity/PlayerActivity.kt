@@ -37,11 +37,9 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             RadioManager.onStop()
         }
 
-        binding.imgBtnInfo.setOnClickListener {
-            val intent = Intent(this@PlayerActivity, InfoActivity::class.java)
-            startActivity(intent)
+        binding.imgBtnShare.setOnClickListener {
+            shareApp(applicationContext)
         }
-        binding.imgBtnShare.setOnClickListener { shareApp(applicationContext) }
     }
 
     override fun onResume() {

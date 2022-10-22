@@ -26,7 +26,7 @@ class WebActivity : AppCompatActivity() {
 
 
         binding.webView.settings.javaScriptEnabled = true // TODO: necessary?
-        binding.webView.loadUrl("http://badradio.nz")
+        binding.webView.loadUrl("https://badradio.nz")
         binding.webView.measure(100, 100)
         binding.webView.settings.useWideViewPort = true
         binding.webView.settings.loadWithOverviewMode = true
