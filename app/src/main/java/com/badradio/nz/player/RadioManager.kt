@@ -2,6 +2,7 @@ package com.badradio.nz.player
 
 import android.os.IBinder
 import android.content.*
+import android.os.Build
 import android.os.Handler
 import android.os.Looper
 import com.badradio.nz.utilities.PlayerStateObserver
@@ -14,7 +15,13 @@ object RadioManager : UserInputObserver {
     fun bind(context: Context) {
         if (!ready) {
             val intent = Intent(context, RadioService::class.java)
-            context.startForegroundService(intent)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                context.startForegroundService(intent)
+            } else {
+                context.startService(intent)
+            }
+
             context.bindService(intent, serviceConnection, 0)
         }
     }
