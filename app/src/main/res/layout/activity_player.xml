@@ -147,20 +147,9 @@
             android:layout_marginEnd="24dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/imgBtn_info"
+            app:layout_constraintRight_toRightOf="parent"
             android:background="@android:color/transparent"
             app:srcCompat="@drawable/ic_share_black_24dp" />
-
-        <ImageButton
-            android:id="@+id/imgBtn_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginEnd="16dp"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_info_outline_black_24dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
