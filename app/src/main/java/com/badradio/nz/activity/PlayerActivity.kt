@@ -9,6 +9,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.badradio.nz.player.RadioManager
 import com.badradio.nz.databinding.ActivityPlayerBinding
+import com.badradio.nz.player.PlaybackStatus
 import com.badradio.nz.player.PlayerState
 import com.badradio.nz.utilities.PlayerStateObserver
 
@@ -32,6 +33,10 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             togglePlayer()
         }
 
+        binding.imgBtnStop.setOnClickListener {
+            RadioManager.onStop()
+        }
+
         binding.imgBtnInfo.setOnClickListener {
             val intent = Intent(this@PlayerActivity, InfoActivity::class.java)
             startActivity(intent)
@@ -49,13 +54,13 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         RadioManager.removeObserver(this)
     }
 
-    private var isPlaying: Boolean = false
+    private var displayPlayButton: Boolean = true
 
     private fun togglePlayer() {
-        if (isPlaying) {
-            RadioManager.onPause()
-        } else {
+        if (displayPlayButton) {
             RadioManager.onPlay()
+        } else {
+            RadioManager.onPause()
         }
     }
 
@@ -67,17 +72,15 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             binding.textSongName.text = state.metadata.title
             binding.textArtist.text = state.metadata.artist
 
-            if (isPlaying != state.playing) {
-                val res = if (state.playing) {
-                    R.drawable.ic_pause_btn
-                } else {
-                    R.drawable.ic_play_btn
-                }
+            displayPlayButton = state.playbackStatus != PlaybackStatus.PLAYING
 
-                binding.imgBtnPlay.setImageResource(res)
-
-                isPlaying = state.playing
+            val res = if (displayPlayButton) {
+                R.drawable.ic_play_btn
+            } else {
+                R.drawable.ic_pause_btn
             }
+
+            binding.imgBtnPlay.setImageResource(res)
         }
     }
 

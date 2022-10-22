@@ -17,6 +17,7 @@ import androidx.media.app.NotificationCompat.MediaStyle
 import androidx.media2.common.MediaMetadata
 import com.badradio.nz.R
 import com.badradio.nz.activity.PlayerActivity
+import com.badradio.nz.player.PlaybackStatus
 import com.badradio.nz.player.PlayerState
 import com.badradio.nz.player.RadioService
 import com.badradio.nz.utilities.PlayerStateObserver
@@ -96,21 +97,17 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
             }
         }
 
-        if (lastPlaybackState != state.playing) {
-            notificationBuilder.apply {
-                clearActions()
+        notificationBuilder.apply {
+            clearActions()
 
-                if (state.playing) {
-                    addAction(pauseAction)
-                } else {
-                    addAction(playAction)
-                }
+            if (state.playbackStatus == PlaybackStatus.PLAYING) {
+                addAction(pauseAction)
+            } else {
+                addAction(playAction)
             }
-
-            mediaStyle.setShowActionsInCompactView(0)
-
-            lastPlaybackState = state.playing
         }
+
+        mediaStyle.setShowActionsInCompactView(0)
 
         val notification = notificationBuilder.build()
 

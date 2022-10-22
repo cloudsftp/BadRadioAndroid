@@ -45,6 +45,10 @@ object RadioManager : UserInputObserver {
         service.onPause()
     }
 
+    override fun onStop() = executeWhenServiceBound {
+        service.onStop()
+    }
+
     fun addObserver(observer: PlayerStateObserver) = executeWhenServiceBound {
         service.addObserver(observer)
     }
