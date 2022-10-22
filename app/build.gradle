@@ -6,7 +6,7 @@ android {
     compileSdkVersion 33
     defaultConfig {
         applicationId "com.badradio.nz"
-        minSdkVersion 31
+        minSdkVersion 23
         targetSdkVersion 33
         versionCode 303
         versionName "3.0.0-beta0"

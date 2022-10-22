@@ -40,7 +40,6 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
 
     private val mediaStyle = MediaStyle()
         .setMediaSession(mediaSession.sessionToken)
-        .setShowActionsInCompactView(0)
 
     private val notificationBuilder = NotificationCompat.Builder(context, channelID).apply {
         setSilent(true)
@@ -89,6 +88,14 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
 
         mediaSession.setMetadata(metadataBuilder.build())
 
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            notificationBuilder.apply {
+                setLargeIcon(artToDisplay)
+                setContentTitle(state.metadata.title)
+                setContentText(state.metadata.artist)
+            }
+        }
+
         if (lastPlaybackState != state.playing) {
             notificationBuilder.apply {
                 clearActions()
@@ -99,6 +106,8 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
                     addAction(playAction)
                 }
             }
+
+            mediaStyle.setShowActionsInCompactView(0)
 
             lastPlaybackState = state.playing
         }
@@ -124,10 +133,5 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
         return NotificationCompat.Action(
             iconId, title, pendingIntent
         )
-    }
-
-    interface NotificationListener {
-        fun onNotificationPosted(notificationId: Int, notification: Notification)
-        fun onNotificationCancelled()
     }
 }
