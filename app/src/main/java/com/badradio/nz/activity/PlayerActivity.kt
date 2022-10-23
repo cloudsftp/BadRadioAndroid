@@ -70,13 +70,15 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             binding.textSongName.text = state.metadata.title
             binding.textArtist.text = state.metadata.artist
 
-            val res = when(state.playbackStatus) {
-                PlaybackStatus.LOADING      -> R.drawable.ic_pause_btn // TODO: replace w/ loading icon
-                PlaybackStatus.NOT_PLAYING  -> R.drawable.ic_play_btn
-                PlaybackStatus.PLAYING      -> R.drawable.ic_pause_btn
-            }
+            binding.imgBtnPlay.isEnabled = state.playbackStatus != PlaybackStatus.LOADING
 
-            binding.imgBtnPlay.setImageResource(res)
+            binding.imgBtnPlay.setImageResource(
+                when(state.playbackStatus) {
+                    PlaybackStatus.LOADING      -> R.drawable.ic_pause_btn // TODO: replace w/ loading icon
+                    PlaybackStatus.NOT_PLAYING  -> R.drawable.ic_play_btn
+                    PlaybackStatus.PLAYING      -> R.drawable.ic_pause_btn
+                }
+            )
         }
     }
 

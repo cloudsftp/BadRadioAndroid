@@ -51,7 +51,7 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
         addObserver(mediaNotificationManager)
 
         playerState = PlayerState(
-            PlaybackStatus.NOT_PLAYING,
+            PlaybackStatus.LOADING,
             SongMetadata(
                 resources.getString(R.string.default_song_name),
                 resources.getString(R.string.default_artist)
@@ -76,6 +76,8 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
             mediaPlayer.apply {
                 setMediaItem(MediaItem.fromUri(Uri.parse(stationInfo.streamURL)))
                 addListener(this@RadioService)
+                playWhenReady = true
+
                 prepare()
             }
         }
@@ -95,6 +97,9 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
             mediaPlayer.pause()
         } else {
             if (mediaPlayer.playbackState == Player.STATE_IDLE) {
+                playerState.playbackStatus = PlaybackStatus.LOADING
+                notifyObservers()
+
                 mediaPlayer.prepare()
             }
             mediaPlayer.play()
