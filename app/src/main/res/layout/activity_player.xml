@@ -24,7 +24,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintWidth="36dp"
             android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_menu_black_24dp" />
+            app:srcCompat="@drawable/vec_menu" />
         
         <TextView
             android:layout_width="wrap_content"
@@ -139,7 +139,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_share_black_24dp" />
+            app:srcCompat="@drawable/vec_share" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

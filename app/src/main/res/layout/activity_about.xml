@@ -25,7 +25,7 @@
                 android:layout_height="30dp"
                 android:layout_marginStart="14dp"
                 android:layout_marginTop="14dp"
-                app:srcCompat="@drawable/ic_close_black_24dp" />
+                app:srcCompat="@drawable/vec_close" />
 
             <TextView
                 android:id="@+id/textView10"

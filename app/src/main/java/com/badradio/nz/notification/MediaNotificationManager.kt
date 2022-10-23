@@ -1,7 +1,6 @@
 package com.badradio.nz.notification
 
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
@@ -47,7 +46,7 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
     private val notificationBuilder = NotificationCompat.Builder(context, channelID).apply {
         setSilent(true)
         setStyle(mediaStyle)
-        setSmallIcon(R.drawable.ic_radio_black_24dp)
+        setSmallIcon(R.drawable.vec_radio)
 
         val sessionIntent = Intent(context, PlayerActivity::class.java)
         val pendingIntent: PendingIntent = TaskStackBuilder.create(context).run {
