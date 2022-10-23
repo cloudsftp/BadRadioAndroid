@@ -51,7 +51,7 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
         addObserver(mediaNotificationManager)
 
         playerState = PlayerState(
-            PlaybackStatus.STOPPED,
+            PlaybackStatus.NOT_PLAYING,
             SongMetadata(
                 resources.getString(R.string.default_song_name),
                 resources.getString(R.string.default_artist)
@@ -90,9 +90,11 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
         return RadioServiceBinder()
     }
 
-    override fun onPlay() = runWhenPlayerInitialized {
-        if (!mediaPlayer.isPlaying) {
-            if (playerState.playbackStatus == PlaybackStatus.STOPPED) {
+    override fun onPlayPause() = runWhenPlayerInitialized {
+        if (mediaPlayer.isPlaying) {
+            mediaPlayer.pause()
+        } else {
+            if (mediaPlayer.playbackState == Player.STATE_IDLE) {
                 mediaPlayer.prepare()
             }
             mediaPlayer.play()
@@ -103,21 +105,17 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
         mediaPlayer.stop()
     }
 
-    override fun onPause() = runWhenPlayerInitialized {
-        if (mediaPlayer.isPlaying) {
-            mediaPlayer.pause()
-        }
+    override fun onPlaybackStateChanged(playbackState: Int) {
+        // TODO: set loading
+
+        // notifyObservers()
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
         playerState.playbackStatus = if (isPlaying) {
             PlaybackStatus.PLAYING
         } else {
-            if (mediaPlayer.playbackState == Player.STATE_IDLE) {
-                PlaybackStatus.STOPPED
-            } else {
-                PlaybackStatus.PAUSED
-            }
+            PlaybackStatus.NOT_PLAYING
         }
 
         notifyObservers()

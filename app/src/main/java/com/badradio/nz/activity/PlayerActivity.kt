@@ -58,14 +58,8 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         RadioManager.removeObserver(this)
     }
 
-    private var displayPlayButton: Boolean = true
-
     private fun togglePlayer() {
-        if (displayPlayButton) {
-            RadioManager.onPlay()
-        } else {
-            RadioManager.onPause()
-        }
+        RadioManager.onPlayPause()
     }
 
 
@@ -76,12 +70,10 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             binding.textSongName.text = state.metadata.title
             binding.textArtist.text = state.metadata.artist
 
-            displayPlayButton = state.playbackStatus != PlaybackStatus.PLAYING
-
-            val res = if (displayPlayButton) {
-                R.drawable.ic_play_btn
-            } else {
-                R.drawable.ic_pause_btn
+            val res = when(state.playbackStatus) {
+                PlaybackStatus.LOADING      -> R.drawable.ic_pause_btn // TODO: replace w/ loading icon
+                PlaybackStatus.NOT_PLAYING  -> R.drawable.ic_play_btn
+                PlaybackStatus.PLAYING      -> R.drawable.ic_pause_btn
             }
 
             binding.imgBtnPlay.setImageResource(res)

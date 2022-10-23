@@ -37,12 +37,8 @@ object RadioManager : UserInputObserver {
         }
     }
 
-    override fun onPlay() = executeWhenServiceBound {
-        service.onPlay()
-    }
-
-    override fun onPause() = executeWhenServiceBound {
-        service.onPause()
+    override fun onPlayPause() = executeWhenServiceBound {
+        service.onPlayPause()
     }
 
     override fun onStop() = executeWhenServiceBound {

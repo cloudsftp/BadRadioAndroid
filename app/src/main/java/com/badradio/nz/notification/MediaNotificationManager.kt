@@ -106,6 +106,14 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
             } else {
                 addAction(playAction)
             }
+
+            addAction(
+                when (state.playbackStatus) {
+                    PlaybackStatus.LOADING      -> pauseAction // TODO: replace w/ loading action
+                    PlaybackStatus.NOT_PLAYING  -> playAction
+                    PlaybackStatus.PLAYING      -> pauseAction
+                }
+            )
         }
 
         mediaStyle.setShowActionsInCompactView(0)
