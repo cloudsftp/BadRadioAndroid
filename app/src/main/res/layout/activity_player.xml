@@ -12,7 +12,7 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintHeight="64dp">
+        app:layout_constraintHeight="64dp" >
 
         <ImageButton
             android:id="@+id/img_about"
@@ -24,7 +24,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintWidth="36dp"
             android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_menu_black_24dp" />
+            app:srcCompat="@drawable/vec_menu" />
         
         <TextView
             android:layout_width="wrap_content"
@@ -44,57 +44,72 @@
     <ImageView
         android:id="@+id/img_album_art"
         android:layout_width="match_parent"
-        android:layout_height="420dp"
+        android:layout_height="300dp"
         android:src="@drawable/badradio"
         app:layout_constraintTop_toBottomOf="@id/rlt_appbar"
+        app:layout_constraintBottom_toTopOf="@id/text_song_name"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent" />
 
+    <TextView
+        android:id="@+id/text_song_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/img_album_art"
+        app:layout_constraintBottom_toTopOf="@id/text_artist"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        android:gravity="center"
+        android:text="@string/default_song_name" />
+
+    <TextView
+        android:id="@+id/text_artist"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@+id/text_song_name"
+        app:layout_constraintBottom_toTopOf="@+id/layout_btn"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:gravity="center"
+        android:text="@string/default_artist" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/layout_song_info"
-        android:layout_width="match_parent"
+        android:id="@+id/layout_btn"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/img_album_art"
-        app:layout_constraintBottom_toTopOf="@+id/imgBtn_play" >
+        app:layout_constraintTop_toBottomOf="@id/text_artist"
+        app:layout_constraintBottom_toTopOf="@id/layout_info"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" >
 
-        <TextView
-            android:id="@+id/text_song_name"
+        <ImageButton
+            android:id="@+id/imgBtn_stop"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            android:textColor="@android:color/white"
-            android:textSize="32sp"
-            android:gravity="center"
-            android:text="@string/default_song_name" />
+            app:layout_constraintRight_toLeftOf="@id/imgBtn_play"
+            android:background="@android:color/transparent"
+            app:srcCompat="@drawable/ic_stop_btn"/>
 
-        <TextView
-            android:id="@+id/text_artist"
+        <ImageButton
+            android:id="@+id/imgBtn_play"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintTop_toBottomOf="@+id/text_song_name"
-            app:layout_constraintLeft_toLeftOf="parent"
+            android:layout_marginStart="20dp"
+            android:background="@android:color/transparent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:textColor="@android:color/white"
-            android:textSize="24sp"
-            android:gravity="center"
-            android:text="@string/default_artist" />
+            app:layout_constraintLeft_toRightOf="@id/imgBtn_stop"
+            app:srcCompat="@drawable/ic_play_btn" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <ImageButton
-        android:id="@+id/imgBtn_play"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@+id/layout_song_info"
-        app:layout_constraintBottom_toTopOf="@+id/layout_info"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:background="@android:color/transparent"
-        app:srcCompat="@drawable/ic_play_btn"/>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/layout_info"
@@ -122,20 +137,9 @@
             android:layout_marginEnd="24dp"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@+id/imgBtn_info"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_share_black_24dp" />
-
-        <ImageButton
-            android:id="@+id/imgBtn_info"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            android:layout_marginEnd="16dp"
             android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_info_outline_black_24dp" />
+            app:srcCompat="@drawable/vec_share" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

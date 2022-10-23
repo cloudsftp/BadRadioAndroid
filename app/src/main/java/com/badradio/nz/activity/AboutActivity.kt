@@ -1,9 +1,9 @@
 package com.badradio.nz.activity
 
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import com.badradio.nz.R
 import android.content.Intent
+import android.net.Uri
+import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.badradio.nz.databinding.ActivityAboutBinding
 
 class AboutActivity : AppCompatActivity() {
@@ -16,12 +16,8 @@ class AboutActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnWebsite.setOnClickListener {
-            val intent = Intent(this@AboutActivity, WebActivity::class.java)
-            startActivity(intent)
-        }
-
-        binding.btnAbout.setOnClickListener {
-            val intent = Intent(this@AboutActivity, WebActivity::class.java)
+            val url = "https://badradio.nz"
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
             startActivity(intent)
         }
 

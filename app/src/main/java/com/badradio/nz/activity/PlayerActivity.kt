@@ -9,6 +9,7 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import com.badradio.nz.player.RadioManager
 import com.badradio.nz.databinding.ActivityPlayerBinding
+import com.badradio.nz.player.PlaybackStatus
 import com.badradio.nz.player.PlayerState
 import com.badradio.nz.utilities.PlayerStateObserver
 
@@ -23,6 +24,12 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val ratio = resources.displayMetrics.heightPixels.toFloat() / resources.displayMetrics.widthPixels
+        binding.imgAlbumArt.layoutParams.height = (
+                (ratio.coerceAtMost(2F) / 2)
+                        * resources.displayMetrics.widthPixels
+        ).toInt()
+
         binding.imgAbout.setOnClickListener {
             val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
             startActivity(intent)
@@ -32,11 +39,13 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             togglePlayer()
         }
 
-        binding.imgBtnInfo.setOnClickListener {
-            val intent = Intent(this@PlayerActivity, InfoActivity::class.java)
-            startActivity(intent)
+        binding.imgBtnStop.setOnClickListener {
+            RadioManager.onStop()
         }
-        binding.imgBtnShare.setOnClickListener { shareApp(applicationContext) }
+
+        binding.imgBtnShare.setOnClickListener {
+            shareApp(applicationContext)
+        }
     }
 
     override fun onResume() {
@@ -49,14 +58,8 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         RadioManager.removeObserver(this)
     }
 
-    private var isPlaying: Boolean = false
-
     private fun togglePlayer() {
-        if (isPlaying) {
-            RadioManager.onPause()
-        } else {
-            RadioManager.onPlay()
-        }
+        RadioManager.onPlayPause()
     }
 
 
@@ -67,17 +70,15 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
             binding.textSongName.text = state.metadata.title
             binding.textArtist.text = state.metadata.artist
 
-            if (isPlaying != state.playing) {
-                val res = if (state.playing) {
-                    R.drawable.ic_pause_btn
-                } else {
-                    R.drawable.ic_play_btn
+            binding.imgBtnPlay.isEnabled = state.playbackStatus != PlaybackStatus.LOADING
+
+            binding.imgBtnPlay.setImageResource(
+                when(state.playbackStatus) {
+                    PlaybackStatus.LOADING      -> R.drawable.ic_pause_btn // TODO: replace w/ loading icon
+                    PlaybackStatus.NOT_PLAYING  -> R.drawable.ic_play_btn
+                    PlaybackStatus.PLAYING      -> R.drawable.ic_pause_btn
                 }
-
-                binding.imgBtnPlay.setImageResource(res)
-
-                isPlaying = state.playing
-            }
+            )
         }
     }
 

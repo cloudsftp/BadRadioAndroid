@@ -1,7 +1,6 @@
 package com.badradio.nz.notification
 
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
@@ -17,6 +16,7 @@ import androidx.media.app.NotificationCompat.MediaStyle
 import androidx.media2.common.MediaMetadata
 import com.badradio.nz.R
 import com.badradio.nz.activity.PlayerActivity
+import com.badradio.nz.player.PlaybackStatus
 import com.badradio.nz.player.PlayerState
 import com.badradio.nz.player.RadioService
 import com.badradio.nz.utilities.PlayerStateObserver
@@ -26,26 +26,27 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
     private val activityRequestCode   = 0
     private val playRequestCode       = 1
     private val pauseRequestCode      = 2
+    private val stopRequestCode       = 3
 
     private val channelID = "BADRADIO Notification Channel"
     private val notificationID = 1
 
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
 
-    private val playAction = createAction(context, PLAY_ACTION, playRequestCode, R.drawable.icn_notification_play, "Play")
-    private val pauseAction = createAction(context, PAUSE_ACTION, pauseRequestCode, R.drawable.icn_notification_pause, "Pause")
+    private val playAction = createAction(context, PLAY_ACTION, playRequestCode, R.drawable.vec_play, "Play")
+    private val pauseAction = createAction(context, PAUSE_ACTION, pauseRequestCode, R.drawable.vec_pause, "Pause")
+    private val stopAction = createAction(context, STOP_ACTION, stopRequestCode, R.drawable.vec_stop, "Stop")
 
     private val metadataBuilder = MediaMetadataCompat.Builder()
     private val mediaSession = MediaSessionCompat(context, "BADRADIO Media Session")
 
     private val mediaStyle = MediaStyle()
         .setMediaSession(mediaSession.sessionToken)
-        .setShowActionsInCompactView(0)
 
     private val notificationBuilder = NotificationCompat.Builder(context, channelID).apply {
         setSilent(true)
         setStyle(mediaStyle)
-        setSmallIcon(R.drawable.ic_radio_black_24dp)
+        setSmallIcon(R.drawable.vec_radio)
 
         val sessionIntent = Intent(context, PlayerActivity::class.java)
         val pendingIntent: PendingIntent = TaskStackBuilder.create(context).run {
@@ -75,8 +76,6 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
         }
     }
 
-    private var lastPlaybackState = false
-
     override fun onStateChange(state: PlayerState) {
         val artToDisplay = state.art
             ?: BitmapFactory.decodeResource(context.resources, defaultAlbumArtRes)
@@ -89,19 +88,29 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
 
         mediaSession.setMetadata(metadataBuilder.build())
 
-        if (lastPlaybackState != state.playing) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             notificationBuilder.apply {
-                clearActions()
-
-                if (state.playing) {
-                    addAction(pauseAction)
-                } else {
-                    addAction(playAction)
-                }
+                setLargeIcon(artToDisplay)
+                setContentTitle(state.metadata.title)
+                setContentText(state.metadata.artist)
             }
-
-            lastPlaybackState = state.playing
         }
+
+        notificationBuilder.apply {
+            clearActions()
+
+            addAction(stopAction)
+
+            addAction(
+                when (state.playbackStatus) {
+                    PlaybackStatus.LOADING      -> pauseAction // TODO: replace w/ loading action
+                    PlaybackStatus.NOT_PLAYING  -> playAction
+                    PlaybackStatus.PLAYING      -> pauseAction
+                }
+            )
+        }
+
+        mediaStyle.setShowActionsInCompactView(0)
 
         val notification = notificationBuilder.build()
 
@@ -124,10 +133,5 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
         return NotificationCompat.Action(
             iconId, title, pendingIntent
         )
-    }
-
-    interface NotificationListener {
-        fun onNotificationPosted(notificationId: Int, notification: Notification)
-        fun onNotificationCancelled()
     }
 }

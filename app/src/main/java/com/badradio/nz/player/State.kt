@@ -4,7 +4,13 @@ import android.graphics.Bitmap
 import com.badradio.nz.metadata.SongMetadata
 
 data class PlayerState(
-    var playing: Boolean,
+    var playbackStatus: PlaybackStatus,
     var metadata: SongMetadata,
     var art: Bitmap?,
 )
+
+enum class PlaybackStatus {
+    LOADING,
+    NOT_PLAYING,
+    PLAYING
+}

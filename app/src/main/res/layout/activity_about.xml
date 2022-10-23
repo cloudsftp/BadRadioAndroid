@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    tools:context=".AboutActivity">
+    tools:context=".activity.AboutActivity">
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
@@ -25,7 +25,7 @@
                 android:layout_height="30dp"
                 android:layout_marginStart="14dp"
                 android:layout_marginTop="14dp"
-                app:srcCompat="@drawable/ic_close_black_24dp" />
+                app:srcCompat="@drawable/vec_close" />
 
             <TextView
                 android:id="@+id/textView10"
@@ -71,16 +71,6 @@
                 android:layout_marginTop="20dp"
                 android:layout_marginEnd="14dp"
                 android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btnAbout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="5dp"
-                    android:layout_weight="1"
-                    android:background="#000000"
-                    android:text="About"
-                    android:textColor="@android:color/white" />
 
                 <Button
                     android:id="@+id/btnWebsite"

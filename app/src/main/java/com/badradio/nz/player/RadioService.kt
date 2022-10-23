@@ -28,8 +28,6 @@ import java.lang.Runnable
 class RadioService : Service(), Player.Listener, UserInputObserver {
     private lateinit var mediaPlayer: ExoPlayer
 
-    private var isForegroundService = false
-
     private lateinit var playerState: PlayerState
     private val observers: MutableList<PlayerStateObserver> = mutableListOf()
 
@@ -53,12 +51,12 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
         addObserver(mediaNotificationManager)
 
         playerState = PlayerState(
-            false,
+            PlaybackStatus.LOADING,
             SongMetadata(
                 resources.getString(R.string.default_song_name),
                 resources.getString(R.string.default_artist)
             ),
-            BitmapFactory.decodeResource(resources, R.drawable.badradio)
+            null
         )
         notifyObservers()
 
@@ -78,6 +76,8 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
             mediaPlayer.apply {
                 setMediaItem(MediaItem.fromUri(Uri.parse(stationInfo.streamURL)))
                 addListener(this@RadioService)
+                playWhenReady = true
+
                 prepare()
             }
         }
@@ -92,20 +92,37 @@ class RadioService : Service(), Player.Listener, UserInputObserver {
         return RadioServiceBinder()
     }
 
-    override fun onPlay() = runWhenPlayerInitialized {
-        if (!mediaPlayer.isPlaying) {
+    override fun onPlayPause() = runWhenPlayerInitialized {
+        if (mediaPlayer.isPlaying) {
+            mediaPlayer.pause()
+        } else {
+            if (mediaPlayer.playbackState == Player.STATE_IDLE) {
+                playerState.playbackStatus = PlaybackStatus.LOADING
+                notifyObservers()
+
+                mediaPlayer.prepare()
+            }
             mediaPlayer.play()
         }
     }
 
-    override fun onPause() = runWhenPlayerInitialized {
-        if (mediaPlayer.isPlaying) {
-            mediaPlayer.pause()
-        }
+    override fun onStop() {
+        mediaPlayer.stop()
+    }
+
+    override fun onPlaybackStateChanged(playbackState: Int) {
+        // TODO: set loading
+
+        // notifyObservers()
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) {
-        playerState.playing = isPlaying
+        playerState.playbackStatus = if (isPlaying) {
+            PlaybackStatus.PLAYING
+        } else {
+            PlaybackStatus.NOT_PLAYING
+        }
+
         notifyObservers()
     }
 
