@@ -1,7 +1,6 @@
 package com.badradio.nz.notification
 
 import android.annotation.SuppressLint
-import android.app.Notification
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
@@ -34,8 +33,8 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
 
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(context)
 
-    private val playAction = createAction(context, PLAY_ACTION, playRequestCode, R.drawable.icn_notification_play, "Play")
-    private val pauseAction = createAction(context, PAUSE_ACTION, pauseRequestCode, R.drawable.icn_notification_pause, "Pause")
+    private val playAction = createAction(context, PLAY_ACTION, playRequestCode, R.drawable.vec_play, "Play")
+    private val pauseAction = createAction(context, PAUSE_ACTION, pauseRequestCode, R.drawable.vec_pause, "Pause")
     private val stopAction = createAction(context, STOP_ACTION, stopRequestCode, R.drawable.vec_stop, "Stop")
 
     private val metadataBuilder = MediaMetadataCompat.Builder()
@@ -47,7 +46,7 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
     private val notificationBuilder = NotificationCompat.Builder(context, channelID).apply {
         setSilent(true)
         setStyle(mediaStyle)
-        setSmallIcon(R.drawable.ic_radio_black_24dp)
+        setSmallIcon(R.drawable.vec_radio)
 
         val sessionIntent = Intent(context, PlayerActivity::class.java)
         val pendingIntent: PendingIntent = TaskStackBuilder.create(context).run {

@@ -1,12 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="64dp"
-    android:height="64dp"
+    android:width="32dp"
+    android:height="32dp"
     android:viewportWidth="32.0"
     android:viewportHeight="32.0">
 
     <path
         android:fillColor="@android:color/black"
-        android:pathData="M12,9v14l12,-7Z"/>
+        android:pathData="M9,4.87 v 22.24     a2,1 -60 0,0  1, 0.5
+                                  l 19,-11.12 a2,1   0 0,0  0,-1.12
+                                  l-19,-11.12 a2,1 60 0,0 -1, 0.5"/>
 
 </vector>

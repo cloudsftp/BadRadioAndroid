@@ -24,6 +24,12 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        val ratio = resources.displayMetrics.heightPixels.toFloat() / resources.displayMetrics.widthPixels
+        binding.imgAlbumArt.layoutParams.height = (
+                (ratio.coerceAtMost(2F) / 2)
+                        * resources.displayMetrics.widthPixels
+        ).toInt()
+
         binding.imgAbout.setOnClickListener {
             val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
             startActivity(intent)
