@@ -13,12 +13,12 @@ class MediaNotificationBroadcastReceiver : BroadcastReceiver() {
         }
 
         when (val actionId = intent.getStringExtra("action")) {
-            PLAY_ACTION -> RadioManager.onPlay()
-            PAUSE_ACTION -> RadioManager.onPause()
+            PLAY_ACTION -> RadioManager.onPlayPause()
+            PAUSE_ACTION -> RadioManager.onPlayPause()
             STOP_ACTION -> RadioManager.onStop()
-            else -> Log.w(TAG, "Unknown action $actionId")
+            else -> Log.w(tag, "Unknown action $actionId")
         }
     }
 
-    private val TAG = "MediaNotificationBroadcastReceiver"
+    private val tag = "MediaNotificationBroadcastReceiver"
 }

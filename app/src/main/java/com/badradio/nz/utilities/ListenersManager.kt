@@ -13,7 +13,6 @@ interface PlayerStateObserver {
 }
 
 interface UserInputObserver {
-    fun onPlay()
-    fun onPause()
+    fun onPlayPause()
     fun onStop()
 }

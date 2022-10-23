@@ -10,7 +10,7 @@ data class PlayerState(
 )
 
 enum class PlaybackStatus {
-    STOPPED,
-    PAUSED,
+    LOADING,
+    NOT_PLAYING,
     PLAYING
 }
