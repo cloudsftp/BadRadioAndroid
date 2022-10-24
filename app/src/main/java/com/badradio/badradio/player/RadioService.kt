@@ -14,6 +14,7 @@ import com.badradio.badradio.notification.MediaNotificationManager
 import com.badradio.badradio.utilities.PlayerStateObserver
 import com.badradio.badradio.utilities.UserInputObserver
 import com.badradio.badradio.utilities.client
+import com.badradio.badradio.R
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
 import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
