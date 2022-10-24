@@ -5,7 +5,7 @@ apply plugin: 'kotlin-kapt'
 android {
     compileSdkVersion 33
     defaultConfig {
-        applicationId "com.badradio.badradio"
+        applicationId "nz.badradio.badradio"
         minSdkVersion 23
         targetSdkVersion 33
         versionCode 304
