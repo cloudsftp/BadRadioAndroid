@@ -69,11 +69,11 @@ class RadioService : Service(), UserInputVMObserver {
     }
 
     override fun onPlay() {
-
+        mediaPlayer.play()
     }
 
     override fun onPause() {
-
+        mediaPlayer.pause()
     }
 
     override fun onStop() {
@@ -81,7 +81,7 @@ class RadioService : Service(), UserInputVMObserver {
     }
 
     override fun onResynchronize() {
-
+        mediaPlayer.seekForward()
     }
 
     // Helpers

@@ -21,7 +21,8 @@ object RadioManager: UserInputVMObserver {
         val intent = Intent(context, RadioService::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            context.startForegroundService(intent)
+            // context.startForegroundService(intent) TODO: revert
+            context.startService(intent)
         } else {
             context.startService(intent)
         }
@@ -63,7 +64,7 @@ object RadioManager: UserInputVMObserver {
     }
 
     private fun executeWhenServiceBound(r: Runnable) {
-        if (service == null) {
+        if (service != null) {
             r.run()
         } else {
             Handler(Looper.getMainLooper()).postDelayed({
