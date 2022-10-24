@@ -7,19 +7,19 @@ import nz.badradio.badradio.R
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import nz.badradio.badradio.player.RadioManager
+import nz.badradio.badradio.radio.RadioManager
 import nz.badradio.badradio.databinding.ActivityPlayerBinding
-import nz.badradio.badradio.player.PlaybackStatus
-import nz.badradio.badradio.player.PlayerState
-import nz.badradio.badradio.utilities.PlayerStateObserver
+import nz.badradio.badradio.radio_viewmodel.RadioVM
+import nz.badradio.badradio.radio_viewmodel.RadioVMObserver
+import nz.badradio.badradio.radio_viewmodel.RadioVMState
 
-class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
+class PlayerActivity : AppCompatActivity(), RadioVMObserver {
     private lateinit var binding: ActivityPlayerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        RadioManager.bind(applicationContext)
+        RadioManager.initialize(applicationContext)
 
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -50,21 +50,22 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
     override fun onResume() {
         super.onResume()
-        RadioManager.addObserver(this)
+        RadioVM.addObserver(this)
     }
 
     override fun onPause() {
         super.onPause()
-        RadioManager.removeObserver(this)
+        RadioVM.removeObserver(this)
     }
 
     private fun togglePlayer() {
-        RadioManager.onPlayPause()
+        RadioVM.onPlayPause()
     }
 
 
-    override fun onStateChange(state: PlayerState) {
+    override fun onStateChange(state: RadioVMState) {
         runOnUiThread {
+            /*
             updateAlbumArt(state.art)
 
             binding.textSongName.text = state.metadata.title
@@ -79,6 +80,8 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
                     PlaybackStatus.PLAYING      -> R.drawable.ic_pause_btn
                 }
             )
+
+             */
         }
     }
 

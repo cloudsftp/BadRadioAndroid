@@ -16,13 +16,12 @@ import androidx.media.app.NotificationCompat.MediaStyle
 import androidx.media2.common.MediaMetadata
 import nz.badradio.badradio.R
 import nz.badradio.badradio.activity.PlayerActivity
-import nz.badradio.badradio.player.PlaybackStatus
-import nz.badradio.badradio.player.PlayerState
-import nz.badradio.badradio.player.RadioService
-import nz.badradio.badradio.utilities.PlayerStateObserver
+import nz.badradio.badradio.radio.RadioService
+import nz.badradio.badradio.radio_viewmodel.RadioVMState
+import nz.badradio.badradio.radio_viewmodel.RadioVMObserver
 
 @SuppressLint("ObsoleteSdkInt")
-class MediaNotificationManager(private val context: RadioService) : PlayerStateObserver {
+class MediaNotificationManager(private val context: RadioService) : RadioVMObserver {
     private val activityRequestCode   = 0
     private val playRequestCode       = 1
     private val pauseRequestCode      = 2
@@ -76,7 +75,8 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
         }
     }
 
-    override fun onStateChange(state: PlayerState) {
+    override fun onStateChange(state: RadioVMState) {
+        /*
         val artToDisplay = state.art
             ?: BitmapFactory.decodeResource(context.resources, defaultAlbumArtRes)
 
@@ -116,6 +116,7 @@ class MediaNotificationManager(private val context: RadioService) : PlayerStateO
 
         notificationManager.notify(notificationID, notification)
         context.startForeground(notificationID, notification)
+         */
     }
 
     private fun createAction(context: Context, actionId: String, requestCode: Int, iconId: Int, title: String): NotificationCompat.Action {

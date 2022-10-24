@@ -26,7 +26,7 @@
         </activity>
         <activity android:name="nz.badradio.badradio.activity.AboutActivity" />
 
-        <service android:name="nz.badradio.badradio.player.RadioService" />
+        <service android:name="nz.badradio.badradio.radio.RadioService" />
 
         <receiver android:name="androidx.media.session.MediaButtonReceiver"
             android:exported="true" >
