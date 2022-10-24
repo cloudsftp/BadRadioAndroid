@@ -11,8 +11,7 @@ private val albumArtGetters = listOf<IAlbumArtGetter>(
     SoundcloudAlbumArtGetter
 )
 
-//                                          radioService needed later - don't delete
-fun getAlbumArt(songMetadata: SongMetadata, radioService: RadioService): Bitmap? {
+fun getAlbumArt(songMetadata: SongMetadata): Bitmap? {
     Log.d(TAG, "Searching for album art for $songMetadata")
 
     albumArtGetters.forEach {

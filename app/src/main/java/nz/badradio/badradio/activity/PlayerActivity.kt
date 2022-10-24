@@ -19,7 +19,7 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        RadioManager.initialize(applicationContext)
+        RadioVM.initialize(applicationContext)
 
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -36,7 +36,7 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
         }
 
         binding.imgBtnPlay.setOnClickListener {
-            togglePlayer()
+            RadioVM.onPlayPause()
         }
 
         binding.imgBtnStop.setOnClickListener {
@@ -62,26 +62,22 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
         RadioVM.onPlayPause()
     }
 
-
     override fun onStateChange(state: RadioVMState) {
         runOnUiThread {
-            /*
-            updateAlbumArt(state.art)
-
-            binding.textSongName.text = state.metadata.title
-            binding.textArtist.text = state.metadata.artist
-
-            binding.imgBtnPlay.isEnabled = state.playbackStatus != PlaybackStatus.LOADING
+            binding.imgBtnPlay.isEnabled = state.enableButtons
 
             binding.imgBtnPlay.setImageResource(
-                when(state.playbackStatus) {
-                    PlaybackStatus.LOADING      -> R.drawable.ic_pause_btn // TODO: replace w/ loading icon
-                    PlaybackStatus.NOT_PLAYING  -> R.drawable.ic_play_btn
-                    PlaybackStatus.PLAYING      -> R.drawable.ic_pause_btn
+                if (state.displayPause) {
+                    R.drawable.ic_pause_btn
+                } else {
+                    R.drawable.ic_play_btn
                 }
             )
 
-             */
+            binding.textSongName.text = state.title
+            binding.textArtist.text = state.artist
+
+            updateAlbumArt(state.art)
         }
     }
 

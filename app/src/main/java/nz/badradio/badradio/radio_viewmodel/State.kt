@@ -1,5 +1,6 @@
 package nz.badradio.badradio.radio_viewmodel
 
+import android.graphics.Bitmap
 
 /**
  * Communication Views <-> View Model
@@ -9,11 +10,6 @@ package nz.badradio.badradio.radio_viewmodel
  *          - MediaNotificationBroadcastReceiver (I)
  */
 
-interface UserInputObserver {
-    fun onPlayPause()
-    fun onStop()
-}
-
 interface RadioVMObserver {
     fun onStateChange(state: RadioVMState)
 }
@@ -21,7 +17,9 @@ interface RadioVMObserver {
 data class RadioVMState(
     var displayPause: Boolean,
     var enableButtons: Boolean,
-
+    var title: String?,
+    var artist: String?,
+    var art: Bitmap?,
 )
 
 /**
@@ -36,6 +34,3 @@ interface UserInputVMObserver {
     fun onStop()            // Experiment with inputs
     fun onResynchronize()
 }
-
-// Other Way: Player.Listener
-
