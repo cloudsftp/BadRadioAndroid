@@ -17,8 +17,8 @@ interface RadioVMObserver {
 data class RadioVMState(
     var displayPause: Boolean,
     var enableButtons: Boolean,
-    var title: String?,
-    var artist: String?,
+    var title: String,
+    var artist: String,
     var art: Bitmap?,
 )
 

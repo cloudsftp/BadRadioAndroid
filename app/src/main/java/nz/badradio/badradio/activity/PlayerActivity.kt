@@ -74,8 +74,8 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
                 }
             )
 
-            binding.textSongName.text = state.title ?: resources.getText(R.string.default_song_name)
-            binding.textArtist.text = state.artist ?: resources.getText(R.string.default_artist)
+            binding.textSongName.text = state.title
+            binding.textArtist.text = state.artist
 
             updateAlbumArt(state.art)
         }

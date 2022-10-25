@@ -1,28 +1,38 @@
 package nz.badradio.badradio.radio_viewmodel
 
 import android.content.Context
+import android.content.res.Resources
 import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import nz.badradio.badradio.R
 import nz.badradio.badradio.metadata.SongMetadata
 import nz.badradio.badradio.metadata.art.getAlbumArt
 import nz.badradio.badradio.radio.RadioManager
 
 object RadioVM: Player.Listener {
-
-    private var state = RadioVMState(
-        displayPause = false,
-        enableButtons = true,
-        title = null,
-        artist = null,
-        art = null,
-    )
+    private lateinit var resources: Resources
+    private lateinit var state: RadioVMState
 
     fun initialize(context: Context) {
         RadioManager.initialize(context)
+
+        if (!::resources.isInitialized) {
+            resources = context.resources
+        }
+
+        if (!::state.isInitialized) {
+            state = RadioVMState(
+                displayPause = false,
+                enableButtons = true,
+                title = resources.getString(R.string.default_song_name),
+                artist = resources.getString(R.string.default_artist),
+                art = null, // for notification this depends on the android version
+            )
+        }
     }
 
     fun onPlayPause() {
