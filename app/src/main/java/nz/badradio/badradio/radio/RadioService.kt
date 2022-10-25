@@ -69,6 +69,10 @@ class RadioService : Service(), UserInputVMObserver {
     }
 
     override fun onPlay() {
+        if (mediaPlayer.playbackState == Player.STATE_IDLE) {
+            mediaPlayer.prepare()
+        }
+
         mediaPlayer.play()
     }
 
