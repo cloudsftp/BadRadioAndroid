@@ -5,6 +5,8 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import com.google.android.exoplayer2.MediaMetadata
@@ -32,6 +34,8 @@ object RadioVM: Player.Listener {
             R.drawable.badradio
         }
 
+    private var initialized = false
+
     private val metadataBuilder = MediaMetadataCompat.Builder()
 
     fun initialize(context: Context) {
@@ -52,9 +56,15 @@ object RadioVM: Player.Listener {
         mediaSession = MediaSessionCompat(context, "BADRADIO Media Session")
 
         RadioManager.initialize(context, mediaSession)
+
+        initialized = true
     }
 
-    fun onPlayPause() {
+    fun onPlayPause() = runWhenInitialized {
+        if (!state.enableButtons) {
+            return@runWhenInitialized
+        }
+
         if (state.displayPause) {
             RadioManager.onPause()
         } else {
@@ -62,15 +72,19 @@ object RadioVM: Player.Listener {
         }
     }
 
-    fun onStop() {
+    fun onStop() = runWhenInitialized {
+        if (!state.enableButtons) {
+            return@runWhenInitialized
+        }
+
         RadioManager.onStop()
     }
 
-    override fun onPlaybackStateChanged(playbackState: Int) {
+    override fun onPlaybackStateChanged(playbackState: Int) = runWhenInitialized {
         state.enableButtons = playbackState != Player.STATE_BUFFERING
     }
 
-    override fun onIsPlayingChanged(isPlaying: Boolean) {
+    override fun onIsPlayingChanged(isPlaying: Boolean) = runWhenInitialized {
         state.displayPause = isPlaying
         notifyObservers()
     }
@@ -80,29 +94,30 @@ object RadioVM: Player.Listener {
     }
 
     @OptIn(DelicateCoroutinesApi::class)
-    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) {
-        val rawTitle = mediaMetadata.title ?: return
-        val metadata = SongMetadata.fromRawTitle(rawTitle.toString())
+    override fun onMediaMetadataChanged(mediaMetadata: MediaMetadata) =
+        runWhenInitialized {
+            val rawTitle = mediaMetadata.title ?: return@runWhenInitialized
+            val metadata = SongMetadata.fromRawTitle(rawTitle.toString())
 
-        state.title = metadata.title
-        state.artist = metadata.artist
+            state.title = metadata.title
+            state.artist = metadata.artist
 
-        GlobalScope.launch { // synchronous network in this function
-            val loadedArt = getAlbumArt(metadata)
-            state.art = loadedArt ?: defaultAlbumArt
-            state.notificationArt = loadedArt ?: defaultNotificationAlbumArt
+            GlobalScope.launch { // synchronous network in this function
+                val loadedArt = getAlbumArt(metadata)
+                state.art = loadedArt ?: defaultAlbumArt
+                state.notificationArt = loadedArt ?: defaultNotificationAlbumArt
 
-            metadataBuilder.apply {
-                putString(androidx.media2.common.MediaMetadata.METADATA_KEY_TITLE, state.title)
-                putString(androidx.media2.common.MediaMetadata.METADATA_KEY_ARTIST, state.artist)
-                putBitmap(androidx.media2.common.MediaMetadata.METADATA_KEY_ART, state.notificationArt)
+                metadataBuilder.apply {
+                    putString(androidx.media2.common.MediaMetadata.METADATA_KEY_TITLE, state.title)
+                    putString(androidx.media2.common.MediaMetadata.METADATA_KEY_ARTIST, state.artist)
+                    putBitmap(androidx.media2.common.MediaMetadata.METADATA_KEY_ART, state.notificationArt)
+                }
+
+                mediaSession.setMetadata(metadataBuilder.build())
+
+                notifyObservers()
             }
-
-            mediaSession.setMetadata(metadataBuilder.build())
-
-            notifyObservers()
         }
-    }
 
     override fun onPlayerError(error: PlaybackException) {
         throw error
@@ -116,5 +131,19 @@ object RadioVM: Player.Listener {
     fun addObserver(o: RadioVMObserver) = observers.add(o)
     fun removeObserver(o: RadioVMObserver) = observers.remove(o)
     private fun notifyObservers() = observers.forEach { it.onStateChange(state) }
+
+    /**
+     * Helper
+     */
+
+    private fun runWhenInitialized(r: Runnable) {
+        if (initialized) {
+            r.run()
+        } else {
+            Handler(Looper.getMainLooper()).postDelayed({
+                runWhenInitialized(r)
+            }, 100)
+        }
+    }
 
 }
