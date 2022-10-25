@@ -5,6 +5,7 @@ import android.content.*
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.support.v4.media.session.MediaSessionCompat
 import nz.badradio.badradio.notification.MediaNotificationManager
 import nz.badradio.badradio.radio_viewmodel.RadioVM
 import nz.badradio.badradio.radio_viewmodel.UserInputVMObserver
@@ -13,7 +14,7 @@ object RadioManager: UserInputVMObserver {
     private var service: RadioService? = null
     private var mediaNotificationManager: MediaNotificationManager? = null
 
-    fun initialize(context: Context) {
+    fun initialize(context: Context, mediaSession: MediaSessionCompat) {
         if (service != null) {
             return
         }
@@ -30,7 +31,7 @@ object RadioManager: UserInputVMObserver {
         context.bindService(intent, serviceConnection, 0)
 
         executeWhenServiceBound {
-            mediaNotificationManager = MediaNotificationManager(service!!)
+            mediaNotificationManager = MediaNotificationManager(service!!, mediaSession)
             RadioVM.addObserver(mediaNotificationManager!!)
         }
     }

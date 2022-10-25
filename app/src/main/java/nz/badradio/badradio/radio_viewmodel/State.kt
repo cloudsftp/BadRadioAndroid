@@ -19,7 +19,8 @@ data class RadioVMState(
     var enableButtons: Boolean,
     var title: String,
     var artist: String,
-    var art: Bitmap?,
+    var art: Bitmap,
+    var notificationArt: Bitmap,
 )
 
 /**

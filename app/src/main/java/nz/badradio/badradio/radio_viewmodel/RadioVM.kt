@@ -2,6 +2,11 @@ package nz.badradio.badradio.radio_viewmodel
 
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.os.Build
+import android.support.v4.media.MediaMetadataCompat
+import android.support.v4.media.session.MediaSessionCompat
 import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
@@ -16,23 +21,37 @@ import nz.badradio.badradio.radio.RadioManager
 object RadioVM: Player.Listener {
     private lateinit var resources: Resources
     private lateinit var state: RadioVMState
+    private lateinit var mediaSession: MediaSessionCompat
+
+    private lateinit var defaultAlbumArt: Bitmap
+    private lateinit var defaultNotificationAlbumArt: Bitmap
+    private val defaultNotificationAlbumArtRes =
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            R.drawable.badradio_background
+        } else {
+            R.drawable.badradio
+        }
+
+    private val metadataBuilder = MediaMetadataCompat.Builder()
 
     fun initialize(context: Context) {
-        RadioManager.initialize(context)
+        resources = context.resources
 
-        if (!::resources.isInitialized) {
-            resources = context.resources
-        }
+        defaultAlbumArt = BitmapFactory.decodeResource(resources, R.drawable.badradio)
+        defaultNotificationAlbumArt = BitmapFactory.decodeResource(resources, defaultNotificationAlbumArtRes)
 
-        if (!::state.isInitialized) {
-            state = RadioVMState(
-                displayPause = false,
-                enableButtons = true,
-                title = resources.getString(R.string.default_song_name),
-                artist = resources.getString(R.string.default_artist),
-                art = null, // for notification this depends on the android version
-            )
-        }
+        state = RadioVMState(
+            displayPause = false,
+            enableButtons = true,
+            title = resources.getString(R.string.default_song_name),
+            artist = resources.getString(R.string.default_artist),
+            art = defaultAlbumArt,
+            notificationArt = defaultNotificationAlbumArt,
+        )
+
+        mediaSession = MediaSessionCompat(context, "BADRADIO Media Session")
+
+        RadioManager.initialize(context, mediaSession)
     }
 
     fun onPlayPause() {
@@ -69,7 +88,18 @@ object RadioVM: Player.Listener {
         state.artist = metadata.artist
 
         GlobalScope.launch { // synchronous network in this function
-            state.art = getAlbumArt(metadata)
+            val loadedArt = getAlbumArt(metadata)
+            state.art = loadedArt ?: defaultAlbumArt
+            state.notificationArt = loadedArt ?: defaultNotificationAlbumArt
+
+            metadataBuilder.apply {
+                putString(androidx.media2.common.MediaMetadata.METADATA_KEY_TITLE, state.title)
+                putString(androidx.media2.common.MediaMetadata.METADATA_KEY_ARTIST, state.artist)
+                putBitmap(androidx.media2.common.MediaMetadata.METADATA_KEY_ART, state.notificationArt)
+            }
+
+            mediaSession.setMetadata(metadataBuilder.build())
+
             notifyObservers()
         }
     }
