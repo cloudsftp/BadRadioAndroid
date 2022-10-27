@@ -39,6 +39,10 @@ object RadioVM: Player.Listener {
     private val metadataBuilder = MediaMetadataCompat.Builder()
 
     fun initialize(context: Context) {
+        if (initialized) {
+            return
+        }
+
         resources = context.resources
 
         defaultAlbumArt = BitmapFactory.decodeResource(resources, R.drawable.badradio)
