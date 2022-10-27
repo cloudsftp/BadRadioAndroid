@@ -50,16 +50,13 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
 
     override fun onResume() {
         super.onResume()
+        RadioVM.requestState(this)
         RadioVM.addObserver(this)
     }
 
     override fun onPause() {
         super.onPause()
         RadioVM.removeObserver(this)
-    }
-
-    private fun togglePlayer() {
-        RadioVM.onPlayPause()
     }
 
     override fun onStateChange(state: RadioVMState) {
