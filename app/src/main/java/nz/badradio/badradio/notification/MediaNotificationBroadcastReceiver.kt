@@ -4,7 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import nz.badradio.badradio.player.RadioManager
+import nz.badradio.badradio.radio_viewmodel.RadioVM
 
 class MediaNotificationBroadcastReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context?, intent: Intent?) {
@@ -13,9 +13,9 @@ class MediaNotificationBroadcastReceiver : BroadcastReceiver() {
         }
 
         when (val actionId = intent.getStringExtra("action")) {
-            PLAY_ACTION -> RadioManager.onPlayPause()
-            PAUSE_ACTION -> RadioManager.onPlayPause()
-            STOP_ACTION -> RadioManager.onStop()
+            PLAY_ACTION -> RadioVM.onPlayPause()
+            PAUSE_ACTION -> RadioVM.onPlayPause()
+            STOP_ACTION -> RadioVM.onStop()
             else -> Log.w(tag, "Unknown action $actionId")
         }
     }
