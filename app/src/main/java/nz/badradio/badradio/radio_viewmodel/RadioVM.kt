@@ -39,6 +39,10 @@ object RadioVM: Player.Listener {
     private val metadataBuilder = MediaMetadataCompat.Builder()
 
     fun initialize(context: Context) {
+        if (initialized) {
+            return
+        }
+
         resources = context.resources
 
         defaultAlbumArt = BitmapFactory.decodeResource(resources, R.drawable.badradio)
@@ -130,7 +134,8 @@ object RadioVM: Player.Listener {
     private val observers: MutableList<RadioVMObserver> = mutableListOf()
     fun addObserver(o: RadioVMObserver) = observers.add(o)
     fun removeObserver(o: RadioVMObserver) = observers.remove(o)
-    private fun notifyObservers() = observers.forEach { it.onStateChange(state) }
+    fun requestState(o: RadioVMObserver) = o.onStateChange(state)
+    private fun notifyObservers() = observers.forEach { requestState(it) }
 
     /**
      * Helper
