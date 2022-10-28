@@ -15,12 +15,12 @@ import java.net.URLEncoder
  */
 object SoundcloudAlbumArtGetter : IAlbumArtGetter {
 
-    // search query: https://api-v2.soundcloud.com/search/tracks?q=title&client_id=gsPNGqVqXY4QlaFqDv7WBWglYHdTPsh6&limit=1
+    // search query: https://api-v2.soundcloud.com/search/tracks?q=title&client_id=ZzQw5OLejAQys1cYAUI2nUbLtZbBe5Lg
 
     private const val hostname = "api-v2.soundcloud.com"
     private const val searchEndpoint = "search/tracks"
 
-    private const val clientID = "gsPNGqVqXY4QlaFqDv7WBWglYHdTPsh6"
+    private const val clientID = "ZzQw5OLejAQys1cYAUI2nUbLtZbBe5Lg"
     private const val numSearchResults = 1
 
     @Throws(IOException::class)
