@@ -1,12 +1,10 @@
 package nz.badradio.badradio.radio
 
-import android.app.Service
 import android.content.Intent
 import android.net.Uri
-import android.os.Binder
-import android.os.Handler
-import android.os.IBinder
-import android.os.Looper
+import android.os.*
+import android.support.v4.media.MediaBrowserCompat
+import androidx.media.MediaBrowserServiceCompat
 import nz.badradio.badradio.utilities.client
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -16,7 +14,7 @@ import nz.badradio.badradio.radio_viewmodel.RadioVM
 import nz.badradio.badradio.radio_viewmodel.UserInputVMObserver
 import java.lang.Runnable
 
-class RadioService : Service(), UserInputVMObserver {
+class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
     private lateinit var mediaPlayer: ExoPlayer
 
     private val audioAttributes = AudioAttributes.Builder().apply {
@@ -68,6 +66,26 @@ class RadioService : Service(), UserInputVMObserver {
         return RadioServiceBinder()
     }
 
+    override fun onGetRoot(
+        clientPackageName: String,
+        clientUid: Int,
+        rootHints: Bundle?
+    ): BrowserRoot {
+        return BrowserRoot(BADRADIO_RECENT_BROWSER_ROOT, Bundle())
+    }
+
+    override fun onLoadChildren(
+        parentId: String,
+        result: Result<MutableList<MediaBrowserCompat.MediaItem>>
+    ) {
+        if (parentId == BADRADIO_RECENT_BROWSER_ROOT) {
+            RadioVM.loadRecentMediaItem(result)
+            result.detach()
+        } else {
+            result.sendResult(null)
+        }
+    }
+
     override fun onPlay() {
         if (mediaPlayer.playbackState == Player.STATE_IDLE) {
             mediaPlayer.prepare()
@@ -106,3 +124,6 @@ class RadioService : Service(), UserInputVMObserver {
         }
     }
 }
+
+private const val BADRADIO_EMPTY_BROWSER_ROOT = "nz.badradio.badradio.radio.BADRADIO_EMPTY_BROWSER_ROOT"
+private const val BADRADIO_RECENT_BROWSER_ROOT = "nz.badradio.badradio.radio.BADRADIO_RECENT_BROWSER_ROOT"

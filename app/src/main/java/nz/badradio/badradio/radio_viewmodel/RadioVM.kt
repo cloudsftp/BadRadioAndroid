@@ -7,8 +7,12 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Handler
 import android.os.Looper
+import android.support.v4.media.MediaBrowserCompat
+import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
+import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
+import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
@@ -24,6 +28,9 @@ object RadioVM: Player.Listener {
     private lateinit var resources: Resources
     private lateinit var state: RadioVMState
     private lateinit var mediaSession: MediaSessionCompat
+
+    private lateinit var mediaDescription: MediaDescriptionCompat
+    private lateinit var mediaItem: MediaBrowserCompat.MediaItem
 
     private lateinit var defaultAlbumArt: Bitmap
     private lateinit var defaultNotificationAlbumArt: Bitmap
@@ -57,8 +64,17 @@ object RadioVM: Player.Listener {
             notificationArt = defaultNotificationAlbumArt,
         )
 
-        mediaSession = MediaSessionCompat(context, "BADRADIO Media Session")
+        mediaDescription = MediaDescriptionCompat.Builder().apply {
+            setMediaId(BADRADIO_MEDIA_ID)
 
+            setTitle(resources.getString(R.string.default_song_name))
+            setSubtitle(resources.getString(R.string.default_artist))
+
+            setIconBitmap(defaultNotificationAlbumArt)
+        }.build()
+        mediaItem = MediaBrowserCompat.MediaItem(mediaDescription, FLAG_PLAYABLE)
+
+        mediaSession = MediaSessionCompat(context, "BADRADIO Media Session")
         RadioManager.initialize(context, mediaSession)
 
         initialized = true
@@ -127,6 +143,12 @@ object RadioVM: Player.Listener {
         throw error
     }
 
+    fun loadRecentMediaItem(result: MediaBrowserServiceCompat.Result<MutableList<MediaBrowserCompat.MediaItem>>)
+        = runWhenInitialized {
+            result.sendResult(mutableListOf(mediaItem))
+    }
+
+
     /**
      * Observers
      */
@@ -150,5 +172,6 @@ object RadioVM: Player.Listener {
             }, 100)
         }
     }
-
 }
+
+private const val BADRADIO_MEDIA_ID = "nz.badradio.badradio.radio_viewmodel.MEDIA_ID"
