@@ -4,9 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.net.Uri
 import android.os.Build
-import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.support.v4.media.MediaBrowserCompat
@@ -14,6 +12,7 @@ import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
+import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.PlaybackException
 import com.google.android.exoplayer2.Player
@@ -31,7 +30,7 @@ object RadioVM: Player.Listener {
     private lateinit var mediaSession: MediaSessionCompat
 
     private lateinit var mediaDescription: MediaDescriptionCompat
-    lateinit var mediaItem: MediaBrowserCompat.MediaItem
+    private lateinit var mediaItem: MediaBrowserCompat.MediaItem
 
     private lateinit var defaultAlbumArt: Bitmap
     private lateinit var defaultNotificationAlbumArt: Bitmap
@@ -143,6 +142,12 @@ object RadioVM: Player.Listener {
     override fun onPlayerError(error: PlaybackException) {
         throw error
     }
+
+    fun loadRecentMediaItem(result: MediaBrowserServiceCompat.Result<MutableList<MediaBrowserCompat.MediaItem>>)
+        = runWhenInitialized {
+            result.sendResult(mutableListOf(mediaItem))
+    }
+
 
     /**
      * Observers

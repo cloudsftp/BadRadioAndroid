@@ -1,13 +1,10 @@
 package nz.badradio.badradio.radio
 
-import android.app.Service
 import android.content.Intent
 import android.net.Uri
 import android.os.*
 import android.support.v4.media.MediaBrowserCompat
-import android.support.v4.media.MediaDescriptionCompat
 import androidx.media.MediaBrowserServiceCompat
-import androidx.media.MediaBrowserServiceCompat.BrowserRoot.EXTRA_RECENT
 import nz.badradio.badradio.utilities.client
 import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.audio.AudioAttributes
@@ -74,20 +71,7 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
         clientUid: Int,
         rootHints: Bundle?
     ): BrowserRoot {
-        val rootExtras = Bundle().apply {
-            /*
-            putBoolean(
-                MEDIA_SEARCH_SUPPORTED,
-                isKnownCaller || browseTree.searchableByUnknownCaller
-            )
-            putBoolean(CONTENT_STYLE_SUPPORTED, true)
-            putInt(CONTENT_STYLE_BROWSABLE_HINT, CONTENT_STYLE_GRID)
-            putInt(CONTENT_STYLE_PLAYABLE_HINT, CONTENT_STYLE_LIST)
-             */
-        }
-
-        val isRecentRequest = rootHints?.getBoolean(EXTRA_RECENT) ?: false
-        return BrowserRoot(BADRADIO_RECENT_BROWSER_ROOT, rootExtras)
+        return BrowserRoot(BADRADIO_RECENT_BROWSER_ROOT, Bundle())
     }
 
     override fun onLoadChildren(
@@ -95,9 +79,11 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
         result: Result<MutableList<MediaBrowserCompat.MediaItem>>
     ) {
         if (parentId == BADRADIO_RECENT_BROWSER_ROOT) {
-            result.sendResult(mutableListOf(RadioVM.mediaItem))
+            RadioVM.loadRecentMediaItem(result)
+            result.detach()
+        } else {
+            result.sendResult(null)
         }
-
     }
 
     override fun onPlay() {
