@@ -29,7 +29,7 @@ object RadioVM: Player.Listener {
     private lateinit var state: RadioVMState
     private lateinit var mediaSession: MediaSessionCompat
 
-    private lateinit var mediaDescription: MediaDescriptionCompat
+    private lateinit var mediaDescriptionBuilder: MediaDescriptionCompat.Builder
     private lateinit var mediaItem: MediaBrowserCompat.MediaItem
 
     private lateinit var defaultAlbumArt: Bitmap
@@ -64,15 +64,15 @@ object RadioVM: Player.Listener {
             notificationArt = defaultNotificationAlbumArt,
         )
 
-        mediaDescription = MediaDescriptionCompat.Builder().apply {
+        mediaDescriptionBuilder = MediaDescriptionCompat.Builder().apply {
             setMediaId(BADRADIO_MEDIA_ID)
 
             setTitle(resources.getString(R.string.default_song_name))
             setSubtitle(resources.getString(R.string.default_artist))
 
             setIconBitmap(defaultNotificationAlbumArt)
-        }.build()
-        mediaItem = MediaBrowserCompat.MediaItem(mediaDescription, FLAG_PLAYABLE)
+        }
+        mediaItem = MediaBrowserCompat.MediaItem(mediaDescriptionBuilder.build(), FLAG_PLAYABLE)
 
         mediaSession = MediaSessionCompat(context, "BADRADIO Media Session")
         RadioManager.initialize(context, mediaSession)
@@ -130,10 +130,18 @@ object RadioVM: Player.Listener {
                 metadataBuilder.apply {
                     putString(androidx.media2.common.MediaMetadata.METADATA_KEY_TITLE, state.title)
                     putString(androidx.media2.common.MediaMetadata.METADATA_KEY_ARTIST, state.artist)
+
                     putBitmap(androidx.media2.common.MediaMetadata.METADATA_KEY_ART, state.notificationArt)
                 }
-
                 mediaSession.setMetadata(metadataBuilder.build())
+
+                mediaDescriptionBuilder.apply {
+                    setTitle(state.title)
+                    setSubtitle(state.artist)
+
+                    setIconBitmap(state.notificationArt)
+                }
+                mediaItem = MediaBrowserCompat.MediaItem(mediaDescriptionBuilder.build(), FLAG_PLAYABLE)
 
                 notifyObservers()
             }
