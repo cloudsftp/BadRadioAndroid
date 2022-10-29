@@ -7,19 +7,19 @@ import nz.badradio.badradio.R
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import nz.badradio.badradio.player.RadioManager
+import nz.badradio.badradio.radio.RadioManager
 import nz.badradio.badradio.databinding.ActivityPlayerBinding
-import nz.badradio.badradio.player.PlaybackStatus
-import nz.badradio.badradio.player.PlayerState
-import nz.badradio.badradio.utilities.PlayerStateObserver
+import nz.badradio.badradio.radio_viewmodel.RadioVM
+import nz.badradio.badradio.radio_viewmodel.RadioVMObserver
+import nz.badradio.badradio.radio_viewmodel.RadioVMState
 
-class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
+class PlayerActivity : AppCompatActivity(), RadioVMObserver {
     private lateinit var binding: ActivityPlayerBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        RadioManager.bind(applicationContext)
+        RadioVM.initialize(applicationContext)
 
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -36,11 +36,11 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
         }
 
         binding.imgBtnPlay.setOnClickListener {
-            togglePlayer()
+            RadioVM.onPlayPause()
         }
 
-        binding.imgBtnStop.setOnClickListener {
-            RadioManager.onStop()
+        binding.imgBtnSkip.setOnClickListener {
+            RadioVM.onSkip()
         }
 
         binding.imgBtnShare.setOnClickListener {
@@ -50,35 +50,31 @@ class PlayerActivity : AppCompatActivity(), PlayerStateObserver {
 
     override fun onResume() {
         super.onResume()
-        RadioManager.addObserver(this)
+        RadioVM.requestState(this)
+        RadioVM.addObserver(this)
     }
 
     override fun onPause() {
         super.onPause()
-        RadioManager.removeObserver(this)
+        RadioVM.removeObserver(this)
     }
 
-    private fun togglePlayer() {
-        RadioManager.onPlayPause()
-    }
-
-
-    override fun onStateChange(state: PlayerState) {
+    override fun onStateChange(state: RadioVMState) {
         runOnUiThread {
-            updateAlbumArt(state.art)
-
-            binding.textSongName.text = state.metadata.title
-            binding.textArtist.text = state.metadata.artist
-
-            binding.imgBtnPlay.isEnabled = state.playbackStatus != PlaybackStatus.LOADING
+            binding.imgBtnPlay.isEnabled = state.enableButtons
 
             binding.imgBtnPlay.setImageResource(
-                when(state.playbackStatus) {
-                    PlaybackStatus.LOADING      -> R.drawable.ic_pause_btn // TODO: replace w/ loading icon
-                    PlaybackStatus.NOT_PLAYING  -> R.drawable.ic_play_btn
-                    PlaybackStatus.PLAYING      -> R.drawable.ic_pause_btn
+                if (state.displayPause) {
+                    R.drawable.ic_pause_btn
+                } else {
+                    R.drawable.ic_play_btn
                 }
             )
+
+            binding.textSongName.text = state.title
+            binding.textArtist.text = state.artist
+
+            updateAlbumArt(state.art)
         }
     }
 

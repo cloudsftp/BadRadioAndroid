@@ -1,4 +1,4 @@
-package nz.badradio.badradio.player
+package nz.badradio.badradio.radio
 
 import android.net.Uri
 import com.google.android.exoplayer2.upstream.DataSource

@@ -3,7 +3,7 @@ package nz.badradio.badradio.metadata.art
 import android.graphics.Bitmap
 import android.util.Log
 import nz.badradio.badradio.metadata.SongMetadata
-import nz.badradio.badradio.player.RadioService
+import nz.badradio.badradio.radio.RadioService
 import com.squareup.picasso.Picasso
 import java.io.IOException
 
@@ -11,8 +11,7 @@ private val albumArtGetters = listOf<IAlbumArtGetter>(
     SoundcloudAlbumArtGetter
 )
 
-//                                          radioService needed later - don't delete
-fun getAlbumArt(songMetadata: SongMetadata, radioService: RadioService): Bitmap? {
+fun getAlbumArt(songMetadata: SongMetadata): Bitmap? {
     Log.d(TAG, "Searching for album art for $songMetadata")
 
     albumArtGetters.forEach {
