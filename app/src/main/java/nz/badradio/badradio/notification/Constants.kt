@@ -1,5 +1,6 @@
 package nz.badradio.badradio.notification
 
-const val PLAY_ACTION = "com.badradio.nz.PLAY"
-const val PAUSE_ACTION = "com.badradio.nz.PAUSE"
-const val STOP_ACTION = "com.badradio.nt.STOP"
+const val PLAY_ACTION   = "nz.badradio.badradio.notification.PLAY"
+const val PAUSE_ACTION  = "nz.badradio.badradio.notification.PAUSE"
+const val STOP_ACTION   = "nz.badradio.badradio.notification.STOP"
+const val SKIP_ACTION   = "nz.badradio.badradio.notification.SKIP"

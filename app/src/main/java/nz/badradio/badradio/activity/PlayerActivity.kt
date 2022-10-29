@@ -39,8 +39,8 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
             RadioVM.onPlayPause()
         }
 
-        binding.imgBtnStop.setOnClickListener {
-            RadioManager.onStop()
+        binding.imgBtnSkip.setOnClickListener {
+            RadioVM.onSkip()
         }
 
         binding.imgBtnShare.setOnClickListener {
