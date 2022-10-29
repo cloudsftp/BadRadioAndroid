@@ -27,15 +27,17 @@ class MediaNotificationManager(
     private val playRequestCode       = 1
     private val pauseRequestCode      = 2
     private val stopRequestCode       = 3
+    private val skipRequestCode       = 4
 
     private val channelID = "BADRADIO Notification Channel"
     private var notificationId = 1
 
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(service)
 
-    private val playAction = createAction(service, PLAY_ACTION, playRequestCode, R.drawable.vec_play, "Play")
+    private val playAction  = createAction(service, PLAY_ACTION, playRequestCode, R.drawable.vec_play, "Play")
     private val pauseAction = createAction(service, PAUSE_ACTION, pauseRequestCode, R.drawable.vec_pause, "Pause")
-    private val stopAction = createAction(service, STOP_ACTION, stopRequestCode, R.drawable.vec_stop, "Stop")
+    private val skipAction  = createAction(service, SKIP_ACTION, skipRequestCode, R.drawable.vec_skip, "Skip")
+    // private val stopAction = createAction(service, STOP_ACTION, stopRequestCode, R.drawable.vec_stop, "Stop")
 
     private val mediaStyle = MediaStyle()
         .setMediaSession(mediaSession.sessionToken)
@@ -87,7 +89,7 @@ class MediaNotificationManager(
                 }
             )
 
-            addAction(stopAction)
+            addAction(skipAction)
         }
 
         mediaStyle.setShowActionsInCompactView(0)
