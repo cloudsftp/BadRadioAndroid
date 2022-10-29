@@ -35,7 +35,6 @@ object RadioVM: Player.Listener {
         object : MediaSessionCompat.Callback() {
             override fun onPlay() = this@RadioVM.onPlayPause()
             override fun onPause() = this@RadioVM.onPlayPause()
-            override fun onStop() = this@RadioVM.onStop()
         }
 
     private lateinit var mediaDescriptionBuilder: MediaDescriptionCompat.Builder
@@ -88,7 +87,7 @@ object RadioVM: Player.Listener {
             setActions(
                 PlaybackStateCompat.ACTION_PAUSE or
                         PlaybackStateCompat.ACTION_PLAY or
-                        PlaybackStateCompat.ACTION_STOP
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT
             )
         }
 
