@@ -35,6 +35,7 @@ object RadioVM: Player.Listener {
         object : MediaSessionCompat.Callback() {
             override fun onPlay() = this@RadioVM.onPlayPause()
             override fun onPause() = this@RadioVM.onPlayPause()
+            override fun onSkipToNext() = this@RadioVM.onSkip()
         }
 
     private lateinit var mediaDescriptionBuilder: MediaDescriptionCompat.Builder
@@ -112,12 +113,22 @@ object RadioVM: Player.Listener {
         }
     }
 
+    /*
     fun onStop() = runWhenInitialized {
         if (!state.enableButtons) {
             return@runWhenInitialized
         }
 
         RadioManager.onStop()
+    }
+    */
+
+    fun onSkip() = runWhenInitialized {
+        if (!state.enableButtons) {
+            return@runWhenInitialized
+        }
+
+        RadioManager.onSkip()
     }
 
     override fun onPlaybackStateChanged(playbackState: Int) = runWhenInitialized {

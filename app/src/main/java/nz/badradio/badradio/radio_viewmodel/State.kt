@@ -32,6 +32,5 @@ data class RadioVMState(
 interface UserInputVMObserver {
     fun onPlay()
     fun onPause()
-    fun onStop()            // Experiment with inputs
-    fun onResynchronize()
+    fun onSkip()            // Experiment with inputs
 }

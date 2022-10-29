@@ -93,18 +93,9 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
 
         mediaPlayer.play()
     }
-
-    override fun onPause() {
-        mediaPlayer.pause()
-    }
-
-    override fun onStop() {
-        mediaPlayer.stop()
-    }
-
-    override fun onResynchronize() {
-        mediaPlayer.seekForward()
-    }
+    override fun onPause() = mediaPlayer.pause()
+    // override fun onStop() = mediaPlayer.stop()
+    override fun onSkip() = mediaPlayer.seekForward()
 
     // Helpers
 

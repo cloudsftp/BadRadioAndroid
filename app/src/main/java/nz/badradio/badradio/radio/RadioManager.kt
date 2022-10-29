@@ -56,12 +56,14 @@ object RadioManager: UserInputVMObserver {
         service!!.onPause()
     }
 
+    /*
     override fun onStop() = executeWhenServiceBound {
         service!!.onStop()
     }
+     */
 
-    override fun onResynchronize() {
-        TODO("Not yet implemented")
+    override fun onSkip() = executeWhenServiceBound {
+        service!!.onSkip()
     }
 
     private fun executeWhenServiceBound(r: Runnable) {
