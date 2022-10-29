@@ -27,7 +27,11 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
-      - run: ./gradlew assembleDebug
+      - run: ./gradlew app:bundleRelease
+        env:
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
+          SIGNING_STORE_PASSWORD: ${{ secrets.SIGNING_STORE_PASSWORD }}
         
       - run: cp app/build/outputs/apk/debug/app-debug.apk badradio.apk
 
