@@ -12,6 +12,7 @@ import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
+import android.support.v4.media.session.PlaybackStateCompat
 import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.PlaybackException
@@ -27,9 +28,16 @@ import nz.badradio.badradio.radio.RadioManager
 object RadioVM: Player.Listener {
     private lateinit var resources: Resources
     private lateinit var state: RadioVMState
-    private lateinit var mediaSession: MediaSessionCompat
 
-    private lateinit var mediaDescription: MediaDescriptionCompat
+    private lateinit var playBackStateBuilder: PlaybackStateCompat.Builder
+    private lateinit var mediaSession: MediaSessionCompat
+    private val mediaSessionCallback: MediaSessionCompat.Callback =
+        object : MediaSessionCompat.Callback() {
+            override fun onPlay() = this@RadioVM.onPlayPause()
+            override fun onPause() = this@RadioVM.onPlayPause()
+        }
+
+    private lateinit var mediaDescriptionBuilder: MediaDescriptionCompat.Builder
     private lateinit var mediaItem: MediaBrowserCompat.MediaItem
 
     private lateinit var defaultAlbumArt: Bitmap
@@ -64,17 +72,29 @@ object RadioVM: Player.Listener {
             notificationArt = defaultNotificationAlbumArt,
         )
 
-        mediaDescription = MediaDescriptionCompat.Builder().apply {
+        mediaDescriptionBuilder = MediaDescriptionCompat.Builder().apply {
             setMediaId(BADRADIO_MEDIA_ID)
 
             setTitle(resources.getString(R.string.default_song_name))
             setSubtitle(resources.getString(R.string.default_artist))
 
             setIconBitmap(defaultNotificationAlbumArt)
-        }.build()
-        mediaItem = MediaBrowserCompat.MediaItem(mediaDescription, FLAG_PLAYABLE)
+        }
+        mediaItem = MediaBrowserCompat.MediaItem(mediaDescriptionBuilder.build(), FLAG_PLAYABLE)
 
-        mediaSession = MediaSessionCompat(context, "BADRADIO Media Session")
+        playBackStateBuilder = PlaybackStateCompat.Builder().apply {
+            setState(PlaybackStateCompat.STATE_BUFFERING, 0, 1f)
+            setActions(
+                PlaybackStateCompat.ACTION_PAUSE or
+                        PlaybackStateCompat.ACTION_PLAY or
+                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+            )
+        }
+
+        mediaSession = MediaSessionCompat(context, "BADRADIO Media Session").apply {
+            setPlaybackState(playBackStateBuilder.build())
+            setCallback(mediaSessionCallback)
+        }
         RadioManager.initialize(context, mediaSession)
 
         initialized = true
@@ -102,10 +122,27 @@ object RadioVM: Player.Listener {
 
     override fun onPlaybackStateChanged(playbackState: Int) = runWhenInitialized {
         state.enableButtons = playbackState != Player.STATE_BUFFERING
+
+        playBackStateBuilder.setState(
+            when (playbackState) {
+                Player.STATE_BUFFERING -> PlaybackStateCompat.STATE_BUFFERING
+                Player.STATE_IDLE -> PlaybackStateCompat.STATE_STOPPED
+                else -> PlaybackStateCompat.STATE_NONE
+            }, 0, 1f
+        )
+        mediaSession.setPlaybackState(playBackStateBuilder.build())
+
+        notifyObservers()
     }
 
     override fun onIsPlayingChanged(isPlaying: Boolean) = runWhenInitialized {
         state.displayPause = isPlaying
+        playBackStateBuilder.setState(
+            if (isPlaying) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED,
+            0, 1f
+        )
+        mediaSession.setPlaybackState(playBackStateBuilder.build())
+
         notifyObservers()
     }
 
@@ -130,10 +167,18 @@ object RadioVM: Player.Listener {
                 metadataBuilder.apply {
                     putString(androidx.media2.common.MediaMetadata.METADATA_KEY_TITLE, state.title)
                     putString(androidx.media2.common.MediaMetadata.METADATA_KEY_ARTIST, state.artist)
+
                     putBitmap(androidx.media2.common.MediaMetadata.METADATA_KEY_ART, state.notificationArt)
                 }
-
                 mediaSession.setMetadata(metadataBuilder.build())
+
+                mediaDescriptionBuilder.apply {
+                    setTitle(state.title)
+                    setSubtitle(state.artist)
+
+                    setIconBitmap(state.notificationArt)
+                }
+                mediaItem = MediaBrowserCompat.MediaItem(mediaDescriptionBuilder.build(), FLAG_PLAYABLE)
 
                 notifyObservers()
             }

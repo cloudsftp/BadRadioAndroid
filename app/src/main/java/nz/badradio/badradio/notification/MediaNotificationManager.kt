@@ -14,8 +14,8 @@ import androidx.media.app.NotificationCompat.MediaStyle
 import nz.badradio.badradio.R
 import nz.badradio.badradio.activity.PlayerActivity
 import nz.badradio.badradio.radio.RadioService
-import nz.badradio.badradio.radio_viewmodel.RadioVMState
 import nz.badradio.badradio.radio_viewmodel.RadioVMObserver
+import nz.badradio.badradio.radio_viewmodel.RadioVMState
 
 @SuppressLint("ObsoleteSdkInt")
 class MediaNotificationManager(
@@ -29,7 +29,7 @@ class MediaNotificationManager(
     private val stopRequestCode       = 3
 
     private val channelID = "BADRADIO Notification Channel"
-    private val notificationID = 1
+    private var notificationId = 1
 
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(service)
 
@@ -58,7 +58,7 @@ class MediaNotificationManager(
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManagerCompat.IMPORTANCE_DEFAULT
+            val importance = NotificationManagerCompat.IMPORTANCE_HIGH
             val channel = NotificationChannelCompat
                 .Builder(channelID, importance)
                 .setName(channelID)
@@ -94,8 +94,8 @@ class MediaNotificationManager(
 
         val notification = notificationBuilder.build()
 
-        notificationManager.notify(notificationID, notification)
-        service.startForeground(notificationID, notification)
+        notificationManager.notify(notificationId, notification)
+        service.startForeground(notificationId, notification)
     }
 
     private fun createAction(context: Context, actionId: String, requestCode: Int, iconId: Int, title: String): NotificationCompat.Action {
