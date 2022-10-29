@@ -30,12 +30,6 @@ class MediaNotificationManager(
 
     private val channelID = "BADRADIO Notification Channel"
     private var notificationId = 1
-    private fun chooseNewNotificationId() {
-        notificationId++
-        if (notificationId < 1) {
-            notificationId = 1
-        }
-    }
 
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(service)
 
@@ -64,7 +58,7 @@ class MediaNotificationManager(
 
     init {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManagerCompat.IMPORTANCE_DEFAULT
+            val importance = NotificationManagerCompat.IMPORTANCE_HIGH
             val channel = NotificationChannelCompat
                 .Builder(channelID, importance)
                 .setName(channelID)
@@ -100,8 +94,6 @@ class MediaNotificationManager(
 
         val notification = notificationBuilder.build()
 
-        notificationManager.cancel(notificationId)
-        chooseNewNotificationId()
         notificationManager.notify(notificationId, notification)
         service.startForeground(notificationId, notification)
     }
