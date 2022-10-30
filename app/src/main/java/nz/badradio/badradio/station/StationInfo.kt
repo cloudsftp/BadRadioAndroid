@@ -1,4 +1,4 @@
-package nz.badradio.badradio.radio
+package nz.badradio.badradio.station
 
 import nz.badradio.badradio.Config
 import nz.badradio.badradio.utilities.client
