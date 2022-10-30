@@ -92,7 +92,7 @@ class MediaNotificationManager(
             addAction(skipAction)
         }
 
-        mediaStyle.setShowActionsInCompactView(0)
+        mediaStyle.setShowActionsInCompactView(0, 1)
 
         val notification = notificationBuilder.build()
 
