@@ -12,6 +12,8 @@ import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import nz.badradio.badradio.radio_viewmodel.RadioVM
 import nz.badradio.badradio.radio_viewmodel.UserInputVMObserver
+import nz.badradio.badradio.station.StationInfo
+import nz.badradio.badradio.station.getStationInfo
 import java.lang.Runnable
 
 class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
@@ -30,9 +32,16 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
         )
     }
 
+    private val preBufferMs = 6_000
+    private val loadControl = DefaultLoadControl.Builder().apply {
+        setBufferDurationsMs(
+            20_000, 120_000,
+            preBufferMs, preBufferMs
+        )
+    }.build()
+
     override fun onCreate() {
         super.onCreate()
-
 
         getStationInfo {
             createPlayer(it)
@@ -44,18 +53,20 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
             setAudioAttributes(audioAttributes, true)
             setWakeMode(C.WAKE_MODE_NETWORK)
             setMediaSourceFactory(ProgressiveMediaSource.Factory(okHttpDataSourceFactory))
+            setLoadControl(loadControl)
         }.build()
 
         runWhenPlayerInitialized { // for main loop
             mediaPlayer.apply {
                 setMediaItem(MediaItem.fromUri(Uri.parse(stationInfo.streamURL)))
                 addListener(RadioVM)
-                playWhenReady = true
 
-                prepare()
+                onPlay()
             }
         }
     }
+
+    // Binding Service
 
     inner class RadioServiceBinder : Binder() {
         val service: RadioService
@@ -65,6 +76,23 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
     override fun onBind(intent: Intent?): IBinder {
         return RadioServiceBinder()
     }
+
+    // Control service
+
+    override fun onPlay() {
+        if (mediaPlayer.playbackState == Player.STATE_IDLE) {
+            mediaPlayer.prepare()
+        }
+
+        mediaPlayer.play()
+    }
+    override fun onPause() = mediaPlayer.pause()
+    override fun onSkip() {
+        mediaPlayer.seekForward()
+        mediaPlayer.play()
+    }
+
+    // Media Browser
 
     override fun onGetRoot(
         clientPackageName: String,
@@ -85,17 +113,6 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
             result.sendResult(null)
         }
     }
-
-    override fun onPlay() {
-        if (mediaPlayer.playbackState == Player.STATE_IDLE) {
-            mediaPlayer.prepare()
-        }
-
-        mediaPlayer.play()
-    }
-    override fun onPause() = mediaPlayer.pause()
-    // override fun onStop() = mediaPlayer.stop()
-    override fun onSkip() = mediaPlayer.seekForward()
 
     // Helpers
 

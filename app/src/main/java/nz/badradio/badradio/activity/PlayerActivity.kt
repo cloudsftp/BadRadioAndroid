@@ -42,10 +42,11 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
         binding.imgBtnSkip.setOnClickListener {
             RadioVM.onSkip()
         }
-
+/*
         binding.imgBtnShare.setOnClickListener {
             shareApp(applicationContext)
         }
+ */
     }
 
     override fun onResume() {
