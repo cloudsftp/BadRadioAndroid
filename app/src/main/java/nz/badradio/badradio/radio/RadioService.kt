@@ -32,6 +32,14 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
         )
     }
 
+    private val preBufferMs = 6_000
+    private val loadControl = DefaultLoadControl.Builder().apply {
+        setBufferDurationsMs(
+            20_000, 120_000,
+            preBufferMs, preBufferMs
+        )
+    }.build()
+
     override fun onCreate() {
         super.onCreate()
 
@@ -45,6 +53,7 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
             setAudioAttributes(audioAttributes, true)
             setWakeMode(C.WAKE_MODE_NETWORK)
             setMediaSourceFactory(ProgressiveMediaSource.Factory(okHttpDataSourceFactory))
+            setLoadControl(loadControl)
         }.build()
 
         runWhenPlayerInitialized { // for main loop
