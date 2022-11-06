@@ -4,6 +4,7 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import nz.badradio.badradio.R
 import nz.badradio.badradio.databinding.ActivityAboutBinding
 
 class AboutActivity : AppCompatActivity() {
@@ -15,6 +16,15 @@ class AboutActivity : AppCompatActivity() {
         binding = ActivityAboutBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.toolbar)
+        binding.toolbar.apply {
+            setNavigationIcon(R.drawable.vec_close)
+            setNavigationOnClickListener {
+                finish()
+            }
+        }
+
+        /*
         binding.btnWebsite.setOnClickListener {
             val url = "https://badradio.nz"
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
@@ -24,5 +34,6 @@ class AboutActivity : AppCompatActivity() {
         binding.btnClose.setOnClickListener {
             finish()
         }
+         */
     }
 }
