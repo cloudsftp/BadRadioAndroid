@@ -18,7 +18,7 @@ class AboutActivity : AppCompatActivity() {
 
         setSupportActionBar(binding.toolbar)
         binding.toolbar.apply {
-            setNavigationIcon(R.drawable.vec_close)
+            setNavigationIcon(androidx.appcompat.R.drawable.abc_ic_ab_back_material)
             setNavigationOnClickListener {
                 finish()
             }

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
 xmlns:app="http://schemas.android.com/apk/res-auto"
-android:background="@android:color/black"
 android:layout_width="match_parent"
 android:layout_height="match_parent">
 
 <androidx.appcompat.widget.Toolbar
     android:id="@+id/toolbar"
     android:layout_width="match_parent"
-    android:layout_height="@dimens/toolbar_height"
-    android:background="@android:color/black"
+    android:layout_height="@dimen/toolbar_height"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
@@ -21,7 +19,6 @@ android:layout_height="match_parent">
         android:layout_gravity="center_horizontal"
         android:fontFamily="@font/nasalization"
         android:text="@string/app_name"
-        android:textColor="@android:color/white"
         android:textSize="24sp"
         android:textStyle="bold"/>
 
