@@ -11,16 +11,8 @@ android:layout_height="match_parent">
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
-    app:buttonGravity="center_vertical">
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:fontFamily="@font/nasalization"
-        android:text="@string/app_name"
-        android:textSize="24sp"
-        android:textStyle="bold"/>
+    app:buttonGravity="center_vertical"
+    android:theme="@style/ToolbarTheme">
 
 </androidx.appcompat.widget.Toolbar>
 
