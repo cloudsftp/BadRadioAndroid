@@ -66,9 +66,9 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
 
             binding.imgBtnPlay.setImageResource(
                 if (state.displayPause) {
-                    R.drawable.ic_pause_btn
+                    R.drawable.ic_pause
                 } else {
-                    R.drawable.ic_play_btn
+                    R.drawable.ic_play
                 }
             )
 
