@@ -11,9 +11,6 @@ android:layout_height="match_parent">
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintLeft_toLeftOf="parent"
     app:layout_constraintRight_toRightOf="parent"
-    app:buttonGravity="center_vertical"
-    android:theme="@style/ToolbarTheme">
-
-</androidx.appcompat.widget.Toolbar>
+    android:theme="@style/ToolbarTheme"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
