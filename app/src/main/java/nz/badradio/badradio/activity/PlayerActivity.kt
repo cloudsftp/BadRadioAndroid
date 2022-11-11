@@ -14,7 +14,6 @@ import nz.badradio.badradio.radio_viewmodel.RadioVM
 import nz.badradio.badradio.radio_viewmodel.RadioVMObserver
 import nz.badradio.badradio.radio_viewmodel.RadioVMState
 
-
 class PlayerActivity : AppCompatActivity(), RadioVMObserver {
     private lateinit var binding: ActivityPlayerBinding
 
@@ -26,7 +25,11 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        setSupportActionBar(binding.toolbar)
+        setSupportActionBar(binding.toolbar.root)
+        binding.toolbar.root.apply {
+            setNavigationIcon(R.drawable.ic_info)
+            setNavigationOnClickListener { openAbout() }
+        }
 
         val ratio = resources.displayMetrics.heightPixels.toFloat() / resources.displayMetrics.widthPixels
         binding.imgAlbumArt.layoutParams.height = (
@@ -102,6 +105,11 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
         }
 
         binding.imgAlbumArt.setImageBitmap(toDisplay)
+    }
+
+    private fun openAbout() {
+        val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
+        startActivity(intent)
     }
 
     private fun shareApp(context: Context) {
