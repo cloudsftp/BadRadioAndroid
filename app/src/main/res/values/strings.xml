@@ -5,6 +5,9 @@
     <string name="default_artist">BADRADIO</string>
 
     <string name="info">info</string>
+    <string name="info_text">New Zealand’s first and only radio station dedicated to underground phonk, hiphop, trap and chillout beats streaming 24/7</string>
+
+    <string name="website">website</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 

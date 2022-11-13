@@ -111,15 +111,4 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
         val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
         startActivity(intent)
     }
-
-    private fun shareApp(context: Context) {
-        val appPackageName = context.packageName
-        val sendIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, "Check out the App at: https://play.google.com/store/apps/details?id=$appPackageName")
-            type = "text/plain"
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        context.startActivity(sendIntent)
-    }
 }

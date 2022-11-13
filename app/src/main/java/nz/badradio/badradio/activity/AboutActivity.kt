@@ -24,16 +24,26 @@ class AboutActivity : AppCompatActivity() {
             }
         }
 
-        /*
-        binding.btnWebsite.setOnClickListener {
-            val url = "https://badradio.nz"
-            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-            startActivity(intent)
-        }
+        binding.websiteButton.setOnClickListener { openWebsite(radioWebsite) }
 
-        binding.btnClose.setOnClickListener {
-            finish()
-        }
-         */
     }
+
+    private fun openWebsite(url: String) {
+        val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+        startActivity(intent)
+    }
+
+    private val radioWebsite =  "https://badradio.nz"
+    /*
+    private fun shareApp(context: Context) {
+        val appPackageName = context.packageName
+        val sendIntent = Intent().apply {
+            action = Intent.ACTION_SEND
+            putExtra(Intent.EXTRA_TEXT, "Check out the App at: https://play.google.com/store/apps/details?id=$appPackageName")
+            type = "text/plain"
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        }
+        context.startActivity(sendIntent)
+    }
+     */
 }
