@@ -25,6 +25,7 @@ class AboutActivity : AppCompatActivity() {
         }
 
         binding.websiteButton.setOnClickListener { openWebsite(radioWebsite) }
+        binding.discordButton.setOnClickListener { openWebsite(badradioDiscord) }
 
     }
 
@@ -33,7 +34,9 @@ class AboutActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private val radioWebsite =  "https://badradio.nz"
+    private val radioWebsite    = "https://badradio.nz"
+    private val badradioDiscord = "https://discord.gg/sY87mUcyYD"
+
     /*
     private fun shareApp(context: Context) {
         val appPackageName = context.packageName
