@@ -34,9 +34,9 @@ class MediaNotificationManager(
 
     private val notificationManager: NotificationManagerCompat = NotificationManagerCompat.from(service)
 
-    private val playAction  = createAction(service, PLAY_ACTION, playRequestCode, R.drawable.vec_play, "Play")
-    private val pauseAction = createAction(service, PAUSE_ACTION, pauseRequestCode, R.drawable.vec_pause, "Pause")
-    private val skipAction  = createAction(service, SKIP_ACTION, skipRequestCode, R.drawable.vec_skip, "Skip")
+    private val playAction  = createAction(service, PLAY_ACTION, playRequestCode, R.drawable.ic_play, "Play")
+    private val pauseAction = createAction(service, PAUSE_ACTION, pauseRequestCode, R.drawable.ic_pause, "Pause")
+    private val skipAction  = createAction(service, SKIP_ACTION, skipRequestCode, R.drawable.ic_fast_forward, "Skip")
     // private val stopAction = createAction(service, STOP_ACTION, stopRequestCode, R.drawable.vec_stop, "Stop")
 
     private val mediaStyle = MediaStyle()
@@ -45,7 +45,7 @@ class MediaNotificationManager(
     private val notificationBuilder = NotificationCompat.Builder(service, channelID).apply {
         setSilent(true)
         setStyle(mediaStyle)
-        setSmallIcon(R.drawable.vec_radio)
+        setSmallIcon(R.drawable.ic_radio)
 
         val sessionIntent = Intent(service, PlayerActivity::class.java)
         val pendingIntent: PendingIntent = TaskStackBuilder.create(service).run {

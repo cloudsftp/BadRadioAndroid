@@ -1,88 +1,123 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="#000000"
-    tools:context=".activity.AboutActivity">
+    android:layout_height="match_parent">
 
-    <androidx.cardview.widget.CardView
+    <include layout="@layout/toolbar" android:id="@+id/toolbar"/>
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/info_text"
         android:layout_width="match_parent"
-        android:layout_height="220dp"
-        android:layout_centerVertical="true"
-        android:layout_marginStart="40dp"
-        android:layout_marginEnd="40dp"
-        app:cardCornerRadius="9dp">
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/info_text_margin"
+        android:layout_marginEnd="@dimen/info_text_margin"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintBottom_toTopOf="@id/link_buttons_layout"
+        android:text="@string/info_text"
+        android:textSize="24sp"
+        android:fontFamily="@font/lato"/>
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/link_buttons_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintTop_toBottomOf="@id/info_text"
+        app:layout_constraintBottom_toTopOf="@id/info_layout"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent">
 
-            <ImageButton
-                android:id="@+id/btn_close"
-                android:layout_width="30dp"
-                android:layout_height="30dp"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="14dp"
-                app:srcCompat="@drawable/vec_close" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/website_button"
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/discord_button"
+            android:text="@string/website"/>
 
-            <TextView
-                android:id="@+id/textView10"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/textView9"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="15dp"
-                android:fontFamily="@font/lato"
-                android:text="Paul Grey"
-                android:textSize="16sp" />
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/discord_button"
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toRightOf="@id/website_button"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="@string/discord"/>
 
-            <TextView
-                android:id="@+id/textView8"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="30dp"
-                android:fontFamily="@font/nasalization"
-                android:text="badradio"
-                android:textColor="@android:color/black"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-            <TextView
-                android:id="@+id/textView9"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/lnr_layout"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="10dp"
-                android:fontFamily="@font/lato"
-                android:text="The Badradio Project"
-                android:textColor="@android:color/black"
-                android:textSize="18sp" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="80dp"
+        app:layout_constraintTop_toBottomOf="@id/link_buttons_layout"
+        app:layout_constraintBottom_toTopOf="@id/app_info_layout">
 
-            <LinearLayout
-                android:id="@+id/lnr_layout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/textView8"
-                android:layout_marginStart="14dp"
-                android:layout_marginTop="20dp"
-                android:layout_marginEnd="14dp"
-                android:orientation="horizontal">
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/project_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="@string/badradio_project"
+            android:textSize="24sp"/>
 
-                <Button
-                    android:id="@+id/btnWebsite"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="5dp"
-                    android:layout_weight="1"
-                    android:background="#000000"
-                    android:text="Website"
-                    android:textColor="@android:color/white" />
-            </LinearLayout>
-        </RelativeLayout>
-    </androidx.cardview.widget.CardView>
+        <com.google.android.material.textview.MaterialTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/project_text_view"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="@string/paul"
+            android:textSize="16sp"
+            android:textColor="@color/greyc"/>
 
-</RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/app_info_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        app:layout_constraintTop_toBottomOf="@id/info_layout"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <com.google.android.material.textview.MaterialTextView
+            android:id="@+id/app_version_text_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="@string/version_name"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/share_button"
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/app_version_text_view"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toLeftOf="@id/beta_button"
+            android:text="@string/share"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/beta_button"
+            android:layout_width="120dp"
+            android:layout_height="50dp"
+            android:layout_marginTop="10dp"
+            app:layout_constraintTop_toBottomOf="@id/app_version_text_view"
+            app:layout_constraintLeft_toRightOf="@id/share_button"
+            app:layout_constraintRight_toRightOf="parent"
+            android:text="@string/join_beta"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
