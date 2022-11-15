@@ -11,6 +11,9 @@ jobs:
   build:
     name: Build Application
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
     steps:
       - uses: actions/checkout@v3
 
@@ -35,7 +38,7 @@ jobs:
         
       - run: cp app/build/outputs/bundle/release/app-release.aab badradio.aab
 
-      - uses: softprops/action-gh-release@v1
+      - uses: ncipollo/release-action@v1
         if: startsWith(github.ref, 'refs/tags/')
         with:
-          files: badradio.aab
+          artifacts: badradio.aab
