@@ -74,6 +74,10 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
                 startActivity(intent)
                 true
             }
+            R.id.restart_service -> {
+                RadioVM.restartService(applicationContext)
+                true
+            }
             else -> super.onContextItemSelected(item)
         }
     }

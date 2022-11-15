@@ -19,6 +19,24 @@ object RadioManager: UserInputVMObserver {
             return
         }
 
+        startService(context, mediaSession)
+    }
+
+    private val serviceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(componentName: ComponentName, binder: IBinder) {
+            service = (binder as RadioService.RadioServiceBinder).service
+        }
+
+        override fun onServiceDisconnected(componentName: ComponentName) {
+            RadioVM.removeObserver(mediaNotificationManager!!)
+            mediaNotificationManager = null
+            service = null
+        }
+    }
+
+    // Service Controls
+
+    private fun startService(context: Context, mediaSession: MediaSessionCompat) {
         val intent = Intent(context, RadioService::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -36,17 +54,13 @@ object RadioManager: UserInputVMObserver {
         }
     }
 
-    private val serviceConnection: ServiceConnection = object : ServiceConnection {
-        override fun onServiceConnected(componentName: ComponentName, binder: IBinder) {
-            service = (binder as RadioService.RadioServiceBinder).service
-        }
+    fun restartService(context: Context, mediaSession: MediaSessionCompat) = executeWhenServiceBound {
+        service!!.stopSelf()
 
-        override fun onServiceDisconnected(componentName: ComponentName) {
-            RadioVM.removeObserver(mediaNotificationManager!!)
-            mediaNotificationManager = null
-            service = null
-        }
+        startService(context, mediaSession)
     }
+
+    // Music Controls
 
     override fun onPlay() = executeWhenServiceBound {
         service!!.onPlay()
@@ -65,6 +79,8 @@ object RadioManager: UserInputVMObserver {
     override fun onSkip() = executeWhenServiceBound {
         service!!.onSkip()
     }
+
+    // Helper
 
     private fun executeWhenServiceBound(r: Runnable) {
         if (service != null) {

@@ -101,6 +101,14 @@ object RadioVM: Player.Listener {
         initialized = true
     }
 
+    // Service Controls
+
+    fun restartService(context: Context) = runWhenInitialized {
+        RadioManager.restartService(context, mediaSession)
+    }
+
+    // Music Controls
+
     fun onPlayPause() = runWhenInitialized {
         if (!state.enableButtons) {
             return@runWhenInitialized
@@ -130,6 +138,8 @@ object RadioVM: Player.Listener {
 
         RadioManager.onSkip()
     }
+
+    // Player State Observation
 
     override fun onPlaybackStateChanged(playbackState: Int) = runWhenInitialized {
         state.enableButtons = playbackState != Player.STATE_BUFFERING
@@ -199,15 +209,14 @@ object RadioVM: Player.Listener {
         throw error
     }
 
+    // Media Browser
+
     fun loadRecentMediaItem(result: MediaBrowserServiceCompat.Result<MutableList<MediaBrowserCompat.MediaItem>>)
         = runWhenInitialized {
             result.sendResult(mutableListOf(mediaItem))
     }
 
-
-    /**
-     * Observers
-     */
+    // Observers
 
     private val observers: MutableList<RadioVMObserver> = mutableListOf()
     fun addObserver(o: RadioVMObserver) = observers.add(o)
@@ -215,9 +224,7 @@ object RadioVM: Player.Listener {
     fun requestState(o: RadioVMObserver) = o.onStateChange(state)
     private fun notifyObservers() = observers.forEach { requestState(it) }
 
-    /**
-     * Helper
-     */
+    // Helper
 
     private fun runWhenInitialized(r: Runnable) {
         if (initialized) {
