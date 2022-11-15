@@ -4,7 +4,19 @@
     <string name="default_song_name">24/7 Phonk Radio</string>
     <string name="default_artist">BADRADIO</string>
 
+    <string name="info">info</string>
+    <string name="info_text">New Zealand’s first and only radio station dedicated to underground phonk, hiphop, trap and chillout beats streaming 24/7</string>
+    <string name="badradio_project">The Badradio Project</string>
+    <string name="paul">Paul Grey</string>
 
+    <string name="website">website</string>
+    <string name="discord">discord</string>
+
+    <string name="version_name">Android App Version: %1$s</string>
+    <string name="share">share</string>
+    <string name="share_app_text">24/7 Phonk Radio https://play.google.com/store/apps/details?id=%1$s</string>
+    <string name="join_beta">join beta</string>
+    <string name="beta_link">https://play.google.com/apps/testing/%1$s</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 
@@ -41,7 +53,6 @@
     <string name="privacy_policy_url">https://freakapps.in/lovegodfm/privacy-policy/</string>
 
     <!--share text-->
-    <string name="share">Share</string>
     <string name="share_text">I Would like to share this with you. Here You Can Download This Application from PlayStore</string>
 
     <!--app about information-->

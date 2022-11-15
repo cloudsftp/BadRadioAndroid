@@ -1,13 +1,14 @@
 package nz.badradio.badradio.activity
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import nz.badradio.badradio.R
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import nz.badradio.badradio.radio.RadioManager
+import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import androidx.appcompat.app.AppCompatActivity
+import nz.badradio.badradio.R
 import nz.badradio.badradio.databinding.ActivityPlayerBinding
 import nz.badradio.badradio.radio_viewmodel.RadioVM
 import nz.badradio.badradio.radio_viewmodel.RadioVMObserver
@@ -24,16 +25,17 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
         binding = ActivityPlayerBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        setSupportActionBar(binding.toolbar.root)
+        binding.toolbar.root.apply {
+            setNavigationIcon(R.drawable.ic_info)
+            setNavigationOnClickListener { openAbout() }
+        }
+
         val ratio = resources.displayMetrics.heightPixels.toFloat() / resources.displayMetrics.widthPixels
         binding.imgAlbumArt.layoutParams.height = (
                 (ratio.coerceAtMost(2F) / 2)
                         * resources.displayMetrics.widthPixels
         ).toInt()
-
-        binding.imgAbout.setOnClickListener {
-            val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
-            startActivity(intent)
-        }
 
         binding.imgBtnPlay.setOnClickListener {
             RadioVM.onPlayPause()
@@ -60,15 +62,32 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
         RadioVM.removeObserver(this)
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.player_activity_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when (item.itemId) {
+            R.id.info -> {
+                val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
+                startActivity(intent)
+                true
+            }
+            else -> super.onContextItemSelected(item)
+        }
+    }
+
+
     override fun onStateChange(state: RadioVMState) {
         runOnUiThread {
             binding.imgBtnPlay.isEnabled = state.enableButtons
 
             binding.imgBtnPlay.setImageResource(
                 if (state.displayPause) {
-                    R.drawable.ic_pause_btn
+                    R.drawable.ic_pause
                 } else {
-                    R.drawable.ic_play_btn
+                    R.drawable.ic_play
                 }
             )
 
@@ -88,14 +107,8 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
         binding.imgAlbumArt.setImageBitmap(toDisplay)
     }
 
-    private fun shareApp(context: Context) {
-        val appPackageName = context.packageName
-        val sendIntent = Intent().apply {
-            action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, "Check out the App at: https://play.google.com/store/apps/details?id=$appPackageName")
-            type = "text/plain"
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK
-        }
-        context.startActivity(sendIntent)
+    private fun openAbout() {
+        val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
+        startActivity(intent)
     }
 }

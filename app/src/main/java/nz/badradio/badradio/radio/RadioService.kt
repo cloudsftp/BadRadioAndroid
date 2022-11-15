@@ -32,11 +32,10 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
         )
     }
 
-    private val preBufferMs = 6_000
     private val loadControl = DefaultLoadControl.Builder().apply {
         setBufferDurationsMs(
             20_000, 120_000,
-            preBufferMs, preBufferMs
+            5_000, 2_000
         )
     }.build()
 
