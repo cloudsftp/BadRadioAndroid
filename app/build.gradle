@@ -8,8 +8,8 @@ android {
         applicationId "nz.badradio.badradio"
         minSdkVersion 23
         targetSdkVersion 33
-        versionCode 307
-        versionName "3.0.0-beta3"
+        versionCode 308
+        versionName "3.0.0-beta3-patch0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     signingConfigs {
@@ -63,7 +63,4 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
-}
-repositories {
-    mavenCentral()
 }

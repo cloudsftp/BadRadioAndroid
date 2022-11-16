@@ -1,10 +1,10 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">badradio</string>
 
     <string name="default_song_name">24/7 Phonk Radio</string>
     <string name="default_artist">BADRADIO</string>
 
-    <string name="info">info</string>
+    <string name="info">Info</string>
     <string name="info_text">New Zealand’s first and only radio station dedicated to underground phonk, hiphop, trap and chillout beats streaming 24/7</string>
     <string name="badradio_project">The Badradio Project</string>
     <string name="paul">Paul Grey</string>
@@ -17,6 +17,14 @@
     <string name="share_app_text">24/7 Phonk Radio https://play.google.com/store/apps/details?id=%1$s</string>
     <string name="join_beta">join beta</string>
     <string name="beta_link">https://play.google.com/apps/testing/%1$s</string>
+    <string name="beta_feedback">Please send bugs and improvements on discord</string>
+
+    <string name="restart_service">Restart Service</string>
+    <string name="stop_service">Stop Service</string>
+    <string name="initializing_service" tools:ignore="TypographyEllipsis">Initializing Service...</string>
+    <string name="service_stopped">Service Stopped\nPlease Restart</string>
+
+    <string name="loading" tools:ignore="TypographyEllipsis">Loading...</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 

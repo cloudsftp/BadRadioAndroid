@@ -12,7 +12,6 @@ import nz.badradio.badradio.databinding.ActivityAboutBinding
 class AboutActivity : AppCompatActivity() {
     private val radioWebsite    = "https://badradio.nz"
     private val badradioDiscord = "https://discord.gg/sY87mUcyYD"
-    private val badradioBeta    = ""
 
     private lateinit var binding: ActivityAboutBinding
 
