@@ -11,4 +11,5 @@
 
     app:titleCentered="true"
     app:titleTextAppearance="@style/TitleAppearance"
-    android:theme="@style/ToolbarTheme"/>
+    android:theme="@style/ToolbarTheme"
+    app:popupTheme="@style/Theme.AppCompat.DayNight"/>
