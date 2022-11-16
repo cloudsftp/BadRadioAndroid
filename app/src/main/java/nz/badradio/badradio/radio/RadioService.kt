@@ -14,6 +14,8 @@ import nz.badradio.badradio.radio_viewmodel.RadioVM
 import nz.badradio.badradio.radio_viewmodel.UserInputVMObserver
 import nz.badradio.badradio.station.StationInfo
 import nz.badradio.badradio.station.getStationInfo
+import nz.badradio.badradio.utilities.generateFunExecuteIf
+import nz.badradio.badradio.utilities.generateFunExecuteWhen
 import java.lang.Runnable
 
 class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
@@ -55,7 +57,7 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
             setLoadControl(loadControl)
         }.build()
 
-        runWhenPlayerInitialized { // for main loop
+        Handler(Looper.getMainLooper()).post {
             mediaPlayer.apply {
                 setMediaItem(MediaItem.fromUri(Uri.parse(stationInfo.streamURL)))
                 addListener(RadioVM)
@@ -122,21 +124,7 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
 
     // Helpers
 
-    private fun runWhenPlayerInitialized(r: Runnable) {
-        Handler(Looper.getMainLooper()).post {
-            runWhenPlayerInitializedInternal(r)
-        }
-    }
-
-    private fun runWhenPlayerInitializedInternal(r: Runnable) {
-        if (::mediaPlayer.isInitialized) {
-            r.run()
-        } else {
-            Handler(Looper.getMainLooper()).postDelayed({
-                runWhenPlayerInitialized(r)
-            }, 100)
-        }
-    }
+    private val runWhenPlayerInitialized = generateFunExecuteWhen { ::mediaPlayer.isInitialized }
 }
 
 private const val BADRADIO_EMPTY_BROWSER_ROOT = "nz.badradio.badradio.radio.BADRADIO_EMPTY_BROWSER_ROOT"

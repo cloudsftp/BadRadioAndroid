@@ -24,6 +24,8 @@ import nz.badradio.badradio.R
 import nz.badradio.badradio.metadata.SongMetadata
 import nz.badradio.badradio.metadata.art.getAlbumArt
 import nz.badradio.badradio.radio.RadioManager
+import nz.badradio.badradio.utilities.generateFunExecuteIf
+import nz.badradio.badradio.utilities.generateFunExecuteWhen
 import java.util.concurrent.atomic.AtomicBoolean
 
 object RadioVM: Player.Listener {
@@ -249,21 +251,9 @@ object RadioVM: Player.Listener {
 
     // Helpers
 
-    private fun runIfInitialized(r: Runnable) {
-        if (initialized) {
-            r.run()
-        }
-    }
+    private val runIfInitialized = generateFunExecuteIf { initialized }
+    private val runWhenInitialized = generateFunExecuteWhen { initialized }
 
-    private fun runWhenInitialized(r: Runnable) {
-        if (initialized) {
-            r.run()
-        } else {
-            Handler(Looper.getMainLooper()).postDelayed({
-                runWhenInitialized(r)
-            }, 100)
-        }
-    }
 }
 
 private const val BADRADIO_MEDIA_ID = "nz.badradio.badradio.radio_viewmodel.MEDIA_ID"
