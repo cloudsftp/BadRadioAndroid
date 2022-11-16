@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">badradio</string>
 
     <string name="default_song_name">24/7 Phonk Radio</string>
@@ -20,7 +20,10 @@
 
     <string name="restart_service">Restart Service</string>
     <string name="stop_service">Stop Service</string>
+    <string name="initializing_service" tools:ignore="TypographyEllipsis">Initializing Service...</string>
     <string name="service_stopped">Service Stopped\nPlease Restart</string>
+
+    <string name="loading" tools:ignore="TypographyEllipsis">Loading...</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 
