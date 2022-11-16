@@ -119,7 +119,7 @@ object RadioVM: Player.Listener {
         state.apply {
             displayPause = false
             enableButtons = true
-            title = resources.getString(R.string.default_song_name)
+            title = resources.getString(R.string.service_stopped)
             artist = resources.getString(R.string.default_artist)
             art = defaultAlbumArt
             notificationArt = defaultNotificationAlbumArt

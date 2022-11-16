@@ -20,6 +20,7 @@
 
     <string name="restart_service">Restart Service</string>
     <string name="stop_service">Stop Service</string>
+    <string name="service_stopped">Service Stopped\nPlease Restart</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 
