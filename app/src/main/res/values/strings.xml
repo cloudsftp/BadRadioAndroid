@@ -17,6 +17,7 @@
     <string name="share_app_text">24/7 Phonk Radio https://play.google.com/store/apps/details?id=%1$s</string>
     <string name="join_beta">join beta</string>
     <string name="beta_link">https://play.google.com/apps/testing/%1$s</string>
+    <string name="beta_feedback">Please send bugs and improvements on discord</string>
 
     <string name="restart_service">Restart Service</string>
     <string name="stop_service">Stop Service</string>
