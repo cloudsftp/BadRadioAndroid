@@ -19,6 +19,7 @@
     <string name="beta_link">https://play.google.com/apps/testing/%1$s</string>
 
     <string name="restart_service">Restart Service</string>
+    <string name="stop_service">Stop Service</string>
 
     <!-- TODO: Remove or change this placeholder text -->
 

@@ -68,20 +68,15 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        return when (item.itemId) {
-            R.id.info -> {
-                val intent = Intent(this@PlayerActivity, AboutActivity::class.java)
-                startActivity(intent)
-                true
-            }
-            R.id.restart_service -> {
-                RadioVM.restartService(applicationContext)
-                true
-            }
-            else -> super.onContextItemSelected(item)
+        when (item.itemId) {
+            R.id.info               -> openAbout()
+            R.id.restart_service    -> RadioVM.restartService(applicationContext)
+            R.id.stop_service       -> RadioVM.stopService()
+            else                    -> super.onContextItemSelected(item)
         }
-    }
 
+        return true
+    }
 
     override fun onStateChange(state: RadioVMState) {
         runOnUiThread {

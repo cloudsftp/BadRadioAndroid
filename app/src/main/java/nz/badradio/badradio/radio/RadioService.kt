@@ -65,6 +65,11 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
         }
     }
 
+    override fun onDestroy() = runWhenPlayerInitialized {
+        mediaPlayer.removeListener(RadioVM)
+        mediaPlayer.release()
+    }
+
     // Binding Service
 
     inner class RadioServiceBinder : Binder() {
