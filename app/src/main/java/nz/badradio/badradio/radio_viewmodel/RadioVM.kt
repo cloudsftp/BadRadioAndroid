@@ -24,11 +24,23 @@ import nz.badradio.badradio.R
 import nz.badradio.badradio.metadata.SongMetadata
 import nz.badradio.badradio.metadata.art.getAlbumArt
 import nz.badradio.badradio.radio.RadioManager
+import nz.badradio.badradio.utilities.generateFunExecuteIf
+import nz.badradio.badradio.utilities.generateFunExecuteWhen
 import java.util.concurrent.atomic.AtomicBoolean
 
 object RadioVM: Player.Listener {
     private lateinit var resources: Resources
     private lateinit var state: RadioVMState
+    private fun defaultState() {
+        state = RadioVMState(
+            displayPause = false,
+            enableButtons = true,
+            title = resources.getString(R.string.initializing_service),
+            artist = resources.getString(R.string.default_artist),
+            art = defaultAlbumArt,
+            notificationArt = defaultNotificationAlbumArt,
+        )
+    }
 
     private lateinit var playBackStateBuilder: PlaybackStateCompat.Builder
     private lateinit var mediaSession: MediaSessionCompat
@@ -71,14 +83,7 @@ object RadioVM: Player.Listener {
         defaultAlbumArt = BitmapFactory.decodeResource(resources, R.drawable.badradio)
         defaultNotificationAlbumArt = BitmapFactory.decodeResource(resources, defaultNotificationAlbumArtRes)
 
-        state = RadioVMState(
-            displayPause = false,
-            enableButtons = true,
-            title = resources.getString(R.string.initializing_service),
-            artist = resources.getString(R.string.default_artist),
-            art = defaultAlbumArt,
-            notificationArt = defaultNotificationAlbumArt,
-        )
+        defaultState()
         actualTitle = resources.getString(R.string.default_song_name)
 
         mediaDescriptionBuilder = MediaDescriptionCompat.Builder().apply {
@@ -114,19 +119,18 @@ object RadioVM: Player.Listener {
 
     fun restartService(context: Context) = runIfInitialized {
         RadioManager.restartService(context, mediaSession)
+
+        defaultState()
+        state.title = resources.getString(R.string.restarting_service)
+
+        notifyObservers()
     }
 
     fun stopService() = runIfInitialized {
         RadioManager.stopService()
 
-        state.apply {
-            displayPause = false
-            enableButtons = true
-            title = resources.getString(R.string.service_stopped)
-            artist = resources.getString(R.string.default_artist)
-            art = defaultAlbumArt
-            notificationArt = defaultNotificationAlbumArt
-        }
+        defaultState()
+        state.title = resources.getString(R.string.service_stopped)
 
         notifyObservers()
     }
@@ -144,16 +148,6 @@ object RadioVM: Player.Listener {
             RadioManager.onPlay()
         }
     }
-
-    /*
-    fun onStop() = runWhenInitialized {
-        if (!state.enableButtons) {
-            return@runWhenInitialized
-        }
-
-        RadioManager.onStop()
-    }
-    */
 
     fun onSkip() = runWhenInitialized {
         if (!state.enableButtons) {
@@ -257,21 +251,9 @@ object RadioVM: Player.Listener {
 
     // Helpers
 
-    private fun runIfInitialized(r: Runnable) {
-        if (initialized) {
-            r.run()
-        }
-    }
+    private val runIfInitialized = generateFunExecuteIf { initialized }
+    private val runWhenInitialized = generateFunExecuteWhen { initialized }
 
-    private fun runWhenInitialized(r: Runnable) {
-        if (initialized) {
-            r.run()
-        } else {
-            Handler(Looper.getMainLooper()).postDelayed({
-                runWhenInitialized(r)
-            }, 100)
-        }
-    }
 }
 
 private const val BADRADIO_MEDIA_ID = "nz.badradio.badradio.radio_viewmodel.MEDIA_ID"

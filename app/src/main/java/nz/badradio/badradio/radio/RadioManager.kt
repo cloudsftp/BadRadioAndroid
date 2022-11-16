@@ -10,6 +10,8 @@ import nz.badradio.badradio.metadata.art.soundcloudSearchResultAdapter
 import nz.badradio.badradio.notification.MediaNotificationManager
 import nz.badradio.badradio.radio_viewmodel.RadioVM
 import nz.badradio.badradio.radio_viewmodel.UserInputVMObserver
+import nz.badradio.badradio.utilities.generateFunExecuteIf
+import nz.badradio.badradio.utilities.generateFunExecuteWhen
 import java.util.concurrent.atomic.AtomicBoolean
 
 object RadioManager: UserInputVMObserver {
@@ -41,7 +43,9 @@ object RadioManager: UserInputVMObserver {
 
     fun restartService(context: Context, mediaSession: MediaSessionCompat) {
         stopService()
-        startService(context, mediaSession)
+        runWhenServiceUnbound {
+            startService(context, mediaSession)
+        }
     }
 
     fun stopService() = runIfServiceBound {
@@ -95,20 +99,7 @@ object RadioManager: UserInputVMObserver {
 
     // Helpers
 
-    private fun runIfServiceBound(r: Runnable) {
-        if (service != null) {
-            r.run()
-        }
-    }
-
-    private fun runWhenServiceBound(r: Runnable) {
-        if (service != null) {
-            r.run()
-        } else {
-            Handler(Looper.getMainLooper()).postDelayed({
-                runWhenServiceBound(r)
-            }, 100)
-        }
-    }
-
+    private val runIfServiceBound = generateFunExecuteIf { service != null }
+    private val runWhenServiceBound = generateFunExecuteWhen { service != null }
+    private val runWhenServiceUnbound = generateFunExecuteWhen { service == null }
 }
