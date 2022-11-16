@@ -41,7 +41,9 @@ object RadioManager: UserInputVMObserver {
 
     fun restartService(context: Context, mediaSession: MediaSessionCompat) {
         stopService()
-        startService(context, mediaSession)
+        runWhenServiceUnbound {
+            startService(context, mediaSession)
+        }
     }
 
     fun stopService() = runIfServiceBound {
@@ -111,4 +113,13 @@ object RadioManager: UserInputVMObserver {
         }
     }
 
+    private fun runWhenServiceUnbound(r: Runnable) {
+        if (service == null) {
+            r.run()
+        } else {
+            Handler(Looper.getMainLooper()).postDelayed({
+                runWhenServiceUnbound(r)
+            }, 100)
+        }
+    }
 }
