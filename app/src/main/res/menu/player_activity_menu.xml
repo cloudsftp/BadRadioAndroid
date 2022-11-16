@@ -4,4 +4,10 @@
         android:id="@+id/info"
         android:title="@string/info"
         android:icon="@drawable/ic_info"/>
+    <item
+        android:id="@+id/restart_service"
+        android:title="@string/restart_service"/>
+    <item
+        android:id="@+id/stop_service"
+        android:title="@string/stop_service"/>
 </menu>

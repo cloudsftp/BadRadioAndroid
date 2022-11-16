@@ -24,6 +24,7 @@ import nz.badradio.badradio.R
 import nz.badradio.badradio.metadata.SongMetadata
 import nz.badradio.badradio.metadata.art.getAlbumArt
 import nz.badradio.badradio.radio.RadioManager
+import java.util.concurrent.atomic.AtomicBoolean
 
 object RadioVM: Player.Listener {
     private lateinit var resources: Resources
@@ -33,8 +34,8 @@ object RadioVM: Player.Listener {
     private lateinit var mediaSession: MediaSessionCompat
     private val mediaSessionCallback: MediaSessionCompat.Callback =
         object : MediaSessionCompat.Callback() {
-            override fun onPlay() = this@RadioVM.onPlayPause()
-            override fun onPause() = this@RadioVM.onPlayPause()
+            override fun onPlay()       = this@RadioVM.onPlayPause()
+            override fun onPause()      = this@RadioVM.onPlayPause()
             override fun onSkipToNext() = this@RadioVM.onSkip()
         }
 
@@ -50,12 +51,16 @@ object RadioVM: Player.Listener {
             R.drawable.badradio
         }
 
+    private var initializing = AtomicBoolean(false)
     private var initialized = false
 
     private val metadataBuilder = MediaMetadataCompat.Builder()
 
     fun initialize(context: Context) {
-        if (initialized) {
+        if (
+            initialized
+        || !initializing.compareAndSet(false, true)
+        ) {
             return
         }
 
@@ -99,7 +104,31 @@ object RadioVM: Player.Listener {
         RadioManager.initialize(context, mediaSession)
 
         initialized = true
+        initializing.set(false)
     }
+
+    // Service Controls
+
+    fun restartService(context: Context) = runIfInitialized {
+        RadioManager.restartService(context, mediaSession)
+    }
+
+    fun stopService() = runIfInitialized {
+        RadioManager.stopService()
+
+        state.apply {
+            displayPause = false
+            enableButtons = true
+            title = resources.getString(R.string.service_stopped)
+            artist = resources.getString(R.string.default_artist)
+            art = defaultAlbumArt
+            notificationArt = defaultNotificationAlbumArt
+        }
+
+        notifyObservers()
+    }
+
+    // Music Controls
 
     fun onPlayPause() = runWhenInitialized {
         if (!state.enableButtons) {
@@ -130,6 +159,8 @@ object RadioVM: Player.Listener {
 
         RadioManager.onSkip()
     }
+
+    // Player State Observation
 
     override fun onPlaybackStateChanged(playbackState: Int) = runWhenInitialized {
         state.enableButtons = playbackState != Player.STATE_BUFFERING
@@ -199,15 +230,14 @@ object RadioVM: Player.Listener {
         throw error
     }
 
+    // Media Browser
+
     fun loadRecentMediaItem(result: MediaBrowserServiceCompat.Result<MutableList<MediaBrowserCompat.MediaItem>>)
         = runWhenInitialized {
             result.sendResult(mutableListOf(mediaItem))
     }
 
-
-    /**
-     * Observers
-     */
+    // Observers
 
     private val observers: MutableList<RadioVMObserver> = mutableListOf()
     fun addObserver(o: RadioVMObserver) = observers.add(o)
@@ -215,9 +245,13 @@ object RadioVM: Player.Listener {
     fun requestState(o: RadioVMObserver) = o.onStateChange(state)
     private fun notifyObservers() = observers.forEach { requestState(it) }
 
-    /**
-     * Helper
-     */
+    // Helpers
+
+    private fun runIfInitialized(r: Runnable) {
+        if (initialized) {
+            r.run()
+        }
+    }
 
     private fun runWhenInitialized(r: Runnable) {
         if (initialized) {
