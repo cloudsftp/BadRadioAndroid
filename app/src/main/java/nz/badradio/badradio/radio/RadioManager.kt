@@ -3,10 +3,7 @@ package nz.badradio.badradio.radio
 import android.os.IBinder
 import android.content.*
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.support.v4.media.session.MediaSessionCompat
-import nz.badradio.badradio.metadata.art.soundcloudSearchResultAdapter
 import nz.badradio.badradio.notification.MediaNotificationManager
 import nz.badradio.badradio.radio_viewmodel.RadioVM
 import nz.badradio.badradio.radio_viewmodel.UserInputVMObserver

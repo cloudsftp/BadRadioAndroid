@@ -45,6 +45,7 @@ interface IAlbumArtGetter {
 
 private const val TAG = "AlbumArtGetter"
 
+/*
 fun songMatchesMetadata(song: SoundcloudSong, songMetadata: SongMetadata): Boolean {
     val title = song.title.lowercase()
 
@@ -57,3 +58,4 @@ fun songMatchesMetadata(song: SoundcloudSong, songMetadata: SongMetadata): Boole
 
     return title.contains(mtitle)
 }
+*/

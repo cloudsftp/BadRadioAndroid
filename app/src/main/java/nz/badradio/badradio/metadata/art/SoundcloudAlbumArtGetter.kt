@@ -2,8 +2,6 @@ package nz.badradio.badradio.metadata.art
 
 import nz.badradio.badradio.metadata.SongMetadata
 import nz.badradio.badradio.utilities.executeRequestAndCheckResponse
-import nz.badradio.badradio.utilities.moshi
-import com.squareup.moshi.JsonAdapter
 import okhttp3.Request
 import java.io.IOException
 import java.net.URLEncoder
@@ -15,20 +13,18 @@ import java.net.URLEncoder
  */
 object SoundcloudAlbumArtGetter : IAlbumArtGetter {
 
-    // search query: https://api-v2.soundcloud.com/search/tracks?q=title&client_id=ZzQw5OLejAQys1cYAUI2nUbLtZbBe5Lg
+    // search query (old api-v2): https://api-v2.soundcloud.com/search/tracks?q=title&client_id=ZzQw5OLejAQys1cYAUI2nUbLtZbBe5Lg
+    // search query: https://soundcloud.com/search/sounds?q=come%20and%20see%20cassyb
 
-    private const val hostname = "api-v2.soundcloud.com"
-    private const val searchEndpoint = "search/tracks"
-
-    private const val clientID = "ZzQw5OLejAQys1cYAUI2nUbLtZbBe5Lg"
-    private const val numSearchResults = 1
+    private const val urlBase = "https://soundcloud.com"
+    private const val searchEndpoint = "search/sounds"
 
     @Throws(IOException::class)
     override fun getImageURL(songMetadata: SongMetadata): String {
         val songURL = getSongURL(songMetadata)
         val songPageRequest = Request.Builder().url(songURL).build()
 
-        val response = executeRequestAndCheckResponse(songPageRequest, "Song page request (sc api-v2)")
+        val response = executeRequestAndCheckResponse(songPageRequest, "Song page request (sc html)")
 
         return getImageURLFromSongPage(response.body!!.string())
     }
@@ -38,7 +34,7 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
         val searchURL = buildSearchURL(songMetadata)
         val searchRequest = Request.Builder().url(searchURL).build()
 
-        val response = executeRequestAndCheckResponse(searchRequest, "Search request (sc api-v2)")
+        val response = executeRequestAndCheckResponse(searchRequest, "Search request (sc html)")
 
         return getSongURLFromSearchResult(songMetadata, response.body!!.string())
     }
@@ -51,62 +47,29 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
             "${songMetadata.artist} ${songMetadata.title}",
             "UTF-8"
         )
-        return "https://$hostname/$searchEndpoint?" +
-                "q=$searchTerm&" +
-                "client_id=$clientID&" +
-                "limit=$numSearchResults"
+        return "$urlBase/$searchEndpoint?q=$searchTerm"
     }
 
     @Throws(IOException::class)
     fun getSongURLFromSearchResult(songMetadata: SongMetadata, result: String): String {
-        val searchResults = soundcloudSearchResultAdapter.fromJson(result)
-            ?: throw IOException("Could not parse search results from Soundcloud api-v2")
+        val songUrlPattern = Regex(".*<li><h2><a href=\"([^\"]+)\">([^<]+.*)")
+        val songUrlSuffix = firstMatch(result, songUrlPattern).groupValues[1]
+        return "$urlBase$songUrlSuffix"
 
-        if (searchResults.collection.isEmpty()) {
-            throw IOException("Empty search results")
-        }
-
-        val firstSong = searchResults.collection[0]
-        if (!songMatchesMetadata(firstSong, songMetadata)) {
-            throw IOException("Song $firstSong does not match metadata $songMetadata")
-        }
-
-        return firstSong.permalink_url
     }
 
     @Throws(IOException::class)
     fun getImageURLFromSongPage(songPage: String): String {
-        val imageURLRegex = Regex(".*<img src=\"([^\"]*)\".*")
+        val imageUrlPattern = Regex(".*<img src=\"([^\"]*)\".*")
+        return firstMatch(songPage, imageUrlPattern).groupValues[1]
+    }
 
-        songPage.split('\n').forEach { line ->
-            val imageURLMatch = imageURLRegex.matchEntire(line)
-                ?: return@forEach
-
-            return imageURLMatch.groupValues[1]
+    @Throws(IOException::class)
+    fun firstMatch(text: String, regex: Regex): MatchResult {
+        text.split('\n').forEach {
+            return regex.matchEntire(it) ?: return@forEach
         }
 
-        throw IOException("Could not find image in Soundcloud song page.")
+        throw IOException("No match found")
     }
 }
-
-data class SoundcloudSearchResults(
-    val collection: List<SoundcloudSong>,
-    val total_results: Int,
-    val query_urn: String,
-)
-
-// Only necessary fields
-data class SoundcloudSong(
-    val id: Int,
-    val kind: String,
-    val permalink_url: String,
-    val title: String,
-    val user: SoundcloudUser,
-)
-
-// Only necessary fields
-data class SoundcloudUser(
-    val username: String,
-)
-
-val soundcloudSearchResultAdapter: JsonAdapter<SoundcloudSearchResults> = moshi.adapter(SoundcloudSearchResults::class.java)
