@@ -17,7 +17,7 @@ class SoundcloudAlbumGetterTests {
 
     @Test
     fun testGetImageURLFromSongPage() {
-        val url = SoundcloudAlbumArtGetter.getImageURLFromSongPage(
+        val url = SoundcloudAlbumArtGetter.getImageUrlFromSongPage(
             comeAndSeeSongPage
         )
         assert(url == "https://i1.sndcdn.com/artworks-tOmHVP9GnI66ky4d-8ZWV8w-t500x500.jpg") {

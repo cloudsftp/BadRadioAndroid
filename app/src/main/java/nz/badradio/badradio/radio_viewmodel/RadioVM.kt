@@ -5,8 +5,6 @@ import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
-import android.os.Handler
-import android.os.Looper
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
@@ -22,7 +20,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import nz.badradio.badradio.R
 import nz.badradio.badradio.metadata.SongMetadata
-import nz.badradio.badradio.metadata.art.getAlbumArt
+import nz.badradio.badradio.metadata.art.StreamingServiceCrawler
 import nz.badradio.badradio.radio.RadioManager
 import nz.badradio.badradio.utilities.generateFunExecuteIf
 import nz.badradio.badradio.utilities.generateFunExecuteWhen
@@ -206,7 +204,11 @@ object RadioVM: Player.Listener {
             state.artist = metadata.artist
 
             GlobalScope.launch { // synchronous network in this function
-                val loadedArt = getAlbumArt(metadata)
+                val albumArtGetter = StreamingServiceCrawler()
+
+                albumArtGetter.search(metadata)
+
+                val loadedArt = albumArtGetter.getAlbumArt()
                 state.art = loadedArt ?: defaultAlbumArt
                 state.notificationArt = loadedArt ?: defaultNotificationAlbumArt
 
