@@ -51,7 +51,14 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
     @Throws(IOException::class)
     fun getSongURLFromSearchResult(songMetadata: SongMetadata, result: String): String {
         val songUrlPattern = Regex(".*<li><h2><a href=\"([^\"]+)\">([^<]+.*)")
-        val songUrlSuffix = firstMatch(result, songUrlPattern).groupValues[1]
+        val match = firstMatch(result, songUrlPattern)
+
+        val songTitle = match.groupValues[2]
+        if (!songTitleMatches(songTitle, songMetadata)) {
+            throw IOException("Song title $songTitle does not match metadata $songMetadata")
+        }
+
+        val songUrlSuffix = match.groupValues[1]
         return "$urlBase$songUrlSuffix"
     }
 

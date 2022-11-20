@@ -5,14 +5,9 @@ import org.junit.Test
 
 class AlbumArtGetterTests {
 
-    /*
     private fun runSongMatchesMetadata(songTitle: String, metadataTitle: String): Boolean {
-        val song = SoundcloudSong(
-            0, "track", "some_link", songTitle,
-            SoundcloudUser("username")
-        )
         val metadata = SongMetadata(metadataTitle, "username")
-        return songMatchesMetadata(song, metadata)
+        return songTitleMatches(songTitle, metadata)
     }
 
     @Test
@@ -23,6 +18,5 @@ class AlbumArtGetterTests {
         assert(runSongMatchesMetadata("thissong", "thissong w/ collaborator"))
         assert(runSongMatchesMetadata("thissong", "thissong (feat. collaborator)"))
     }
-    */
-    
+
 }

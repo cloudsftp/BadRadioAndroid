@@ -51,17 +51,15 @@ interface IAlbumArtGetter {
 
 private const val TAG = "AlbumArtGetter"
 
-/*
-fun songMatchesMetadata(song: SoundcloudSong, songMetadata: SongMetadata): Boolean {
-    val title = song.title.lowercase()
+fun songTitleMatches(songTitle: String, songMetadata: SongMetadata): Boolean {
+    val title = songTitle.lowercase()
 
-    var mtitle = songMetadata.title.lowercase()
-    val mtitleRegex = Regex("(.*) (w/|\\().*")
-    val mtitleMatch = mtitleRegex.matchEntire(mtitle)
-    if (mtitleMatch != null) {
-        mtitle = mtitleMatch.groupValues[1]
+    var mTitle = songMetadata.title.lowercase()
+    val mTitleRegex = Regex("(.*)(w/|\\().*")
+    val mTitleMatch = mTitleRegex.matchEntire(mTitle)
+    if (mTitleMatch != null) {
+        mTitle = mTitleMatch.groupValues[1].trim()
     }
 
-    return title.contains(mtitle)
+    return title.contains(mTitle)
 }
-*/
