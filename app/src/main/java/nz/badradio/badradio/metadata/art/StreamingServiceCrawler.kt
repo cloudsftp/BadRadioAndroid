@@ -54,8 +54,14 @@ private const val TAG = "AlbumArtGetter"
 fun songTitleMatches(songTitle: String, songMetadata: SongMetadata): Boolean {
     val title = songTitle.lowercase()
 
-    var mTitle = songMetadata.title.lowercase()
-    val mTitleRegex = Regex("(.*)(w/|\\().*")
+    var mTitle = songMetadata.title
+        .lowercase()
+        .replace("(", "")
+        .replace(")", "")
+        .replace("[", "")
+        .replace("]", "")
+
+    val mTitleRegex = Regex("(.*)(feat|w/).*")
     val mTitleMatch = mTitleRegex.matchEntire(mTitle)
     if (mTitleMatch != null) {
         mTitle = mTitleMatch.groupValues[1].trim()

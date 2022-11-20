@@ -17,6 +17,7 @@ class AlbumArtGetterTests {
         assert(runSongMatchesMetadata("thissong w/ collaborator", "thissong"))
         assert(runSongMatchesMetadata("thissong", "thissong w/ collaborator"))
         assert(runSongMatchesMetadata("thissong", "thissong (feat. collaborator)"))
+        assert(runSongMatchesMetadata("thissong", "thissong feat. collaborator"))
     }
 
 }
