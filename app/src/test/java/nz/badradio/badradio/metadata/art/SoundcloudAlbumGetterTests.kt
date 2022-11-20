@@ -7,11 +7,17 @@ class SoundcloudAlbumGetterTests {
 
     @Test
     fun testGetImageUrl() {
-        val url = SoundcloudAlbumArtGetter.getImageURL(
+        var albumArtUrl: String? = null
+
+        SoundcloudAlbumArtGetter.search(
+            object : IStreamingServiceDataObserver {
+                override fun notifyOfAlbumArtUrl(url: String) { albumArtUrl = url }
+                override fun notifyOfSoundcloudUrl(url: String) { }
+            },
             SongMetadata("come and see", "cassyb, north posse")
         )
-        assert(url == "https://i1.sndcdn.com/artworks-tOmHVP9GnI66ky4d-8ZWV8w-t500x500.jpg") {
-            println("was $url")
+        assert(albumArtUrl == "https://i1.sndcdn.com/artworks-tOmHVP9GnI66ky4d-8ZWV8w-t500x500.jpg") {
+            println("was $albumArtUrl")
         }
     }
 
@@ -27,11 +33,15 @@ class SoundcloudAlbumGetterTests {
 
     @Test
     fun testGetSongUrl() {
-        val url = SoundcloudAlbumArtGetter.getSongURL(
+        val songUrl = SoundcloudAlbumArtGetter.getSongURL(
+            object: IStreamingServiceDataObserver {
+                override fun notifyOfAlbumArtUrl(url: String) { }
+                override fun notifyOfSoundcloudUrl(url: String) { }
+            },
             SongMetadata("come and see", "cassyb, north posse")
         )
-        assert(url == "https://soundcloud.com/xxcassyb/come-and-see") {
-            println("was $url")
+        assert(songUrl == "https://soundcloud.com/xxcassyb/come-and-see") {
+            println("was $songUrl")
         }
     }
 

@@ -6,7 +6,7 @@ import nz.badradio.badradio.metadata.SongMetadata
 import com.squareup.picasso.Picasso
 import java.io.IOException
 
-class StreamingServiceCrawler {
+class StreamingServiceCrawler : IStreamingServiceDataObserver {
     private val crawlers = listOf<IAlbumArtGetter>(
         SoundcloudAlbumArtGetter
     )
@@ -26,8 +26,8 @@ class StreamingServiceCrawler {
         }
     }
 
-    fun notifyOfAlbumArtUrl(url: String) = albumArtUrls.add(url)
-    fun notifySoundcloudUrl(url: String) = run { soundcloudUrl = url }
+    override fun notifyOfAlbumArtUrl(url: String) { albumArtUrls.add(url) }
+    override fun notifyOfSoundcloudUrl(url: String) = run { soundcloudUrl = url }
     // fun notifyBandcampUrl(url: String) = run { bandcampUrl = url }
 
     fun getAlbumArt(): Bitmap? {
@@ -39,24 +39,33 @@ class StreamingServiceCrawler {
     }
 }
 
+interface IStreamingServiceDataObserver {
+    fun notifyOfAlbumArtUrl(url: String)
+    fun notifyOfSoundcloudUrl(url: String)
+}
+
 interface IAlbumArtGetter {
     @Throws(IOException::class)
-    fun search(parent: StreamingServiceCrawler,songMetadata: SongMetadata)
+    fun search(parent: IStreamingServiceDataObserver,songMetadata: SongMetadata)
 }
 
 private const val TAG = "AlbumArtGetter"
 
-/*
-fun songMatchesMetadata(song: SoundcloudSong, songMetadata: SongMetadata): Boolean {
-    val title = song.title.lowercase()
+fun songTitleMatches(songTitle: String, songMetadata: SongMetadata): Boolean {
+    val title = songTitle.lowercase()
 
-    var mtitle = songMetadata.title.lowercase()
-    val mtitleRegex = Regex("(.*) (w/|\\().*")
-    val mtitleMatch = mtitleRegex.matchEntire(mtitle)
-    if (mtitleMatch != null) {
-        mtitle = mtitleMatch.groupValues[1]
+    var mTitle = songMetadata.title
+        .lowercase()
+        .replace("(", "")
+        .replace(")", "")
+        .replace("[", "")
+        .replace("]", "")
+
+    val mTitleRegex = Regex("(.*)(feat|w/).*")
+    val mTitleMatch = mTitleRegex.matchEntire(mTitle)
+    if (mTitleMatch != null) {
+        mTitle = mTitleMatch.groupValues[1].trim()
     }
 
-    return title.contains(mtitle)
+    return title.contains(mTitle)
 }
-*/

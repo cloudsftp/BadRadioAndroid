@@ -2,6 +2,7 @@ package nz.badradio.badradio.metadata.art
 
 import nz.badradio.badradio.metadata.SongMetadata
 import nz.badradio.badradio.utilities.executeRequestAndCheckResponse
+import nz.badradio.badradio.utilities.firstMatch
 import okhttp3.Request
 import java.io.IOException
 import java.net.URLEncoder
@@ -14,7 +15,7 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
     private const val searchEndpoint = "search/sounds"
 
     @Throws(IOException::class)
-    override fun search(parent: StreamingServiceCrawler, songMetadata: SongMetadata) {
+    override fun search(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata) {
         val songURL = getSongURL(parent, songMetadata)
         val songPageRequest = Request.Builder().url(songURL).build()
 
@@ -25,14 +26,14 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
     }
 
     @Throws(IOException::class)
-    fun getSongURL(parent: StreamingServiceCrawler, songMetadata: SongMetadata): String {
+    fun getSongURL(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata): String {
         val searchURL = buildSearchURL(songMetadata)
         val searchRequest = Request.Builder().url(searchURL).build()
 
         val response = executeRequestAndCheckResponse(searchRequest, "Search request (sc html)")
 
         val songUrl = getSongURLFromSearchResult(songMetadata, response.body!!.string())
-        parent.notifySoundcloudUrl(songUrl)
+        parent.notifyOfSoundcloudUrl(songUrl)
         return songUrl
     }
 
@@ -50,7 +51,14 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
     @Throws(IOException::class)
     fun getSongURLFromSearchResult(songMetadata: SongMetadata, result: String): String {
         val songUrlPattern = Regex(".*<li><h2><a href=\"([^\"]+)\">([^<]+.*)")
-        val songUrlSuffix = firstMatch(result, songUrlPattern).groupValues[1]
+        val match = firstMatch(result, songUrlPattern)
+
+        val songTitle = match.groupValues[2]
+        if (!songTitleMatches(songTitle, songMetadata)) {
+            throw IOException("Song title $songTitle does not match metadata $songMetadata")
+        }
+
+        val songUrlSuffix = match.groupValues[1]
         return "$urlBase$songUrlSuffix"
     }
 
@@ -58,14 +66,5 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
     fun getImageUrlFromSongPage(songPage: String): String {
         val imageUrlPattern = Regex(".*<img src=\"([^\"]*)\".*")
         return firstMatch(songPage, imageUrlPattern).groupValues[1]
-    }
-
-    @Throws(IOException::class)
-    fun firstMatch(text: String, regex: Regex): MatchResult {
-        text.split('\n').forEach {
-            return regex.matchEntire(it) ?: return@forEach
-        }
-
-        throw IOException("No match found")
     }
 }
