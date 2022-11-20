@@ -2,6 +2,7 @@ package nz.badradio.badradio.metadata.art
 
 import nz.badradio.badradio.metadata.SongMetadata
 import nz.badradio.badradio.utilities.executeRequestAndCheckResponse
+import nz.badradio.badradio.utilities.firstMatch
 import okhttp3.Request
 import java.io.IOException
 import java.net.URLEncoder
@@ -58,14 +59,5 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
     fun getImageUrlFromSongPage(songPage: String): String {
         val imageUrlPattern = Regex(".*<img src=\"([^\"]*)\".*")
         return firstMatch(songPage, imageUrlPattern).groupValues[1]
-    }
-
-    @Throws(IOException::class)
-    fun firstMatch(text: String, regex: Regex): MatchResult {
-        text.split('\n').forEach {
-            return regex.matchEntire(it) ?: return@forEach
-        }
-
-        throw IOException("No match found")
     }
 }
