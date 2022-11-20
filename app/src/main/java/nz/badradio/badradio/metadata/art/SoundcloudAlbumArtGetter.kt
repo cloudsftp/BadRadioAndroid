@@ -14,7 +14,7 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
     private const val searchEndpoint = "search/sounds"
 
     @Throws(IOException::class)
-    override fun search(parent: StreamingServiceCrawler, songMetadata: SongMetadata) {
+    override fun search(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata) {
         val songURL = getSongURL(parent, songMetadata)
         val songPageRequest = Request.Builder().url(songURL).build()
 
@@ -25,14 +25,14 @@ object SoundcloudAlbumArtGetter : IAlbumArtGetter {
     }
 
     @Throws(IOException::class)
-    fun getSongURL(parent: StreamingServiceCrawler, songMetadata: SongMetadata): String {
+    fun getSongURL(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata): String {
         val searchURL = buildSearchURL(songMetadata)
         val searchRequest = Request.Builder().url(searchURL).build()
 
         val response = executeRequestAndCheckResponse(searchRequest, "Search request (sc html)")
 
         val songUrl = getSongURLFromSearchResult(songMetadata, response.body!!.string())
-        parent.notifySoundcloudUrl(songUrl)
+        parent.notifyOfSoundcloudUrl(songUrl)
         return songUrl
     }
 

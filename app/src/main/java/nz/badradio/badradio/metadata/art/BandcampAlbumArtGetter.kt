@@ -11,7 +11,7 @@ object BandcampAlbumArtGetter : IAlbumArtGetter {
     // A lot of HTML crawling required
 
     @Throws(IOException::class)
-    override fun search(parent: StreamingServiceCrawler,songMetadata: SongMetadata) {
+    override fun search(parent: IStreamingServiceDataObserver,songMetadata: SongMetadata) {
         TODO("Not yet implemented")
     }
 }
