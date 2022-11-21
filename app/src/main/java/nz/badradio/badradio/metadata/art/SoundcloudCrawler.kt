@@ -7,7 +7,7 @@ import okhttp3.Request
 import java.io.IOException
 import java.net.URLEncoder
 
-object SoundcloudAlbumArtGetter : IAlbumArtGetter {
+object SoundcloudCrawler : IStreamingServiceCrawler {
 
     // search query: https://soundcloud.com/search/sounds?q=come%20and%20see%20cassyb
 

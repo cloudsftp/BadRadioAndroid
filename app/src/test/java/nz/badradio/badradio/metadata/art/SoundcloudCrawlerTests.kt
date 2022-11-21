@@ -3,13 +3,13 @@ package nz.badradio.badradio.metadata.art
 import nz.badradio.badradio.metadata.SongMetadata
 import org.junit.Test
 
-class SoundcloudAlbumGetterTests {
+class SoundcloudCrawlerTests {
 
     @Test
     fun testGetImageUrl() {
         var albumArtUrl: String? = null
 
-        SoundcloudAlbumArtGetter.search(
+        SoundcloudCrawler.search(
             object : IStreamingServiceDataObserver {
                 override fun notifyOfAlbumArtUrl(url: String) { albumArtUrl = url }
                 override fun notifyOfSoundcloudUrl(url: String) { }
@@ -23,7 +23,7 @@ class SoundcloudAlbumGetterTests {
 
     @Test
     fun testGetImageURLFromSongPage() {
-        val url = SoundcloudAlbumArtGetter.getImageUrlFromSongPage(
+        val url = SoundcloudCrawler.getImageUrlFromSongPage(
             comeAndSeeSongPage
         )
         assert(url == "https://i1.sndcdn.com/artworks-tOmHVP9GnI66ky4d-8ZWV8w-t500x500.jpg") {
@@ -33,7 +33,7 @@ class SoundcloudAlbumGetterTests {
 
     @Test
     fun testGetSongUrl() {
-        val songUrl = SoundcloudAlbumArtGetter.getSongURL(
+        val songUrl = SoundcloudCrawler.getSongURL(
             object: IStreamingServiceDataObserver {
                 override fun notifyOfAlbumArtUrl(url: String) { }
                 override fun notifyOfSoundcloudUrl(url: String) { }
@@ -47,7 +47,7 @@ class SoundcloudAlbumGetterTests {
 
     @Test
     fun testGetSongURLFromSearchResult() {
-        val url = SoundcloudAlbumArtGetter.getSongURLFromSearchResult(
+        val url = SoundcloudCrawler.getSongURLFromSearchResult(
             SongMetadata("come and see", "cassyb, north posse"),
             comeAndSeeSearchResult
         )

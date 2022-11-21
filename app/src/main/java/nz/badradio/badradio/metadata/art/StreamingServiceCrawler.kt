@@ -7,8 +7,8 @@ import com.squareup.picasso.Picasso
 import java.io.IOException
 
 class StreamingServiceCrawler : IStreamingServiceDataObserver {
-    private val crawlers = listOf<IAlbumArtGetter>(
-        SoundcloudAlbumArtGetter
+    private val crawlers = listOf<IStreamingServiceCrawler>(
+        SoundcloudCrawler
     )
 
     private val albumArtUrls = mutableListOf<String>()
@@ -44,7 +44,7 @@ interface IStreamingServiceDataObserver {
     fun notifyOfSoundcloudUrl(url: String)
 }
 
-interface IAlbumArtGetter {
+interface IStreamingServiceCrawler {
     @Throws(IOException::class)
     fun search(parent: IStreamingServiceDataObserver,songMetadata: SongMetadata)
 }
