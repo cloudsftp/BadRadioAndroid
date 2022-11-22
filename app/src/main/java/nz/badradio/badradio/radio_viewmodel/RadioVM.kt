@@ -152,7 +152,7 @@ object RadioVM: Player.Listener {
     }
 
     fun onGoLive() = runWhenInitialized {
-        if (!state.enablePlayPauseButton) {
+        if (!state.enableGoLiveButton) {
             return@runWhenInitialized
         }
 

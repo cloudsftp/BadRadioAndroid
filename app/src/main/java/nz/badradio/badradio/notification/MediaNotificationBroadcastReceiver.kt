@@ -3,6 +3,7 @@ package nz.badradio.badradio.notification
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.provider.MediaStore
 import android.util.Log
 import nz.badradio.badradio.radio_viewmodel.RadioVM
 
@@ -15,7 +16,8 @@ class MediaNotificationBroadcastReceiver : BroadcastReceiver() {
         when (val actionId = intent.getStringExtra("action")) {
             PLAY_ACTION,
             PAUSE_ACTION    -> RadioVM.onPlayPause()
-            SKIP_ACTION     -> RadioVM.onGoLive()
+            IS_LIVE_ACTION  -> {}
+            GO_LIVE_ACTION  -> RadioVM.onGoLive()
             else            -> Log.w(tag, "Unknown action $actionId")
         }
     }
