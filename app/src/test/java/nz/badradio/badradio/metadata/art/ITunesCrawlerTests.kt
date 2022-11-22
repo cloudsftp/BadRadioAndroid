@@ -1,8 +1,25 @@
 package nz.badradio.badradio.metadata.art
 
+import nz.badradio.badradio.metadata.SongMetadata
 import org.junit.Test
 
 class ITunesCrawlerTests {
+
+    @Test
+    fun testGetImageUrl() {
+        var imageUrl = ""
+        ITunesCrawler.search(
+            object : IStreamingServiceDataObserver {
+                override fun notifyOfAlbumArtUrl(url: String) { imageUrl = url }
+                override fun notifyOfSoundcloudUrl(url: String) { }
+            },
+            SongMetadata("come and see", "cassyb")
+        )
+
+        assert(imageUrl == "https://is4-ssl.mzstatic.com/image/thumb/Music112/v4/b8/67/6d/b8676dfc-a60d-45b3-8136-a3e02e5db168/artwork.jpg/500x500bb.jpg") {
+            println("was $imageUrl")
+        }
+    }
 
     @Test
     fun testGetImageUrlFromSearchResults() {

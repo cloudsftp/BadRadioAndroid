@@ -7,22 +7,22 @@ class SoundcloudCrawlerTests {
 
     @Test
     fun testGetImageUrl() {
-        var albumArtUrl: String? = null
-
+        var imageUrl = ""
         SoundcloudCrawler.search(
             object : IStreamingServiceDataObserver {
-                override fun notifyOfAlbumArtUrl(url: String) { albumArtUrl = url }
+                override fun notifyOfAlbumArtUrl(url: String) { imageUrl = url }
                 override fun notifyOfSoundcloudUrl(url: String) { }
             },
             SongMetadata("come and see", "cassyb, north posse")
         )
-        assert(albumArtUrl == "https://i1.sndcdn.com/artworks-tOmHVP9GnI66ky4d-8ZWV8w-t500x500.jpg") {
-            println("was $albumArtUrl")
+
+        assert(imageUrl == "https://i1.sndcdn.com/artworks-tOmHVP9GnI66ky4d-8ZWV8w-t500x500.jpg") {
+            println("was $imageUrl")
         }
     }
 
     @Test
-    fun testGetImageURLFromSongPage() {
+    fun testGetImageUrlFromSongPage() {
         val url = SoundcloudCrawler.getImageUrlFromSongPage(
             comeAndSeeSongPage
         )

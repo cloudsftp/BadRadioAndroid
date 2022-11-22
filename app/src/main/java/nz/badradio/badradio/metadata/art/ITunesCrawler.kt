@@ -2,19 +2,33 @@ package nz.badradio.badradio.metadata.art
 
 import com.squareup.moshi.JsonAdapter
 import nz.badradio.badradio.metadata.SongMetadata
+import nz.badradio.badradio.utilities.buildSearchUrl
+import nz.badradio.badradio.utilities.executeRequestAndCheckResponse
 import nz.badradio.badradio.utilities.moshi
+import okhttp3.Request
 import java.io.IOException
 
 object ITunesCrawler : IStreamingServiceCrawler {
+
+    // search query: https://itunes.apple.com/search?term=come%20and%20see%20&media=music&limit=1
+
+    private const val urlBase = "https://itunes.apple.com/search"
+
     override fun search(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata) {
-        TODO("Not yet implemented")
+        val searchUrl = buildSearchUrl(
+            urlBase,
+            "term",
+            songMetadata,
+            mapOf("media" to "music", "limit" to "1"),
+        )
+        val searchRequest = Request.Builder().url(searchUrl).build()
+
+        val response = executeRequestAndCheckResponse(searchRequest, "Search request (itunes html)")
+        val imageUrl = getImageUrlFromSearchResults(response.body!!.string())
+        parent.notifyOfAlbumArtUrl(imageUrl)
     }
 
     fun getImageUrlFromSearchResults(results: String): String {
-        /**
-         * 1. parse search results from json
-         * 2. get url, replace 100x100bb w/ 500x500bb
-         */
         val searchResults = iTunesSearchResultsAdapter.fromJson(results)
             ?: throw IOException("Could not parse search results from iTunes api")
 

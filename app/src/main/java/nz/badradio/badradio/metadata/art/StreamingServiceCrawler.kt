@@ -8,7 +8,8 @@ import java.io.IOException
 
 class StreamingServiceCrawler : IStreamingServiceDataObserver {
     private val crawlers = listOf<IStreamingServiceCrawler>(
-        SoundcloudCrawler
+        ITunesCrawler,
+        SoundcloudCrawler,
     )
 
     private val albumArtUrls = mutableListOf<String>()

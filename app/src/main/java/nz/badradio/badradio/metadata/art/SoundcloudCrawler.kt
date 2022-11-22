@@ -1,11 +1,11 @@
 package nz.badradio.badradio.metadata.art
 
 import nz.badradio.badradio.metadata.SongMetadata
+import nz.badradio.badradio.utilities.buildSearchUrl
 import nz.badradio.badradio.utilities.executeRequestAndCheckResponse
 import nz.badradio.badradio.utilities.firstMatch
 import okhttp3.Request
 import java.io.IOException
-import java.net.URLEncoder
 
 object SoundcloudCrawler : IStreamingServiceCrawler {
 
@@ -27,7 +27,11 @@ object SoundcloudCrawler : IStreamingServiceCrawler {
 
     @Throws(IOException::class)
     fun getSongURL(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata): String {
-        val searchURL = buildSearchURL(songMetadata)
+        val searchURL = buildSearchUrl(
+            "$urlBase/$searchEndpoint",
+            "q",
+            songMetadata,
+        )
         val searchRequest = Request.Builder().url(searchURL).build()
 
         val response = executeRequestAndCheckResponse(searchRequest, "Search request (sc html)")
@@ -35,17 +39,6 @@ object SoundcloudCrawler : IStreamingServiceCrawler {
         val songUrl = getSongURLFromSearchResult(songMetadata, response.body!!.string())
         parent.notifyOfSoundcloudUrl(songUrl)
         return songUrl
-    }
-
-    private fun buildSearchURL(songMetadata: SongMetadata): String {
-        /*
-            Don't use Uri.Builder since it won't run in normal unit tests
-         */
-        val searchTerm = URLEncoder.encode(
-            "${songMetadata.artist} ${songMetadata.title}",
-            "UTF-8"
-        )
-        return "$urlBase/$searchEndpoint?q=$searchTerm"
     }
 
     @Throws(IOException::class)
