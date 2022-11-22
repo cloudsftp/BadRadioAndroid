@@ -50,7 +50,7 @@ object SoundcloudCrawler : IStreamingServiceCrawler {
 
     @Throws(IOException::class)
     fun getSongURLFromSearchResult(songMetadata: SongMetadata, result: String): String {
-        val songUrlPattern = Regex(".*<li><h2><a href=\"([^\"]+)\">([^<]+.*)")
+        val songUrlPattern = Regex(".*<li><h2><a href=\"([^\"]+)\">([^<]+).*")
         val match = firstMatch(result, songUrlPattern)
 
         val songTitle = match.groupValues[2]
