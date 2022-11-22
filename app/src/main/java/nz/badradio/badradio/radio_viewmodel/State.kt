@@ -16,7 +16,9 @@ interface RadioVMObserver {
 
 data class RadioVMState(
     var displayPause: Boolean,
-    var enableButtons: Boolean,
+    var enablePlayPauseButton: Boolean,
+    var displayLive: Boolean,
+    var enableGoLiveButton: Boolean,
     var title: String,
     var artist: String,
     var art: Bitmap,
@@ -32,5 +34,5 @@ data class RadioVMState(
 interface UserInputVMObserver {
     fun onPlay()
     fun onPause()
-    fun onSkip()            // Experiment with inputs
+    fun onGoLive()            // Experiment with inputs
 }

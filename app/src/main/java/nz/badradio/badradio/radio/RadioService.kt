@@ -95,7 +95,7 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
     override fun onPause() = runWhenPlayerInitialized {
         mediaPlayer.pause()
     }
-    override fun onSkip() = runWhenPlayerInitialized {
+    override fun onGoLive() = runWhenPlayerInitialized {
         mediaPlayer.seekForward()
         mediaPlayer.play()
     }
