@@ -58,31 +58,20 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" >
 
-        <!---ImageButton
-            android:id="@+id/imgBtn_stop"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/imgBtn_play"
-            android:background="@android:color/transparent"
-            app:srcCompat="@drawable/ic_stop_btn"/-->
-
         <ImageButton
-            android:id="@+id/imgBtn_play"
+            android:id="@+id/image_button_play_pause"
             android:layout_width="@dimen/img_btn_size"
             android:layout_height="@dimen/img_btn_size"
             android:scaleType="fitXY"
             android:background="@android:color/transparent"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintRight_toLeftOf="@id/imgBtn_skip"
+            app:layout_constraintRight_toLeftOf="@id/image_button_go_live"
             app:layout_constraintLeft_toLeftOf="parent"
             app:srcCompat="@drawable/ic_play" />
 
         <ImageButton
-            android:id="@+id/imgBtn_skip"
+            android:id="@+id/image_button_go_live"
             android:layout_width="@dimen/img_btn_size"
             android:layout_height="@dimen/img_btn_size"
             android:scaleType="fitXY"
@@ -91,7 +80,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintLeft_toRightOf="@+id/imgBtn_play"
+            app:layout_constraintLeft_toRightOf="@+id/image_button_play_pause"
             app:srcCompat="@drawable/ic_radio_button_checked" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

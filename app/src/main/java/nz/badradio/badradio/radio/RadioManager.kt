@@ -90,8 +90,8 @@ object RadioManager: UserInputVMObserver {
     }
      */
 
-    override fun onSkip() = runWhenServiceBound {
-        service!!.onSkip()
+    override fun onGoLive() = runWhenServiceBound {
+        service!!.onGoLive()
     }
 
     // Helpers

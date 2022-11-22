@@ -1,6 +1,5 @@
 package nz.badradio.badradio.activity
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -37,12 +36,12 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
                         * resources.displayMetrics.widthPixels
         ).toInt()
 
-        binding.imgBtnPlay.setOnClickListener {
+        binding.imageButtonPlayPause.setOnClickListener {
             RadioVM.onPlayPause()
         }
 
-        binding.imgBtnSkip.setOnClickListener {
-            RadioVM.onSkip()
+        binding.imageButtonGoLive.setOnClickListener {
+            RadioVM.onGoLive()
         }
 /*
         binding.imgBtnShare.setOnClickListener {
@@ -80,15 +79,24 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
 
     override fun onStateChange(state: RadioVMState) {
         runOnUiThread {
-            binding.imgBtnPlay.isEnabled = state.enableButtons
-
-            binding.imgBtnPlay.setImageResource(
+            binding.imageButtonPlayPause.setImageResource(
                 if (state.displayPause) {
                     R.drawable.ic_pause
                 } else {
                     R.drawable.ic_play
                 }
             )
+
+            binding.imageButtonGoLive.setImageResource(
+                if (state.displayLive) {
+                    R.drawable.ic_radio_button_checked
+                } else {
+                    R.drawable.ic_radio_button_unchecked
+                }
+            )
+
+            binding.imageButtonPlayPause.isEnabled = state.enablePlayPauseButton
+            binding.imageButtonGoLive.isEnabled = state.enableGoLiveButton
 
             binding.textSongName.text = state.title
             binding.textArtist.text = state.artist

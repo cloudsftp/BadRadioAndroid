@@ -32,7 +32,9 @@ object RadioVM: Player.Listener {
     private fun defaultState() {
         state = RadioVMState(
             displayPause = false,
-            enableButtons = true,
+            enablePlayPauseButton = false,
+            displayLive = true,
+            enableGoLiveButton = false,
             title = resources.getString(R.string.initializing_service),
             artist = resources.getString(R.string.default_artist),
             art = defaultAlbumArt,
@@ -46,7 +48,7 @@ object RadioVM: Player.Listener {
         object : MediaSessionCompat.Callback() {
             override fun onPlay()       = this@RadioVM.onPlayPause()
             override fun onPause()      = this@RadioVM.onPlayPause()
-            override fun onSkipToNext() = this@RadioVM.onSkip()
+            override fun onSkipToNext() = this@RadioVM.onGoLive()
         }
 
     private lateinit var mediaDescriptionBuilder: MediaDescriptionCompat.Builder
@@ -136,29 +138,33 @@ object RadioVM: Player.Listener {
     // Music Controls
 
     fun onPlayPause() = runWhenInitialized {
-        if (!state.enableButtons) {
+        if (!state.enablePlayPauseButton) {
             return@runWhenInitialized
         }
 
         if (state.displayPause) {
+            state.displayLive = false
+            state.enableGoLiveButton = true
             RadioManager.onPause()
         } else {
             RadioManager.onPlay()
         }
     }
 
-    fun onSkip() = runWhenInitialized {
-        if (!state.enableButtons) {
+    fun onGoLive() = runWhenInitialized {
+        if (!state.enablePlayPauseButton) {
             return@runWhenInitialized
         }
 
-        RadioManager.onSkip()
+        state.displayLive = true
+        state.enableGoLiveButton = false
+        RadioManager.onGoLive()
     }
 
     // Player State Observation
 
     override fun onPlaybackStateChanged(playbackState: Int) = runWhenInitialized {
-        state.enableButtons = playbackState != Player.STATE_BUFFERING
+        state.enablePlayPauseButton = playbackState != Player.STATE_BUFFERING
 
         playBackStateBuilder.setState(
             when (playbackState) {
