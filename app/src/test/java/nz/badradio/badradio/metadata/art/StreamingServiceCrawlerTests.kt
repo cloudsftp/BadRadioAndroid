@@ -3,7 +3,7 @@ package nz.badradio.badradio.metadata.art
 import nz.badradio.badradio.metadata.SongMetadata
 import org.junit.Test
 
-class AlbumArtGetterTests {
+class StreamingServiceCrawlerTests {
 
     private fun runSongMatchesMetadata(songTitle: String, metadataTitle: String): Boolean {
         val metadata = SongMetadata(metadataTitle, "username")

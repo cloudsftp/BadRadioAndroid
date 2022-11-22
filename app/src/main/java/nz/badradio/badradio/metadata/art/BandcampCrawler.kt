@@ -3,7 +3,7 @@ package nz.badradio.badradio.metadata.art
 import nz.badradio.badradio.metadata.SongMetadata
 import java.io.IOException
 
-object BandcampAlbumArtGetter : IAlbumArtGetter {
+object BandcampCrawler : IStreamingServiceCrawler {
 
     // search query: https://bandcamp.com/search?q=title&item_type=t
 
