@@ -92,7 +92,7 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintRight_toRightOf="parent"
             app:layout_constraintLeft_toRightOf="@+id/imgBtn_play"
-            app:srcCompat="@drawable/ic_fast_forward" />
+            app:srcCompat="@drawable/ic_radio_button_checked" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

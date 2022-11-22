@@ -6,4 +6,6 @@
 
     <color name="grey3">#303030</color>
     <color name="greyc">#c0c0c0</color>
+
+    <color name="red">#FF0000</color>
 </resources>
