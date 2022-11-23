@@ -14,6 +14,7 @@ object ITunesCrawler : IStreamingServiceCrawler {
 
     private const val urlBase = "https://itunes.apple.com/search"
 
+    @Throws(IOException::class, IndexOutOfBoundsException::class)
     override fun search(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata) {
         val searchUrl = buildSearchUrl(
             urlBase,
@@ -28,6 +29,7 @@ object ITunesCrawler : IStreamingServiceCrawler {
         parent.notifyOfAlbumArtUrl(imageUrl)
     }
 
+    @Throws(IOException::class, IndexOutOfBoundsException::class)
     fun getImageUrlFromSearchResults(results: String): String {
         val searchResults = iTunesSearchResultsAdapter.fromJson(results)
             ?: throw IOException("Could not parse search results from iTunes api")

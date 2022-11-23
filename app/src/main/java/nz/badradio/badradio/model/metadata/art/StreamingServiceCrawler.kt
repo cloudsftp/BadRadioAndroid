@@ -5,6 +5,7 @@ import android.util.Log
 import nz.badradio.badradio.model.metadata.SongMetadata
 import com.squareup.picasso.Picasso
 import java.io.IOException
+import java.lang.Exception
 
 class StreamingServiceCrawler : IStreamingServiceDataObserver {
     private val crawlers = listOf<IStreamingServiceCrawler>(
@@ -21,8 +22,12 @@ class StreamingServiceCrawler : IStreamingServiceDataObserver {
             try {
                 Log.d(TAG, "Try crawling ${it::class.qualifiedName}")
                 it.search(this, songMetadata)
-            } catch (e: IOException) {
-                Log.w(TAG, e)
+            } catch (e: Exception) {
+                when (e) {
+                    is IOException,
+                    is IndexOutOfBoundsException    -> Log.w(TAG, e)
+                    else                            -> throw e
+                }
             }
         }
     }
