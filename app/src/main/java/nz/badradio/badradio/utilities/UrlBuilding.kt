@@ -1,6 +1,6 @@
 package nz.badradio.badradio.utilities
 
-import nz.badradio.badradio.metadata.SongMetadata
+import nz.badradio.badradio.model.metadata.SongMetadata
 import java.net.URLEncoder
 
 fun buildSearchUrl(

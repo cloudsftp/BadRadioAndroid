@@ -17,16 +17,16 @@
         android:theme="@style/AppTheme" >
 
         <activity
-            android:name="nz.badradio.badradio.activity.PlayerActivity"
+            android:name="nz.badradio.badradio.view.PlayerActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="nz.badradio.badradio.activity.AboutActivity" />
+        <activity android:name="nz.badradio.badradio.view.AboutActivity" />
 
-        <service android:name="nz.badradio.badradio.radio.RadioService" />
+        <service android:name="nz.badradio.badradio.model.radio.RadioService" />
 
         <receiver android:name="androidx.media.session.MediaButtonReceiver"
             android:exported="true" >
@@ -35,7 +35,7 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="nz.badradio.badradio.notification.MediaNotificationBroadcastReceiver" />
+        <receiver android:name="nz.badradio.badradio.view.notification.MediaNotificationBroadcastReceiver" />
 
         <meta-data
             android:name="preloaded_fonts"
