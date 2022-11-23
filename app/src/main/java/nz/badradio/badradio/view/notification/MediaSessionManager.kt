@@ -1,29 +1,39 @@
 package nz.badradio.badradio.view.notification
 
 import android.content.Context
+import android.os.Bundle
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.MediaSessionCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import nz.badradio.badradio.R
 import nz.badradio.badradio.viewmodel.RadioVM
 import nz.badradio.badradio.viewmodel.RadioVMObserver
 import nz.badradio.badradio.viewmodel.RadioVMState
 
 class MediaSessionManager(context: Context) : RadioVMObserver {
+
+    private val goLiveActionIdentifier = "nz.badradio.badradio.view.notification.MediaSessionManager.GO_LIVE"
+    private val goLiveActionName = "Go Live"
+
     val mediaSession: MediaSessionCompat
     private val mediaSessionCallback: MediaSessionCompat.Callback =
         object : MediaSessionCompat.Callback() {
             override fun onPlay()       = RadioVM.onPlayPause()
             override fun onPause()      = RadioVM.onPlayPause()
-            override fun onSkipToNext() = RadioVM.onGoLive()
+            override fun onCustomAction(action: String?, extras: Bundle?) {
+                when (action) {
+                    goLiveActionIdentifier -> RadioVM.onGoLive()
+                }
+            }
         }
 
     private val playBackStateBuilder = PlaybackStateCompat.Builder().apply {
         setState(PlaybackStateCompat.STATE_BUFFERING, 0, 1f)
         setActions(
             PlaybackStateCompat.ACTION_PAUSE or
-                    PlaybackStateCompat.ACTION_PLAY or
-                    PlaybackStateCompat.ACTION_SKIP_TO_NEXT
+                    PlaybackStateCompat.ACTION_PLAY
         )
+        addCustomAction(goLiveActionIdentifier, goLiveActionName, R.drawable.ic_radio_button_checked)
     }
     private val metadataBuilder = MediaMetadataCompat.Builder()
 
