@@ -36,6 +36,7 @@ object RadioVM: Player.Listener {
             enablePlayPauseButton = false,
             displayLive = true,
             enableGoLiveButton = false,
+            actualTitle = resources.getString(R.string.default_song_name),
             title = resources.getString(R.string.initializing_service),
             artist = resources.getString(R.string.default_artist),
             art = defaultAlbumArt,
@@ -60,8 +61,6 @@ object RadioVM: Player.Listener {
     private var initializing = AtomicBoolean(false)
     private var initialized = false
 
-    private var actualTitle = ""
-
     fun initialize(context: Context) {
         if (
             initialized
@@ -76,7 +75,6 @@ object RadioVM: Player.Listener {
         defaultNotificationAlbumArt = BitmapFactory.decodeResource(resources, defaultNotificationAlbumArtRes)
 
         defaultState()
-        actualTitle = resources.getString(R.string.default_song_name)
 
         mediaDescriptionBuilder = MediaDescriptionCompat.Builder().apply {
             setMediaId(BADRADIO_MEDIA_ID)
@@ -150,7 +148,7 @@ object RadioVM: Player.Listener {
         state.title = if (playbackState == Player.STATE_BUFFERING) {
             resources.getString(R.string.loading)
         } else {
-            actualTitle
+            state.actualTitle
         }
 
         notifyObservers()
@@ -172,8 +170,8 @@ object RadioVM: Player.Listener {
             val rawTitle = mediaMetadata.title ?: return@runWhenInitialized
             val metadata = SongMetadata.fromRawTitle(rawTitle.toString())
 
-            actualTitle = metadata.title
-            state.title = actualTitle
+            state.actualTitle = metadata.title
+            state.title = state.actualTitle
             state.artist = metadata.artist
 
             GlobalScope.launch { // synchronous network in this function

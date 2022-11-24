@@ -19,6 +19,7 @@ data class RadioVMState(
     var enablePlayPauseButton: Boolean,
     var displayLive: Boolean,
     var enableGoLiveButton: Boolean,
+    var actualTitle: String,
     var title: String,
     var artist: String,
     var art: Bitmap,

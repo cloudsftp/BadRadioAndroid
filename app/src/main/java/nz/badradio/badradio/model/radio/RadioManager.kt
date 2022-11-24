@@ -60,7 +60,7 @@ object RadioManager: UserInputVMObserver {
         val intent = Intent(context, RadioService::class.java)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            // context.startForegroundService(intent) TODO: revert
+            // context.startForegroundService(intent) TODO: revert (maybe not?)
             context.startService(intent)
         } else {
             context.startService(intent)
