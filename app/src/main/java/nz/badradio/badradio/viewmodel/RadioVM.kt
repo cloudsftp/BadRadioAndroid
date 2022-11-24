@@ -8,9 +8,6 @@ import android.os.Build
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.PlaybackException
@@ -34,6 +31,7 @@ object RadioVM: Player.Listener {
         state = RadioVMState(
             displayPause = false,
             enablePlayPauseButton = true,
+            displayPlayPauseButtonNotification = true,
             displayLive = true,
             enableGoLiveButton = false,
             actualTitle = resources.getString(R.string.default_song_name),
@@ -86,7 +84,7 @@ object RadioVM: Player.Listener {
         }
         mediaItem = MediaBrowserCompat.MediaItem(mediaDescriptionBuilder.build(), FLAG_PLAYABLE)
 
-        mediaSessionManager = MediaSessionManager(context)
+        mediaSessionManager = MediaSessionManager(context, state)
         RadioManager.startService(context, mediaSessionManager.mediaSession)
         addObserver(mediaSessionManager)
 
@@ -113,9 +111,9 @@ object RadioVM: Player.Listener {
 
         defaultState()
         state.apply {
-            enablePlayPauseButton = true
-            enableGoLiveButton = true
             displayLive = false
+            displayPlayPauseButtonNotification = false
+            enableGoLiveButton = true
         }
 
         state.title = resources.getString(R.string.service_stopped)
