@@ -72,25 +72,25 @@ class MediaSessionManager(context: Context, state: RadioVMState) : RadioVMObserv
     private fun createStateBuilder(state: RadioVMState): PlaybackStateCompat.Builder {
         return PlaybackStateCompat.Builder().apply {
             setState(PlaybackStateCompat.STATE_BUFFERING, 0, 1f)
-            if (state.displayPlayPauseButtonNotification) {
+            if (state.displayButtonsNotification) {
                 setActions(
                     PlaybackStateCompat.ACTION_PAUSE or
                             PlaybackStateCompat.ACTION_PLAY
                 )
-            }
 
-            if (state.displayLive) {
-                addCustomAction(
-                    isLiveActionIdentifier,
-                    isLiveActionName,
-                    R.drawable.ic_radio_button_checked,
-                )
-            } else {
-                addCustomAction(
-                    goLiveActionIdentifier,
-                    goLiveActionName,
-                    R.drawable.ic_radio_button_unchecked,
-                )
+                if (state.displayLive) {
+                    addCustomAction(
+                        isLiveActionIdentifier,
+                        isLiveActionName,
+                        R.drawable.ic_radio_button_checked,
+                    )
+                } else {
+                    addCustomAction(
+                        goLiveActionIdentifier,
+                        goLiveActionName,
+                        R.drawable.ic_radio_button_unchecked,
+                    )
+                }
             }
         }
     }

@@ -29,11 +29,10 @@ object RadioVM: Player.Listener {
     private lateinit var state: RadioVMState
     private fun defaultState() {
         state = RadioVMState(
+            displayButtonsNotification = true,
             displayPause = false,
             enablePlayPauseButton = true,
-            displayPlayPauseButtonNotification = true,
             displayLive = true,
-            enableGoLiveButton = false,
             actualTitle = resources.getString(R.string.default_song_name),
             title = resources.getString(R.string.initializing_service),
             artist = resources.getString(R.string.default_artist),
@@ -111,9 +110,8 @@ object RadioVM: Player.Listener {
 
         defaultState()
         state.apply {
+            displayButtonsNotification = false
             displayLive = false
-            displayPlayPauseButtonNotification = false
-            enableGoLiveButton = true
         }
 
         state.title = resources.getString(R.string.service_stopped)
@@ -124,7 +122,9 @@ object RadioVM: Player.Listener {
     // Music Controls
 
     fun onPlayPause(context: Context) {
-        startService(context)
+        if (startService(context)) {
+            state.displayLive = true
+        }
         onPlayPause()
     }
     fun onPlayPause() = runWhenInitialized {
@@ -133,10 +133,7 @@ object RadioVM: Player.Listener {
         }
 
         if (state.displayPause) {
-            state.apply {
-                displayLive = false
-                enableGoLiveButton = true
-            }
+            state.displayLive = false
             RadioManager.onPause()
         } else {
             RadioManager.onPlay()
@@ -148,14 +145,11 @@ object RadioVM: Player.Listener {
         onGoLive()
     }
     fun onGoLive() = runWhenInitialized {
-        if (!state.enableGoLiveButton) {
+        if (state.displayLive) {
             return@runWhenInitialized
         }
 
-        state.apply {
-            displayLive = true
-            enableGoLiveButton = false
-        }
+        state.displayLive = true
         RadioManager.onGoLive()
     }
 
@@ -169,6 +163,8 @@ object RadioVM: Player.Listener {
         } else {
             state.actualTitle
         }
+
+        state.displayButtonsNotification = true
 
         notifyObservers()
     }

@@ -45,12 +45,12 @@ object RadioManager: UserInputVMObserver {
         service!!.stopSelf()
     }
 
-    fun startService(context: Context, mediaSession: MediaSessionCompat) {
+    fun startService(context: Context, mediaSession: MediaSessionCompat): Boolean {
         if (
             service != null
         || !initializing.compareAndSet(false, true)
         ) {
-            return
+            return false
         }
 
         val intent = Intent(context, RadioService::class.java)
@@ -68,6 +68,8 @@ object RadioManager: UserInputVMObserver {
             mediaNotificationManager = MediaNotificationManager(service!!, mediaSession)
             RadioVM.addObserver(mediaNotificationManager!!)
         }
+
+        return true
     }
 
     // Music Controls

@@ -14,9 +14,9 @@ class MediaNotificationBroadcastReceiver : BroadcastReceiver() {
 
         when (val actionId = intent.getStringExtra("action")) {
             PLAY_ACTION,
-            PAUSE_ACTION    -> RadioVM.onPlayPause(context)
+            PAUSE_ACTION    -> RadioVM.onPlayPause()
             IS_LIVE_ACTION  -> {}
-            GO_LIVE_ACTION  -> RadioVM.onGoLive(context)
+            GO_LIVE_ACTION  -> RadioVM.onGoLive()
             else            -> Log.w(tag, "Unknown action $actionId")
         }
     }
