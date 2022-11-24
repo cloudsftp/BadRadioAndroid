@@ -9,7 +9,7 @@ import java.lang.Exception
 
 class StreamingServiceCrawler : IStreamingServiceDataObserver {
     private val crawlers = listOf<IStreamingServiceCrawler>(
-        ITunesCrawler,
+        // ITunesCrawler, TODO: re-enable
         SoundcloudCrawler,
     )
 
