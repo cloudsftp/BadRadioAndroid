@@ -37,11 +37,11 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
         ).toInt()
 
         binding.imageButtonPlayPause.setOnClickListener {
-            RadioVM.onPlayPause()
+            RadioVM.onPlayPause(applicationContext)
         }
 
         binding.imageButtonGoLive.setOnClickListener {
-            RadioVM.onGoLive()
+            RadioVM.onGoLive(applicationContext)
         }
 /*
         binding.imgBtnShare.setOnClickListener {
@@ -96,7 +96,7 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
             )
 
             binding.imageButtonPlayPause.isEnabled = state.enablePlayPauseButton
-            binding.imageButtonGoLive.isEnabled = state.enableGoLiveButton
+            binding.imageButtonGoLive.isEnabled = !state.displayLive
 
             binding.textSongName.text = state.title
             binding.textArtist.text = state.artist

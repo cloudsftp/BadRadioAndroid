@@ -8,9 +8,6 @@ import android.os.Build
 import android.support.v4.media.MediaBrowserCompat
 import android.support.v4.media.MediaBrowserCompat.MediaItem.FLAG_PLAYABLE
 import android.support.v4.media.MediaDescriptionCompat
-import android.support.v4.media.MediaMetadataCompat
-import android.support.v4.media.session.MediaSessionCompat
-import android.support.v4.media.session.PlaybackStateCompat
 import androidx.media.MediaBrowserServiceCompat
 import com.google.android.exoplayer2.MediaMetadata
 import com.google.android.exoplayer2.PlaybackException
@@ -32,10 +29,10 @@ object RadioVM: Player.Listener {
     private lateinit var state: RadioVMState
     private fun defaultState() {
         state = RadioVMState(
+            displayButtonsNotification = true,
             displayPause = false,
-            enablePlayPauseButton = false,
+            enablePlayPauseButton = true,
             displayLive = true,
-            enableGoLiveButton = false,
             actualTitle = resources.getString(R.string.default_song_name),
             title = resources.getString(R.string.initializing_service),
             artist = resources.getString(R.string.default_artist),
@@ -86,8 +83,8 @@ object RadioVM: Player.Listener {
         }
         mediaItem = MediaBrowserCompat.MediaItem(mediaDescriptionBuilder.build(), FLAG_PLAYABLE)
 
-        mediaSessionManager = MediaSessionManager(context)
-        RadioManager.initialize(context, mediaSessionManager.mediaSession)
+        mediaSessionManager = MediaSessionManager(context, state)
+        RadioManager.startService(context, mediaSessionManager.mediaSession)
         addObserver(mediaSessionManager)
 
         initialized = true
@@ -105,10 +102,18 @@ object RadioVM: Player.Listener {
         notifyObservers()
     }
 
+    private fun startService(context: Context)
+        = RadioManager.startService(context, mediaSessionManager.mediaSession)
+
     fun stopService() = runIfInitialized {
         RadioManager.stopService()
 
         defaultState()
+        state.apply {
+            displayButtonsNotification = false
+            displayLive = false
+        }
+
         state.title = resources.getString(R.string.service_stopped)
 
         notifyObservers()
@@ -116,6 +121,12 @@ object RadioVM: Player.Listener {
 
     // Music Controls
 
+    fun onPlayPause(context: Context) {
+        if (startService(context)) {
+            state.displayLive = true
+        }
+        onPlayPause()
+    }
     fun onPlayPause() = runWhenInitialized {
         if (!state.enablePlayPauseButton) {
             return@runWhenInitialized
@@ -123,20 +134,22 @@ object RadioVM: Player.Listener {
 
         if (state.displayPause) {
             state.displayLive = false
-            state.enableGoLiveButton = true
             RadioManager.onPause()
         } else {
             RadioManager.onPlay()
         }
     }
 
+    fun onGoLive(context: Context) {
+        startService(context)
+        onGoLive()
+    }
     fun onGoLive() = runWhenInitialized {
-        if (!state.enableGoLiveButton) {
+        if (state.displayLive) {
             return@runWhenInitialized
         }
 
         state.displayLive = true
-        state.enableGoLiveButton = false
         RadioManager.onGoLive()
     }
 
@@ -150,6 +163,8 @@ object RadioVM: Player.Listener {
         } else {
             state.actualTitle
         }
+
+        state.displayButtonsNotification = true
 
         notifyObservers()
     }
@@ -183,6 +198,7 @@ object RadioVM: Player.Listener {
                 state.art = loadedArt ?: defaultAlbumArt
                 state.notificationArt = loadedArt ?: defaultNotificationAlbumArt
 
+                // TODO: move to extra file?
                 mediaDescriptionBuilder.apply {
                     setTitle(state.title)
                     setSubtitle(state.artist)
@@ -190,6 +206,7 @@ object RadioVM: Player.Listener {
                     setIconBitmap(state.notificationArt)
                 }
                 mediaItem = MediaBrowserCompat.MediaItem(mediaDescriptionBuilder.build(), FLAG_PLAYABLE)
+                // end
 
                 notifyObservers()
             }

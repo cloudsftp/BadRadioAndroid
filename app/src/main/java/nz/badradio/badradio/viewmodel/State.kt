@@ -15,10 +15,10 @@ interface RadioVMObserver {
 }
 
 data class RadioVMState(
+    var displayButtonsNotification: Boolean,
     var displayPause: Boolean,
     var enablePlayPauseButton: Boolean,
     var displayLive: Boolean,
-    var enableGoLiveButton: Boolean,
     var actualTitle: String,
     var title: String,
     var artist: String,

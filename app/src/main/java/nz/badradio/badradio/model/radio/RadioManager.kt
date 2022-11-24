@@ -17,10 +17,6 @@ object RadioManager: UserInputVMObserver {
 
     private var initializing = AtomicBoolean(false)
 
-    fun initialize(context: Context, mediaSession: MediaSessionCompat) {
-        startService(context, mediaSession)
-    }
-
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(componentName: ComponentName, binder: IBinder) {
             service = (binder as RadioService.RadioServiceBinder).service
@@ -49,12 +45,12 @@ object RadioManager: UserInputVMObserver {
         service!!.stopSelf()
     }
 
-    private fun startService(context: Context, mediaSession: MediaSessionCompat) {
+    fun startService(context: Context, mediaSession: MediaSessionCompat): Boolean {
         if (
             service != null
         || !initializing.compareAndSet(false, true)
         ) {
-            return
+            return false
         }
 
         val intent = Intent(context, RadioService::class.java)
@@ -72,6 +68,8 @@ object RadioManager: UserInputVMObserver {
             mediaNotificationManager = MediaNotificationManager(service!!, mediaSession)
             RadioVM.addObserver(mediaNotificationManager!!)
         }
+
+        return true
     }
 
     // Music Controls

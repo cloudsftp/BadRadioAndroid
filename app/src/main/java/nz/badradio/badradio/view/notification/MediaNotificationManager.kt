@@ -81,21 +81,23 @@ class MediaNotificationManager(
         notificationBuilder.apply {
             clearActions()
 
-            addAction(
-                if (state.displayPause) {
-                    pauseAction
-                } else {
-                    playAction
-                }
-            )
+            if (state.displayButtonsNotification) {
+                addAction(
+                    if (state.displayPause) {
+                        pauseAction
+                    } else {
+                        playAction
+                    }
+                )
 
-            addAction(
-                if (state.displayLive) {
-                    isLiveAction
-                } else {
-                    goLiveAction
-                }
-            )
+                addAction(
+                    if (state.displayLive) {
+                        isLiveAction
+                    } else {
+                        goLiveAction
+                    }
+                )
+            }
         }
 
         mediaStyle.setShowActionsInCompactView(0, 1)

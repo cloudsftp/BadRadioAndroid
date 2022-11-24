@@ -11,7 +11,7 @@ import nz.badradio.badradio.viewmodel.RadioVM
 import nz.badradio.badradio.viewmodel.RadioVMObserver
 import nz.badradio.badradio.viewmodel.RadioVMState
 
-class MediaSessionManager(context: Context) : RadioVMObserver {
+class MediaSessionManager(context: Context, state: RadioVMState) : RadioVMObserver {
 
     private val goLiveActionIdentifier = "nz.badradio.badradio.view.notification.MediaSessionManager.GO_LIVE"
     private val isLiveActionIdentifier = "nz.badradio.badradio.view.notification.MediaSessionManager.IS_LIVE"
@@ -34,13 +34,13 @@ class MediaSessionManager(context: Context) : RadioVMObserver {
 
     init {
         mediaSession = MediaSessionCompat(context, "BADRADIO Media Session").apply {
-            setPlaybackState(createStateBuilder(true).build())
+            setPlaybackState(createStateBuilder(state).build())
             setCallback(mediaSessionCallback)
         }
     }
 
     override fun onStateChange(state: RadioVMState) {
-        val playBackStateBuilder = createStateBuilder(state.displayLive)
+        val playBackStateBuilder = createStateBuilder(state)
 
         playBackStateBuilder.setState(
             if (!state.enablePlayPauseButton) {
@@ -69,26 +69,28 @@ class MediaSessionManager(context: Context) : RadioVMObserver {
         mediaSession.setMetadata(metadataBuilder.build())
     }
 
-    private fun createStateBuilder(displayLive: Boolean): PlaybackStateCompat.Builder {
+    private fun createStateBuilder(state: RadioVMState): PlaybackStateCompat.Builder {
         return PlaybackStateCompat.Builder().apply {
             setState(PlaybackStateCompat.STATE_BUFFERING, 0, 1f)
-            setActions(
-                PlaybackStateCompat.ACTION_PAUSE or
-                        PlaybackStateCompat.ACTION_PLAY
-            )
+            if (state.displayButtonsNotification) {
+                setActions(
+                    PlaybackStateCompat.ACTION_PAUSE or
+                            PlaybackStateCompat.ACTION_PLAY
+                )
 
-            if (displayLive) {
-                addCustomAction(
-                    isLiveActionIdentifier,
-                    isLiveActionName,
-                    R.drawable.ic_radio_button_checked,
-                )
-            } else {
-                addCustomAction(
-                    goLiveActionIdentifier,
-                    goLiveActionName,
-                    R.drawable.ic_radio_button_unchecked,
-                )
+                if (state.displayLive) {
+                    addCustomAction(
+                        isLiveActionIdentifier,
+                        isLiveActionName,
+                        R.drawable.ic_radio_button_checked,
+                    )
+                } else {
+                    addCustomAction(
+                        goLiveActionIdentifier,
+                        goLiveActionName,
+                        R.drawable.ic_radio_button_unchecked,
+                    )
+                }
             }
         }
     }
