@@ -23,7 +23,7 @@
     <string name="stop_service">Stop Service</string>
     <string name="initializing_service" tools:ignore="TypographyEllipsis">Initializing Service...</string>
     <string name="restarting_service" tools:ignore="TypographyEllipsis">Restarting Service...</string>
-    <string name="service_stopped">Service Stopped\nPlease Restart</string>
+    <string name="service_stopped">Service Stopped</string>
 
     <string name="loading" tools:ignore="TypographyEllipsis">Loading...</string>
 

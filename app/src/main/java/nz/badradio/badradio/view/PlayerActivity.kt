@@ -37,11 +37,11 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
         ).toInt()
 
         binding.imageButtonPlayPause.setOnClickListener {
-            RadioVM.onPlayPause()
+            RadioVM.onPlayPause(applicationContext)
         }
 
         binding.imageButtonGoLive.setOnClickListener {
-            RadioVM.onGoLive()
+            RadioVM.onGoLive(applicationContext)
         }
 /*
         binding.imgBtnShare.setOnClickListener {

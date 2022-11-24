@@ -33,7 +33,7 @@ object RadioVM: Player.Listener {
     private fun defaultState() {
         state = RadioVMState(
             displayPause = false,
-            enablePlayPauseButton = false,
+            enablePlayPauseButton = true,
             displayLive = true,
             enableGoLiveButton = false,
             actualTitle = resources.getString(R.string.default_song_name),
@@ -87,7 +87,7 @@ object RadioVM: Player.Listener {
         mediaItem = MediaBrowserCompat.MediaItem(mediaDescriptionBuilder.build(), FLAG_PLAYABLE)
 
         mediaSessionManager = MediaSessionManager(context)
-        RadioManager.initialize(context, mediaSessionManager.mediaSession)
+        RadioManager.startService(context, mediaSessionManager.mediaSession)
         addObserver(mediaSessionManager)
 
         initialized = true
@@ -105,10 +105,19 @@ object RadioVM: Player.Listener {
         notifyObservers()
     }
 
+    private fun startService(context: Context)
+        = RadioManager.startService(context, mediaSessionManager.mediaSession)
+
     fun stopService() = runIfInitialized {
         RadioManager.stopService()
 
         defaultState()
+        state.apply {
+            enablePlayPauseButton = true
+            enableGoLiveButton = true
+            displayLive = false
+        }
+
         state.title = resources.getString(R.string.service_stopped)
 
         notifyObservers()
@@ -116,27 +125,39 @@ object RadioVM: Player.Listener {
 
     // Music Controls
 
+    fun onPlayPause(context: Context) {
+        startService(context)
+        onPlayPause()
+    }
     fun onPlayPause() = runWhenInitialized {
         if (!state.enablePlayPauseButton) {
             return@runWhenInitialized
         }
 
         if (state.displayPause) {
-            state.displayLive = false
-            state.enableGoLiveButton = true
+            state.apply {
+                displayLive = false
+                enableGoLiveButton = true
+            }
             RadioManager.onPause()
         } else {
             RadioManager.onPlay()
         }
     }
 
+    fun onGoLive(context: Context) {
+        startService(context)
+        onGoLive()
+    }
     fun onGoLive() = runWhenInitialized {
         if (!state.enableGoLiveButton) {
             return@runWhenInitialized
         }
 
-        state.displayLive = true
-        state.enableGoLiveButton = false
+        state.apply {
+            displayLive = true
+            enableGoLiveButton = false
+        }
         RadioManager.onGoLive()
     }
 
@@ -183,6 +204,7 @@ object RadioVM: Player.Listener {
                 state.art = loadedArt ?: defaultAlbumArt
                 state.notificationArt = loadedArt ?: defaultNotificationAlbumArt
 
+                // TODO: move to extra file?
                 mediaDescriptionBuilder.apply {
                     setTitle(state.title)
                     setSubtitle(state.artist)
@@ -190,6 +212,7 @@ object RadioVM: Player.Listener {
                     setIconBitmap(state.notificationArt)
                 }
                 mediaItem = MediaBrowserCompat.MediaItem(mediaDescriptionBuilder.build(), FLAG_PLAYABLE)
+                // end
 
                 notifyObservers()
             }
