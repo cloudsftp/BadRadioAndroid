@@ -24,6 +24,7 @@ import nz.badradio.badradio.model.metadata.art.StreamingServiceCrawler
 import nz.badradio.badradio.model.radio.RadioManager
 import nz.badradio.badradio.utilities.generateFunExecuteIf
 import nz.badradio.badradio.utilities.generateFunExecuteWhen
+import nz.badradio.badradio.view.notification.MediaSessionManager
 import java.util.concurrent.atomic.AtomicBoolean
 
 object RadioVM: Player.Listener {
@@ -35,6 +36,7 @@ object RadioVM: Player.Listener {
             enablePlayPauseButton = false,
             displayLive = true,
             enableGoLiveButton = false,
+            actualTitle = resources.getString(R.string.default_song_name),
             title = resources.getString(R.string.initializing_service),
             artist = resources.getString(R.string.default_artist),
             art = defaultAlbumArt,
@@ -42,14 +44,7 @@ object RadioVM: Player.Listener {
         )
     }
 
-    private lateinit var playBackStateBuilder: PlaybackStateCompat.Builder
-    private lateinit var mediaSession: MediaSessionCompat
-    private val mediaSessionCallback: MediaSessionCompat.Callback =
-        object : MediaSessionCompat.Callback() {
-            override fun onPlay()       = this@RadioVM.onPlayPause()
-            override fun onPause()      = this@RadioVM.onPlayPause()
-            override fun onSkipToNext() = this@RadioVM.onGoLive()
-        }
+    private lateinit var mediaSessionManager: MediaSessionManager
 
     private lateinit var mediaDescriptionBuilder: MediaDescriptionCompat.Builder
     private lateinit var mediaItem: MediaBrowserCompat.MediaItem
@@ -66,10 +61,6 @@ object RadioVM: Player.Listener {
     private var initializing = AtomicBoolean(false)
     private var initialized = false
 
-    private val metadataBuilder = MediaMetadataCompat.Builder()
-
-    private var actualTitle = ""
-
     fun initialize(context: Context) {
         if (
             initialized
@@ -84,7 +75,6 @@ object RadioVM: Player.Listener {
         defaultNotificationAlbumArt = BitmapFactory.decodeResource(resources, defaultNotificationAlbumArtRes)
 
         defaultState()
-        actualTitle = resources.getString(R.string.default_song_name)
 
         mediaDescriptionBuilder = MediaDescriptionCompat.Builder().apply {
             setMediaId(BADRADIO_MEDIA_ID)
@@ -96,20 +86,9 @@ object RadioVM: Player.Listener {
         }
         mediaItem = MediaBrowserCompat.MediaItem(mediaDescriptionBuilder.build(), FLAG_PLAYABLE)
 
-        playBackStateBuilder = PlaybackStateCompat.Builder().apply {
-            setState(PlaybackStateCompat.STATE_BUFFERING, 0, 1f)
-            setActions(
-                PlaybackStateCompat.ACTION_PAUSE or
-                        PlaybackStateCompat.ACTION_PLAY or
-                        PlaybackStateCompat.ACTION_SKIP_TO_NEXT
-            )
-        }
-
-        mediaSession = MediaSessionCompat(context, "BADRADIO Media Session").apply {
-            setPlaybackState(playBackStateBuilder.build())
-            setCallback(mediaSessionCallback)
-        }
-        RadioManager.initialize(context, mediaSession)
+        mediaSessionManager = MediaSessionManager(context)
+        RadioManager.initialize(context, mediaSessionManager.mediaSession)
+        addObserver(mediaSessionManager)
 
         initialized = true
         initializing.set(false)
@@ -118,7 +97,7 @@ object RadioVM: Player.Listener {
     // Service Controls
 
     fun restartService(context: Context) = runIfInitialized {
-        RadioManager.restartService(context, mediaSession)
+        RadioManager.restartService(context, mediaSessionManager.mediaSession)
 
         defaultState()
         state.title = resources.getString(R.string.restarting_service)
@@ -166,19 +145,10 @@ object RadioVM: Player.Listener {
     override fun onPlaybackStateChanged(playbackState: Int) = runWhenInitialized {
         state.enablePlayPauseButton = playbackState != Player.STATE_BUFFERING
 
-        playBackStateBuilder.setState(
-            when (playbackState) {
-                Player.STATE_BUFFERING -> PlaybackStateCompat.STATE_BUFFERING
-                Player.STATE_IDLE -> PlaybackStateCompat.STATE_STOPPED
-                else -> PlaybackStateCompat.STATE_NONE
-            }, 0, 1f
-        )
-        mediaSession.setPlaybackState(playBackStateBuilder.build())
-
         state.title = if (playbackState == Player.STATE_BUFFERING) {
             resources.getString(R.string.loading)
         } else {
-            actualTitle
+            state.actualTitle
         }
 
         notifyObservers()
@@ -186,11 +156,6 @@ object RadioVM: Player.Listener {
 
     override fun onIsPlayingChanged(isPlaying: Boolean) = runWhenInitialized {
         state.displayPause = isPlaying
-        playBackStateBuilder.setState(
-            if (isPlaying) PlaybackStateCompat.STATE_PLAYING else PlaybackStateCompat.STATE_PAUSED,
-            0, 1f
-        )
-        mediaSession.setPlaybackState(playBackStateBuilder.build())
 
         notifyObservers()
     }
@@ -205,8 +170,8 @@ object RadioVM: Player.Listener {
             val rawTitle = mediaMetadata.title ?: return@runWhenInitialized
             val metadata = SongMetadata.fromRawTitle(rawTitle.toString())
 
-            actualTitle = metadata.title
-            state.title = actualTitle
+            state.actualTitle = metadata.title
+            state.title = state.actualTitle
             state.artist = metadata.artist
 
             GlobalScope.launch { // synchronous network in this function
@@ -217,14 +182,6 @@ object RadioVM: Player.Listener {
                 val loadedArt = albumArtGetter.getAlbumArt()
                 state.art = loadedArt ?: defaultAlbumArt
                 state.notificationArt = loadedArt ?: defaultNotificationAlbumArt
-
-                metadataBuilder.apply {
-                    putString(androidx.media2.common.MediaMetadata.METADATA_KEY_TITLE, state.title)
-                    putString(androidx.media2.common.MediaMetadata.METADATA_KEY_ARTIST, state.artist)
-
-                    putBitmap(androidx.media2.common.MediaMetadata.METADATA_KEY_ART, state.notificationArt)
-                }
-                mediaSession.setMetadata(metadataBuilder.build())
 
                 mediaDescriptionBuilder.apply {
                     setTitle(state.title)
@@ -244,9 +201,10 @@ object RadioVM: Player.Listener {
 
     // Media Browser
 
-    fun loadRecentMediaItem(result: MediaBrowserServiceCompat.Result<MutableList<MediaBrowserCompat.MediaItem>>)
-        = runWhenInitialized {
-            result.sendResult(mutableListOf(mediaItem))
+    fun loadRecentMediaItem(
+        result: MediaBrowserServiceCompat.Result<MutableList<MediaBrowserCompat.MediaItem>>
+    ) = runWhenInitialized {
+        result.sendResult(mutableListOf(mediaItem))
     }
 
     // Observers
