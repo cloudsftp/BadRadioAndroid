@@ -22,76 +22,10 @@
     <string name="restart_service">Restart Service</string>
     <string name="stop_service">Stop Service</string>
     <string name="initializing_service" tools:ignore="TypographyEllipsis">Initializing Service...</string>
-    <string name="service_stopped">Service Stopped\nPlease Restart</string>
+    <string name="restarting_service" tools:ignore="TypographyEllipsis">Restarting Service...</string>
+    <string name="service_stopped">Service Stopped</string>
 
     <string name="loading" tools:ignore="TypographyEllipsis">Loading...</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-
-    <string name="action_settings">Settings</string>
-
-    <string name="no_stream">Radio station couldn\'t stream!</string>
-    <string name="live_broadcast">On Air</string>
-
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-
-
-    <!-- media viewer and radio-->
-    <string name="volume_low">Turn your volume up!</string>
-    <string name="now_playing">Now Playing</string>
-    <string name="notification_playing">Now Playing</string>
-    <string name="toggle_fullscreen">Toggle Fullscreen</string>
-    <string name="audio_notification">Background media playback</string>
-    <string name="error_retry">Failed to connect to stream&#8230;</string>
-    <string name="error_retry_later">Please try again in a few seconds&#8230;</string>
-    <string name="radio_playing_other">Already playing another station. Press play again to play this station instead.</string>
-    <string name="empty_textview">Error loading data</string>
-
-    <!--more app link-->
-    <string name="play_more_apps">https://play.google.com/store/apps/developer?id=FreakApps+Studio</string>
-
-    <!--social network-->
-    <string name="social_tab1">Facebook</string>
-    <string name="social_tab2">Twitter</string>
-    <string name="facebook_url">https://www.facebook.com/tuneindia.net</string>
-    <string name="twitter_url">https://twitter.com/tuneindia</string>
-
-    <!--privacy policy-->
-    <!--this privacy policy url will be used if admin panel mode is disabled-->
-    <string name="privacy_policy_url">https://freakapps.in/lovegodfm/privacy-policy/</string>
-
-    <!--share text-->
-    <string name="share_text">I Would like to share this with you. Here You Can Download This Application from PlayStore</string>
-
-    <!--app about information-->
-    <string name="about_app_name">Application Name</string>
-    <string name="about_app_version">Build Version</string>
-    <string name="about_app_email">Email</string>
-    <string name="about_app_copyright">Copyright</string>
-    <string name="about_app_rate">Rate</string>
-    <string name="about_app_more">More</string>
-    <string name="sub_about_app_copyright">Copyright &#169; Bad radio \n All rights reserved</string>
-    <string name="sub_about_app_rate">Give your rate and feedback</string>
-    <string name="sub_about_app_more">More apps from developer</string>
-
-    <!--connection-->
-    <string name="dialog_connection_title">Servers unreachable</string>
-    <string name="dialog_connection_description">We can not connect with our APIs.\n\nPlease ensure that you have set up your API keys and parameters as documented!</string>
-    <string name="dialog_internet_title">No internet</string>
-    <string name="dialog_internet_description">You seem to have no internet connection, this app requires internet to load the content.</string>
-    <string name="no_network">Failed to Connect Network!</string>
-    <string name="ok">OK</string>
-
-    <!--exit dialog-->
-    <string name="message">What do you want to do?</string>
-    <string name="quit">Quit</string>
-    <string name="minimize">Minimize</string>
-    <string name="cancel">Cancel</string>
-
-    <!--others-->
-    <string name="drawer_open">Open navigation drawer</string>
-    <string name="drawer_close">Close navigation drawer</string>
-    <string name="loading_progress">Loading&#8230;</string>
 
 </resources>
 

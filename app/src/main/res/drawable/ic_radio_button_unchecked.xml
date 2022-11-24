@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:top="@dimen/radio_button_padding"
+        android:left="@dimen/radio_button_padding"
+        android:right="@dimen/radio_button_padding"
+        android:bottom="@dimen/radio_button_padding"
+        android:drawable="@drawable/ic_radio_button_circle"/>
+</layer-list>
