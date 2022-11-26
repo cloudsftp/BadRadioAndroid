@@ -72,7 +72,7 @@ class MediaNotificationManager(
     override fun onStateChange(state: RadioVMState) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             notificationBuilder.apply {
-                setContentTitle(state.title)
+                setContentTitle(state.actualTitle)
                 setContentText(state.artist)
                 setLargeIcon(state.notificationArt)
             }
@@ -97,10 +97,12 @@ class MediaNotificationManager(
                         goLiveAction
                     }
                 )
+
+                mediaStyle.setShowActionsInCompactView(0, 1)
+            } else {
+                mediaStyle.setShowActionsInCompactView()
             }
         }
-
-        mediaStyle.setShowActionsInCompactView(0, 1)
 
         val notification = notificationBuilder.build()
 
