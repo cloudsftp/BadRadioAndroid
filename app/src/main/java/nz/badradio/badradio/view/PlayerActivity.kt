@@ -43,11 +43,6 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
         binding.imageButtonGoLive.setOnClickListener {
             RadioVM.onGoLive(applicationContext)
         }
-/*
-        binding.imgBtnShare.setOnClickListener {
-            shareApp(applicationContext)
-        }
- */
     }
 
     override fun onResume() {
@@ -69,7 +64,6 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.info               -> openAbout()
-            R.id.restart_service    -> RadioVM.restartService(applicationContext)
             R.id.stop_service       -> RadioVM.stopService()
             else                    -> super.onContextItemSelected(item)
         }
