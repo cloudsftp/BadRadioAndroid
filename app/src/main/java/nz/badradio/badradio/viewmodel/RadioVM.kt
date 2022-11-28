@@ -22,6 +22,9 @@ import nz.badradio.badradio.model.radio.RadioManager
 import nz.badradio.badradio.utilities.generateFunExecuteIf
 import nz.badradio.badradio.utilities.generateFunExecuteWhen
 import nz.badradio.badradio.view.notification.MediaSessionManager
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledFuture
+import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicBoolean
 
 object RadioVM: Player.Listener {
@@ -54,6 +57,9 @@ object RadioVM: Player.Listener {
         } else {
             R.drawable.badradio
         }
+
+    private val executor = Executors.newSingleThreadScheduledExecutor()
+    private var shutdownServiceJob: ScheduledFuture<*>? = null
 
     private var initializing = AtomicBoolean(false)
     private var initialized = false
@@ -93,15 +99,6 @@ object RadioVM: Player.Listener {
 
     // Service Controls
 
-    fun restartService(context: Context) = runIfInitialized {
-        RadioManager.restartService(context, mediaSessionManager.mediaSession)
-
-        defaultState()
-        state.title = resources.getString(R.string.restarting_service)
-
-        notifyObservers()
-    }
-
     private fun startService(context: Context)
         = RadioManager.startService(context, mediaSessionManager.mediaSession)
 
@@ -118,6 +115,17 @@ object RadioVM: Player.Listener {
 
         notifyObservers()
     }
+
+    private fun scheduleServiceShutdown() {
+        cancelServiceShutdown()
+        shutdownServiceJob = executor.schedule({
+                stopService()
+            },
+            30, TimeUnit.MINUTES,
+        )
+    }
+
+    private fun cancelServiceShutdown() = shutdownServiceJob?.cancel(false)
 
     // Music Controls
 
@@ -171,6 +179,12 @@ object RadioVM: Player.Listener {
 
     override fun onIsPlayingChanged(isPlaying: Boolean) = runWhenInitialized {
         state.displayPause = isPlaying
+
+        if (isPlaying) {
+            cancelServiceShutdown()
+        } else {
+            scheduleServiceShutdown()
+        }
 
         notifyObservers()
     }
