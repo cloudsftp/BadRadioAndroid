@@ -10,7 +10,7 @@ import java.io.IOException
 
 object ITunesCrawler : IStreamingServiceCrawler {
 
-    // search query: https://itunes.apple.com/search?term=come%20and%20see%20&media=music&limit=1
+    // search query: https://itunes.apple.com/search?term=come%20and%20see%20cassyb&media=music&limit=1
 
     private const val urlBase = "https://itunes.apple.com/search"
 
@@ -20,7 +20,10 @@ object ITunesCrawler : IStreamingServiceCrawler {
             urlBase,
             "term",
             songMetadata,
-            mapOf("media" to "music", "limit" to "1"),
+            mapOf(
+                "media" to "music",
+                "limit" to "1",
+            ),
         )
         val searchRequest = Request.Builder().url(searchUrl).build()
 

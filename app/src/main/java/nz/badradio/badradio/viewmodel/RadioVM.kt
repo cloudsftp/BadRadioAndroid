@@ -203,6 +203,8 @@ object RadioVM: Player.Listener {
             state.title = state.actualTitle
             state.artist = metadata.artist
 
+            notifyObservers()
+
             GlobalScope.launch { // synchronous network in this function
                 val albumArtGetter = StreamingServiceCrawler()
 
