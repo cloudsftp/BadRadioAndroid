@@ -10,6 +10,9 @@
 
         <item name="colorControlNormal">@android:color/white</item>
         <item name="colorButtonNormal">@color/colorAccent</item>
+
+        <item name="colorOnPrimary">@android:color/white</item>
+        <item name="colorOnSecondary">@android:color/white</item>
     </style>
 
     <style name="AppTheme.WhiteAccent">

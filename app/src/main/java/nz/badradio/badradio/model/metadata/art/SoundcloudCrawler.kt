@@ -16,8 +16,8 @@ object SoundcloudCrawler : IStreamingServiceCrawler {
 
     @Throws(IOException::class)
     override fun search(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata) {
-        val songURL = getSongURL(parent, songMetadata)
-        val songPageRequest = Request.Builder().url(songURL).build()
+        val songUrl = getSongUrl(parent, songMetadata)
+        val songPageRequest = Request.Builder().url(songUrl).build()
 
         val response = executeRequestAndCheckResponse(songPageRequest, "Song page request (sc html)")
 
@@ -26,7 +26,7 @@ object SoundcloudCrawler : IStreamingServiceCrawler {
     }
 
     @Throws(IOException::class)
-    fun getSongURL(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata): String {
+    fun getSongUrl(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata): String {
         val searchURL = buildSearchUrl(
             "$urlBase/$searchEndpoint",
             "q",
@@ -36,13 +36,13 @@ object SoundcloudCrawler : IStreamingServiceCrawler {
 
         val response = executeRequestAndCheckResponse(searchRequest, "Search request (sc html)")
 
-        val songUrl = getSongURLFromSearchResult(songMetadata, response.body!!.string())
+        val songUrl = getSongUrlFromSearchResult(songMetadata, response.body!!.string())
         parent.notifyOfSoundcloudUrl(songUrl)
         return songUrl
     }
 
     @Throws(IOException::class)
-    fun getSongURLFromSearchResult(songMetadata: SongMetadata, result: String): String {
+    fun getSongUrlFromSearchResult(songMetadata: SongMetadata, result: String): String {
         val songUrlPattern = Regex(".*<li><h2><a href=\"([^\"]+)\">([^<]+).*")
         val match = firstMatch(result, songUrlPattern)
 

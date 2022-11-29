@@ -8,14 +8,15 @@ import java.io.IOException
 import java.lang.Exception
 
 class StreamingServiceCrawler : IStreamingServiceDataObserver {
-    private val crawlers = listOf<IStreamingServiceCrawler>(
+    private val crawlers = listOf(
         // ITunesCrawler, TODO: re-enable
+        BandcampCrawler,
         SoundcloudCrawler,
     )
 
     private val albumArtUrls = mutableListOf<String>()
     private var soundcloudUrl: String? = null
-    // private var bandcampUrl: String? = null
+    private var bandcampUrl: String? = null
 
     fun search(songMetadata: SongMetadata) {
         crawlers.forEach {
@@ -34,7 +35,7 @@ class StreamingServiceCrawler : IStreamingServiceDataObserver {
 
     override fun notifyOfAlbumArtUrl(url: String) { albumArtUrls.add(url) }
     override fun notifyOfSoundcloudUrl(url: String) = run { soundcloudUrl = url }
-    // fun notifyBandcampUrl(url: String) = run { bandcampUrl = url }
+    override fun notifyOfBandcampUrl(url: String) = run { bandcampUrl = url }
 
     fun getAlbumArt(): Bitmap? {
         if (albumArtUrls.isEmpty()) {
@@ -48,6 +49,7 @@ class StreamingServiceCrawler : IStreamingServiceDataObserver {
 interface IStreamingServiceDataObserver {
     fun notifyOfAlbumArtUrl(url: String)
     fun notifyOfSoundcloudUrl(url: String)
+    fun notifyOfBandcampUrl(url: String)
 }
 
 interface IStreamingServiceCrawler {
