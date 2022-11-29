@@ -1,0 +1,9 @@
+<en-US>
+Complete rebuild of the Badradio app.
+
+- No permissions needed anymore
+- New UI design
+- Cover art from Soundcloud
+- Cover art also displayed in notification
+- Written 100% in kotlin
+</en-US>
