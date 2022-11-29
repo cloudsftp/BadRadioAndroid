@@ -12,6 +12,7 @@ class SoundcloudCrawlerTests {
             object : IStreamingServiceDataObserver {
                 override fun notifyOfAlbumArtUrl(url: String) { imageUrl = url }
                 override fun notifyOfSoundcloudUrl(url: String) { }
+                override fun notifyOfBandcampUrl(url: String) { }
             },
             SongMetadata("come and see", "cassyb, north posse")
         )
@@ -34,9 +35,10 @@ class SoundcloudCrawlerTests {
     @Test
     fun testGetSongUrl() {
         val songUrl = SoundcloudCrawler.getSongURL(
-            object: IStreamingServiceDataObserver {
+            object : IStreamingServiceDataObserver {
                 override fun notifyOfAlbumArtUrl(url: String) { }
                 override fun notifyOfSoundcloudUrl(url: String) { }
+                override fun notifyOfBandcampUrl(url: String) { }
             },
             SongMetadata("come and see", "cassyb, north posse")
         )
