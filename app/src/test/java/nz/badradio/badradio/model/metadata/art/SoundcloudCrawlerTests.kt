@@ -14,7 +14,7 @@ class SoundcloudCrawlerTests {
                 override fun notifyOfSoundcloudUrl(url: String) { }
                 override fun notifyOfBandcampUrl(url: String) { }
             },
-            SongMetadata("come and see", "cassyb, north posse")
+            SongMetadata("come and see", "cassyb, north posse"),
         )
 
         assert(imageUrl == "https://i1.sndcdn.com/artworks-tOmHVP9GnI66ky4d-8ZWV8w-t500x500.jpg") {
@@ -30,7 +30,7 @@ class SoundcloudCrawlerTests {
                 override fun notifyOfSoundcloudUrl(url: String) { }
                 override fun notifyOfBandcampUrl(url: String) { }
             },
-            SongMetadata("come and see", "cassyb, north posse")
+            SongMetadata("come and see", "cassyb, north posse"),
         )
         assert(songUrl == "https://soundcloud.com/xxcassyb/come-and-see") {
             println("was $songUrl")

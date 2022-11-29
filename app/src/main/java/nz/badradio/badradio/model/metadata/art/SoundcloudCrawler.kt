@@ -16,8 +16,8 @@ object SoundcloudCrawler : IStreamingServiceCrawler {
 
     @Throws(IOException::class)
     override fun search(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata) {
-        val songURL = getSongUrl(parent, songMetadata)
-        val songPageRequest = Request.Builder().url(songURL).build()
+        val songUrl = getSongUrl(parent, songMetadata)
+        val songPageRequest = Request.Builder().url(songUrl).build()
 
         val response = executeRequestAndCheckResponse(songPageRequest, "Song page request (sc html)")
 

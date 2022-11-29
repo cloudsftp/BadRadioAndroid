@@ -15,7 +15,19 @@ object BandcampCrawler : IStreamingServiceCrawler {
 
     @Throws(IOException::class)
     override fun search(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata) {
+        val songUrl = getSongUrl(parent, songMetadata)
+        val songPageRequest = Request.Builder().url(songUrl).build()
 
+        val response = executeRequestAndCheckResponse(songPageRequest, "Song page request (bandcamp html)")
+
+        val imageUrl = getImageUrlFromSongPage(response.body!!.string())
+        parent.notifyOfAlbumArtUrl(imageUrl)
+    }
+
+    @Throws(IOException::class)
+    fun getImageUrlFromSongPage(songPage: String): String {
+        val imageUrlPattern = Regex(".*<a class=\"popupImage\" href=\"([^\"]+).*")
+        return firstMatch(songPage, imageUrlPattern).groupValues[1]
     }
 
     @Throws(IOException::class)
@@ -38,8 +50,7 @@ object BandcampCrawler : IStreamingServiceCrawler {
     @Throws(IOException::class)
     fun getSongUrlFromSearchResult(result: String): String {
         val songUrlPattern = Regex(".*<a class=\"artcont\" href=\"([^\"]+).*")
-        val match = firstMatch(result, songUrlPattern)
-        val songUrl = match.groupValues[1]
+        val songUrl = firstMatch(result, songUrlPattern).groupValues[1]
 
         return songUrl
             .replaceAfter("?", "")
