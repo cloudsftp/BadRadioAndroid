@@ -33,6 +33,8 @@ class MediaSessionManager(context: Context, state: RadioVMState) : RadioVMObserv
 
     private val metadataBuilder = MediaMetadataCompat.Builder()
 
+    private val defaultTitle = context.resources.getString(R.string.default_song_name)
+
     init {
         mediaSession = MediaSessionCompat(context, "BADRADIO Media Session").apply {
             setPlaybackState(createStateBuilder(state).build())
@@ -40,6 +42,7 @@ class MediaSessionManager(context: Context, state: RadioVMState) : RadioVMObserv
         }
     }
 
+    // Needed, because in android 13 notification image only updates when title changed
     private var lastAlbumArt: Bitmap? = null
 
     override fun onStateChange(state: RadioVMState) {
@@ -57,22 +60,15 @@ class MediaSessionManager(context: Context, state: RadioVMState) : RadioVMObserv
         )
         mediaSession.setPlaybackState(playBackStateBuilder.build())
 
-        if (lastAlbumArt != state.notificationArt) {
+        if (
+            lastAlbumArt != state.notificationArt
+            || state.actualTitle == defaultTitle
+        ) {
             metadataBuilder.apply {
-                putString(
-                    androidx.media2.common.MediaMetadata.METADATA_KEY_TITLE,
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                        state.actualTitle
-                    } else {
-                        state.title
-                    }
-                )
+                putString( androidx.media2.common.MediaMetadata.METADATA_KEY_TITLE, state.actualTitle)
                 putString(androidx.media2.common.MediaMetadata.METADATA_KEY_ARTIST, state.artist)
 
-                putBitmap(
-                    androidx.media2.common.MediaMetadata.METADATA_KEY_ART,
-                    state.notificationArt
-                )
+                putBitmap( androidx.media2.common.MediaMetadata.METADATA_KEY_ART, state.notificationArt)
             }
             mediaSession.setMetadata(metadataBuilder.build())
 
