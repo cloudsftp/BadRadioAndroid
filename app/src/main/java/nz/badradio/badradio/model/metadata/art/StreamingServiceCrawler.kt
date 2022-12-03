@@ -24,11 +24,7 @@ class StreamingServiceCrawler : IStreamingServiceDataObserver {
                 Log.d(TAG, "Try crawling ${it::class.qualifiedName}")
                 it.search(this, songMetadata)
             } catch (e: Exception) {
-                when (e) {
-                    is IOException,
-                    is IndexOutOfBoundsException    -> Log.w(TAG, e)
-                    else                            -> throw e
-                }
+                Log.w(TAG, e)
             }
         }
     }
