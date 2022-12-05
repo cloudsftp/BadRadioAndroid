@@ -58,6 +58,7 @@ class RadioService : MediaBrowserServiceCompat(), UserInputVMObserver {
         Handler(Looper.getMainLooper()).post {
             mediaPlayer.apply {
                 setMediaItem(MediaItem.fromUri(Uri.parse(stationInfo.streamURL)))
+                // setMediaItem(MediaItem.fromUri(Uri.parse("https://s2.radio.com/s2b2b68744/listen")))
                 addListener(RadioVM)
 
                 onPlay()
