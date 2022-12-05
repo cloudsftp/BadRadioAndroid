@@ -53,7 +53,7 @@ object CustomDns: Dns {
         initialize()
 
         try {
-            return listOf(Address.getByName(hostname))
+            return Dns.SYSTEM.lookup(hostname)
         } catch (e: Exception) {
             Log.w(tag, "Could not resolve host $hostname", e)
         }
