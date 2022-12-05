@@ -228,10 +228,6 @@ object RadioVM: Player.Listener {
             }
         }
 
-    override fun onPlayerError(error: PlaybackException) {
-        throw error
-    }
-
     // Media Browser
 
     fun loadRecentMediaItem(
