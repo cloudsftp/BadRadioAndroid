@@ -8,8 +8,8 @@ android {
         applicationId "nz.badradio.badradio"
         minSdkVersion 23
         targetSdkVersion 33
-        versionCode 311
-        versionName "3.0.0-patch0"
+        versionCode 312
+        versionName "3.0.0-patch1"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     signingConfigs {
@@ -58,6 +58,7 @@ dependencies {
 
     implementation 'com.squareup.okhttp3:okhttp:4.9.2'
     implementation 'com.squareup.okhttp3:logging-interceptor:3.5.0'
+    implementation 'org.xbill:dns:2.0.8'
 
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
