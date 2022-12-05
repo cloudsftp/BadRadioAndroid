@@ -42,7 +42,7 @@ object CustomDns: Dns {
     private val hostAddressNameMap = mapOf(
         "badradio.nz" to "104.26.1.121",
         "s2.radio.co" to "51.77.148.63",
-        "s2.radioco.net" to "51.77.148.63", // TODO: whats up with this?
+        "s2.radioco.net" to "51.77.148.63",
         "soundcloud.com" to "18.66.122.119",
         "bandcamp.com" to "151.101.129.28",
     )
@@ -84,8 +84,12 @@ object CustomDns: Dns {
                 ExtendedResolver(
                     arrayOf(
                         Lookup.getDefaultResolver(),
+                        // Google
                         SimpleResolver("8.8.8.8"),
                         SimpleResolver("8.8.4.4"),
+                        // Cloudflare
+                        SimpleResolver("1.1.1.1"),
+                        SimpleResolver("1.0.0.1"),
                     )
                 )
             )
