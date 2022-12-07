@@ -14,7 +14,7 @@
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme">
 
         <activity
             android:name="nz.badradio.badradio.view.PlayerActivity"
@@ -26,10 +26,15 @@
         </activity>
         <activity android:name="nz.badradio.badradio.view.AboutActivity" />
 
-        <service android:name="nz.badradio.badradio.model.radio.RadioService" />
+        <service android:name="nz.badradio.badradio.model.radio.RadioService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.media.browse.MediaBrowserService" />
+            </intent-filter>
+        </service>
 
         <receiver android:name="androidx.media.session.MediaButtonReceiver"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
