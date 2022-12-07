@@ -5,7 +5,7 @@ import android.util.Log
 import nz.badradio.badradio.model.metadata.SongMetadata
 import com.squareup.picasso.Picasso
 import java.io.IOException
-import java.lang.Exception
+import kotlin.Exception
 
 class StreamingServiceCrawler : IStreamingServiceDataObserver {
     private val crawlers = listOf(
@@ -21,10 +21,10 @@ class StreamingServiceCrawler : IStreamingServiceDataObserver {
     fun search(songMetadata: SongMetadata) {
         crawlers.forEach {
             try {
-                Log.d(TAG, "Try crawling ${it::class.qualifiedName}")
+                Log.d(tag, "Try crawling ${it::class.qualifiedName}")
                 it.search(this, songMetadata)
             } catch (e: Exception) {
-                Log.w(TAG, e)
+                Log.w(tag, e)
             }
         }
     }
@@ -38,7 +38,12 @@ class StreamingServiceCrawler : IStreamingServiceDataObserver {
             return null
         }
 
-        return Picasso.get().load(albumArtUrls[0]).get()
+        return try {
+            Picasso.get().load(albumArtUrls[0]).get()
+        } catch (e: Exception) {
+            Log.w(tag, "Could not download album art", e)
+            null
+        }
     }
 }
 
@@ -53,7 +58,7 @@ interface IStreamingServiceCrawler {
     fun search(parent: IStreamingServiceDataObserver,songMetadata: SongMetadata)
 }
 
-private const val TAG = "AlbumArtGetter"
+private const val tag = "AlbumArtGetter"
 
 fun songTitleMatches(songTitle: String, songMetadata: SongMetadata): Boolean {
     val title = songTitle.lowercase()
