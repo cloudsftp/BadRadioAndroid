@@ -41,8 +41,7 @@ object CustomDns: Dns {
 
     private val hostAddressNameMap = mapOf(
         "badradio.nz" to "104.26.1.121",
-        "s2.radio.co" to "51.77.148.63",
-        "s2.radioco.net" to "51.77.148.63",
+        "s2.radio.co" to "51.77.148.63", // TODO: test these ips regularly
         "soundcloud.com" to "18.66.122.119",
         "bandcamp.com" to "151.101.129.28",
     )
