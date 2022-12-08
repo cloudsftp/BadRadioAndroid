@@ -35,6 +35,15 @@ class SongMetadataTests {
     }
 
     @Test
+    fun parseNotMatchingTitle() {
+        val title = "title not matching format"
+        val meta = runParser(title)
+
+        assert(meta.title == title) { print(meta.title) }
+        assert(meta.artist == "") { print(meta.artist) }
+    }
+
+    @Test
     fun recognizeBadradioTags() {
         assert(SongMetadata("All Day, All Night", "BADRADIO").isBadradioTag)
         // assert(SongMetadata("", "BADRADIO").isBadradioTag) TODO: other Tag?

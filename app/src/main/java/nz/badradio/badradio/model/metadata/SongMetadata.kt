@@ -15,7 +15,7 @@ class SongMetadata(
         fun fromStationTrack(track: StationTrack) = fromRawTitle(track.title)
         fun fromRawTitle(rawTitle: String): SongMetadata {
             val match = titleRegex.matchEntire(rawTitle)
-                ?: throw IOException("Could not match title $rawTitle")
+                ?: return SongMetadata(rawTitle, "")
 
             val title = match.groupValues[2]
             val artist = match.groupValues[1].replace(" -", ",")
