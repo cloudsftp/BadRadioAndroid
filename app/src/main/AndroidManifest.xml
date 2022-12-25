@@ -26,7 +26,9 @@
         </activity>
         <activity android:name="nz.badradio.badradio.view.AboutActivity" />
 
-        <service android:name="nz.badradio.badradio.model.radio.RadioService"
+        <service android:name="nz.badradio.badradio.model.radio.RadioService"/>
+
+        <service android:name=".model.radio.MediaBrowser"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />

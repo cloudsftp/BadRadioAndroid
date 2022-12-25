@@ -34,13 +34,6 @@ object RadioManager: UserInputVMObserver {
 
     // Service Controls
 
-    fun restartService(context: Context, mediaSession: MediaSessionCompat) {
-        stopService()
-        runWhenServiceUnbound {
-            startService(context, mediaSession)
-        }
-    }
-
     fun stopService() = runIfServiceBound {
         service!!.stopSelf()
     }
@@ -81,12 +74,6 @@ object RadioManager: UserInputVMObserver {
     override fun onPause() = runWhenServiceBound {
         service!!.onPause()
     }
-
-    /*
-    override fun onStop() = executeWhenServiceBound {
-        service!!.onStop()
-    }
-     */
 
     override fun onGoLive() = runWhenServiceBound {
         service!!.onGoLive()
