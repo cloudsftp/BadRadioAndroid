@@ -17,7 +17,8 @@ class ITunesCrawlerTests {
             SongMetadata("come and see", "cassyb")
         )
 
-        assert(imageUrl == "https://is3-ssl.mzstatic.com/image/thumb/Music126/v4/f4/ca/00/f4ca00c9-5cda-d48d-8eaf-3da176d68822/artwork.jpg/500x500bb.jpg") {
+        // Can't test against fixed URL, because it changes all the time
+        assert(imageUrl.endsWith("/artwork.jpg/500x500bb.jpg")) {
             println("was $imageUrl")
         }
     }
