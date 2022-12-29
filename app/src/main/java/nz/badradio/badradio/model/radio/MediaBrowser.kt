@@ -12,15 +12,20 @@ class MediaBrowser : MediaBrowserServiceCompat() {
         clientUid: Int,
         rootHints: Bundle?
     ): BrowserRoot {
-        // TODO: return empty root when not playing
-        return BrowserRoot(BADRADIO_RECENT_BROWSER_ROOT, Bundle())
+        return BrowserRoot(
+            if (RadioVM.isInitializedAndPlaying()) {
+                recentBrowserRoot
+            } else {
+                emptyBrowserRoot
+            }, Bundle()
+        )
     }
 
     override fun onLoadChildren(
         parentId: String,
         result: Result<MutableList<MediaBrowserCompat.MediaItem>>
     ) {
-        if (parentId == BADRADIO_RECENT_BROWSER_ROOT) {
+        if (parentId == recentBrowserRoot) {
             RadioVM.loadRecentMediaItem(result)
             result.detach()
         } else {
@@ -28,7 +33,7 @@ class MediaBrowser : MediaBrowserServiceCompat() {
         }
     }
 
-}
+    private val emptyBrowserRoot = "nz.badradio.badradio.model.radio.BADRADIO_EMPTY_BROWSER_ROOT"
+    private val recentBrowserRoot = "nz.badradio.badradio.model.radio.BADRADIO_RECENT_BROWSER_ROOT"
 
-private const val BADRADIO_EMPTY_BROWSER_ROOT = "nz.badradio.badradio.model.radio.BADRADIO_EMPTY_BROWSER_ROOT"
-private const val BADRADIO_RECENT_BROWSER_ROOT = "nz.badradio.badradio.model.radio.BADRADIO_RECENT_BROWSER_ROOT"
+}
