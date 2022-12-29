@@ -127,6 +127,8 @@ object RadioVM: Player.Listener {
 
     private fun cancelServiceShutdown() = shutdownServiceJob?.cancel(false)
 
+    fun isInitializedAndPlaying() = initialized && state.displayButtonsNotification
+
     // Music Controls
 
     fun onPlayPause(context: Context) {
