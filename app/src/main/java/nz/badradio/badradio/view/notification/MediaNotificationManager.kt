@@ -1,12 +1,15 @@
 package nz.badradio.badradio.view.notification
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.support.v4.media.session.MediaSessionCompat
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
@@ -73,6 +76,14 @@ class MediaNotificationManager(
     }
 
     override fun onStateChange(state: RadioVMState) {
+        if (ActivityCompat.checkSelfPermission(
+                service,
+                Manifest.permission.POST_NOTIFICATIONS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            return
+        }
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             notificationBuilder.apply {
                 setContentTitle(state.actualTitle)
