@@ -30,6 +30,11 @@ jobs:
           distribution: 'adopt'
           java-version: '17'
 
+      - run: |
+          echo "${{ secrets.KEYSTORE }}" \
+            | gpg -d --passphrase "${{ secrets.KEYSTORE_ENCRYPTION_PASSWORD }}" \
+            > app/keystore.jks
+
       - run: ./gradlew app:bundleRelease
         env:
           SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
