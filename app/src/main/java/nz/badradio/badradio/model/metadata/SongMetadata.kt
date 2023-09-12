@@ -24,8 +24,9 @@ class SongMetadata(
         }
     }
 
-    override fun equals(other: Any?) = other is SongMetadata
-                && this.hashCode() == other.hashCode()
+    override fun equals(other: Any?)
+        = other is SongMetadata
+        && this.hashCode() == other.hashCode()
 
     override fun hashCode(): Int {
         var result = title.hashCode()

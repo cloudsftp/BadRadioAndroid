@@ -13,15 +13,19 @@ class MediaNotificationBroadcastReceiver : BroadcastReceiver() {
         }
 
         try {
-            when (val actionId = intent.getStringExtra("action")) {
-                PLAY_ACTION,
-                PAUSE_ACTION -> RadioVM.onPlayPause()
-                IS_LIVE_ACTION -> {}
-                GO_LIVE_ACTION -> RadioVM.onGoLive()
-                else -> Log.w(tag, "Unknown action $actionId")
-            }
+            routeIntent(intent)
         } catch (e: Exception) {
             Log.w(tag, "Exception:", e)
+        }
+    }
+
+    private fun routeIntent(intent: Intent) {
+        when (val actionId = intent.getStringExtra("action")) {
+            PLAY_ACTION,
+            PAUSE_ACTION -> RadioVM.onPlayPause()
+            IS_LIVE_ACTION -> {}
+            GO_LIVE_ACTION -> RadioVM.onGoLive()
+            else -> Log.w(tag, "Unknown action $actionId")
         }
     }
 

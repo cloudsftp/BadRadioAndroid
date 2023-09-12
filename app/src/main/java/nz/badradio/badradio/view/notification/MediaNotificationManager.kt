@@ -58,15 +58,18 @@ class MediaNotificationManager(
         setContentIntent(pendingIntent)
     }
 
-    init {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val importance = NotificationManagerCompat.IMPORTANCE_HIGH
-            val channel = NotificationChannelCompat
-                .Builder(channelID, importance)
-                .setName(channelID)
-                .build()
-            notificationManager.createNotificationChannel(channel)
+    init { initialize() }
+    private fun initialize() { /* hack needed for early return */
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return
         }
+
+        val importance = NotificationManagerCompat.IMPORTANCE_HIGH
+        val channel = NotificationChannelCompat
+            .Builder(channelID, importance)
+            .setName(channelID)
+            .build()
+        notificationManager.createNotificationChannel(channel)
     }
 
     override fun onStateChange(state: RadioVMState) {
@@ -78,36 +81,37 @@ class MediaNotificationManager(
             }
         }
 
-        notificationBuilder.apply {
-            clearActions()
+        notificationBuilder.clearActions()
 
-            if (state.displayButtonsNotification) {
-                addAction(
-                    if (state.displayPause) {
-                        pauseAction
-                    } else {
-                        playAction
-                    }
-                )
-
-                addAction(
-                    if (state.displayLive) {
-                        isLiveAction
-                    } else {
-                        goLiveAction
-                    }
-                )
-
-                mediaStyle.setShowActionsInCompactView(0, 1)
-            } else {
-                mediaStyle.setShowActionsInCompactView()
-            }
+        if (state.displayButtonsNotification) {
+            addActions(state)
+            mediaStyle.setShowActionsInCompactView(0, 1)
+        } else {
+            mediaStyle.setShowActionsInCompactView()
         }
 
         val notification = notificationBuilder.build()
 
         notificationManager.notify(notificationId, notification)
         service.startForeground(notificationId, notification)
+    }
+
+    private fun addActions(state: RadioVMState) {
+        notificationBuilder.addAction(
+            if (state.displayPause) {
+                pauseAction
+            } else {
+                playAction
+            }
+        )
+
+        notificationBuilder.addAction(
+            if (state.displayLive) {
+                isLiveAction
+            } else {
+                goLiveAction
+            }
+        )
     }
 
     private fun createAction(context: Context, actionId: String, requestCode: Int, iconId: Int, title: String): NotificationCompat.Action {
