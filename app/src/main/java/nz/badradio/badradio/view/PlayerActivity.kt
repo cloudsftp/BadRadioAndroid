@@ -23,7 +23,6 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        requestNecessaryPermissions()
         RadioVM.initialize(applicationContext)
 
         binding = ActivityPlayerBinding.inflate(layoutInflater)
@@ -47,22 +46,6 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
 
         binding.imageButtonGoLive.setOnClickListener {
             RadioVM.onGoLive(applicationContext)
-        }
-    }
-
-    private fun requestNecessaryPermissions() {
-        // TODO: show rationale, if rejected stop service
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ActivityCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                requestPermissions(
-                    arrayOf(Manifest.permission.POST_NOTIFICATIONS),
-                    requestNotificationPermissions,
-                )
-            }
         }
     }
 

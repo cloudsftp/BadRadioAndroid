@@ -76,14 +76,6 @@ class MediaNotificationManager(
     }
 
     override fun onStateChange(state: RadioVMState) {
-        if (ActivityCompat.checkSelfPermission(
-                service,
-                Manifest.permission.POST_NOTIFICATIONS
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            return
-        }
-
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
             notificationBuilder.apply {
                 setContentTitle(state.actualTitle)
@@ -102,8 +94,6 @@ class MediaNotificationManager(
         }
 
         val notification = notificationBuilder.build()
-
-        notificationManager.notify(notificationId, notification)
         service.startForeground(notificationId, notification)
     }
 
