@@ -14,27 +14,30 @@ import kotlin.jvm.Throws
 
 fun getStationInfo(callback: (StationInfo) -> Unit) {
     val stationInfoListRequest = Request.Builder().url(Config.STATION_DATA_URL).build()
-
+    
     client.newCall(stationInfoListRequest).enqueue(object : Callback {
-        override fun onFailure(call: Call, e: IOException) {
-            Log.w(tag, "Exception while executing station info request", e)
-            fallbackStationInfo(callback)
-        }
+       override fun onFailure(call: Call, e: IOException) {
+           Log.w(tag, "Exception while executing station info request", e)
+           fallbackStationInfo(callback)
+       }
 
-        override fun onResponse(call: Call, response: Response) {
-            if (response.body == null) {
-                Log.w(tag, "Station info response has no body")
-                fallbackStationInfo(callback)
-            }
+        override fun onResponse(call: Call, response: Response)
+            = handleStationInfoResponse(response, callback)
+   })
+}
 
-            try {
-                processStationInfoResponse(response.body!!.string(), callback)
-            } catch (e: Exception) {
-                Log.w(tag, "Exception while parsing station info response", e)
-                fallbackStationInfo(callback)
-            }
-        }
-    })
+private fun handleStationInfoResponse(response:Response, callback: (StationInfo) -> Unit) {
+    if (response.body == null) {
+        Log.w(tag, "Station info response has no body")
+        fallbackStationInfo(callback)
+    }
+
+    try {
+        processStationInfoResponse(response.body!!.string(), callback)
+    } catch (e: Exception) {
+        Log.w(tag, "Exception while parsing station info response", e)
+        fallbackStationInfo(callback)
+    }
 }
 
 @Throws(IOException::class)

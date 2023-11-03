@@ -25,7 +25,7 @@ class RadioService : Service(), UserInputVMObserver {
 
     private val okHttpDataSourceFactory = OkHttpDataSource.Factory(client).apply {
         setDefaultRequestProperties(
-            mutableMapOf(
+            mapOf(
                 Pair("Icy-Metadata", "1")
             )
         )

@@ -60,6 +60,7 @@ interface IStreamingServiceCrawler {
 
 private const val tag = "AlbumArtGetter"
 
+private val mTitleRegex = Regex("(.*)(feat|w/).*")
 fun songTitleMatches(songTitle: String, songMetadata: SongMetadata): Boolean {
     val title = songTitle.lowercase()
 
@@ -70,7 +71,6 @@ fun songTitleMatches(songTitle: String, songMetadata: SongMetadata): Boolean {
         .replace("[", "")
         .replace("]", "")
 
-    val mTitleRegex = Regex("(.*)(feat|w/).*")
     val mTitleMatch = mTitleRegex.matchEntire(mTitle)
     if (mTitleMatch != null) {
         mTitle = mTitleMatch.groupValues[1].trim()

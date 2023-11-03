@@ -1,12 +1,14 @@
 package nz.badradio.badradio.view
 
+import android.Manifest
 import android.content.Intent
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import nz.badradio.badradio.R
 import nz.badradio.badradio.databinding.ActivityPlayerBinding
 import nz.badradio.badradio.viewmodel.RadioVM
@@ -15,6 +17,8 @@ import nz.badradio.badradio.viewmodel.RadioVMState
 
 class PlayerActivity : AppCompatActivity(), RadioVMObserver {
     private lateinit var binding: ActivityPlayerBinding
+
+    private val requestNotificationPermissions = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,39 +77,33 @@ class PlayerActivity : AppCompatActivity(), RadioVMObserver {
 
     override fun onStateChange(state: RadioVMState) {
         runOnUiThread {
-            binding.imageButtonPlayPause.setImageResource(
-                if (state.displayPause) {
-                    R.drawable.ic_pause
-                } else {
-                    R.drawable.ic_play
-                }
-            )
-
-            binding.imageButtonGoLive.setImageResource(
-                if (state.displayLive) {
-                    R.drawable.ic_radio_button_checked
-                } else {
-                    R.drawable.ic_radio_button_unchecked
-                }
-            )
-
-            binding.imageButtonPlayPause.isEnabled = state.enablePlayPauseButton
-            binding.imageButtonGoLive.isEnabled = !state.displayLive
+            setButtons(state)
 
             binding.textSongName.text = state.title
             binding.textArtist.text = state.artist
-
-            updateAlbumArt(state.art)
+            binding.imgAlbumArt.setImageBitmap(state.art)
         }
     }
 
-    private fun updateAlbumArt(art: Bitmap?) {
-        var toDisplay = art
-        if (toDisplay == null) {
-            toDisplay = BitmapFactory.decodeResource(resources, R.drawable.badradio)
-        }
+    private fun setButtons(state: RadioVMState) {
+        binding.imageButtonPlayPause.setImageResource(
+            if (state.displayPause) {
+                R.drawable.ic_pause
+            } else {
+                R.drawable.ic_play
+            }
+        )
 
-        binding.imgAlbumArt.setImageBitmap(toDisplay)
+        binding.imageButtonGoLive.setImageResource(
+            if (state.displayLive) {
+                R.drawable.ic_radio_button_checked
+            } else {
+                R.drawable.ic_radio_button_unchecked
+            }
+        )
+
+        binding.imageButtonPlayPause.isEnabled = state.enablePlayPauseButton
+        binding.imageButtonGoLive.isEnabled = !state.displayLive
     }
 
     private fun openAbout() {
