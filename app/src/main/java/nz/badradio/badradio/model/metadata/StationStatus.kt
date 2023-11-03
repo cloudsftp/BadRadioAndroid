@@ -1,7 +1,7 @@
 package nz.badradio.badradio.model.metadata
 
-import nz.badradio.badradio.utilities.moshi
 import com.squareup.moshi.JsonAdapter
+import nz.badradio.badradio.utilities.moshi
 
 data class StationStatus(
     val status: String,
