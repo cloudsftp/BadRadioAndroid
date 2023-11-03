@@ -1,14 +1,17 @@
 package nz.badradio.badradio.model.radio
 
-import android.os.IBinder
-import android.content.*
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
+import android.os.IBinder
 import android.support.v4.media.session.MediaSessionCompat
+import nz.badradio.badradio.utilities.generateFunExecuteIf
+import nz.badradio.badradio.utilities.generateFunExecuteWhen
 import nz.badradio.badradio.view.notification.MediaNotificationManager
 import nz.badradio.badradio.viewmodel.RadioVM
 import nz.badradio.badradio.viewmodel.UserInputVMObserver
-import nz.badradio.badradio.utilities.generateFunExecuteIf
-import nz.badradio.badradio.utilities.generateFunExecuteWhen
 import java.util.concurrent.atomic.AtomicBoolean
 
 object RadioManager: UserInputVMObserver {

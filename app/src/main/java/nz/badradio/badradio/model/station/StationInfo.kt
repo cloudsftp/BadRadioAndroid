@@ -1,16 +1,15 @@
 package nz.badradio.badradio.model.station
 
 import android.util.Log
+import com.squareup.moshi.JsonAdapter
 import nz.badradio.badradio.Config
 import nz.badradio.badradio.utilities.client
 import nz.badradio.badradio.utilities.moshi
-import com.squareup.moshi.JsonAdapter
 import okhttp3.Call
 import okhttp3.Callback
 import okhttp3.Request
 import okhttp3.Response
 import java.io.IOException
-import kotlin.jvm.Throws
 
 fun getStationInfo(callback: (StationInfo) -> Unit) {
     val stationInfoListRequest = Request.Builder().url(Config.STATION_DATA_URL).build()

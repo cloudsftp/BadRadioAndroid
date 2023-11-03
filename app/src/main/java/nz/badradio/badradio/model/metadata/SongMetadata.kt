@@ -1,7 +1,5 @@
 package nz.badradio.badradio.model.metadata
 
-import java.io.IOException
-
 class SongMetadata(
     var title: String,
     var artist: String
