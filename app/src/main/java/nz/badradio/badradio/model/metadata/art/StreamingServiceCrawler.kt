@@ -2,10 +2,9 @@ package nz.badradio.badradio.model.metadata.art
 
 import android.graphics.Bitmap
 import android.util.Log
-import nz.badradio.badradio.model.metadata.SongMetadata
 import com.squareup.picasso.Picasso
+import nz.badradio.badradio.model.metadata.SongMetadata
 import java.io.IOException
-import kotlin.Exception
 
 class StreamingServiceCrawler : IStreamingServiceDataObserver {
     private val crawlers = listOf(

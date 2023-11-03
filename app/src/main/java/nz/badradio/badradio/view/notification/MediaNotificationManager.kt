@@ -1,22 +1,19 @@
 package nz.badradio.badradio.view.notification
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Build
 import android.support.v4.media.session.MediaSessionCompat
-import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationChannelCompat
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media.app.NotificationCompat.MediaStyle
 import nz.badradio.badradio.R
-import nz.badradio.badradio.view.PlayerActivity
 import nz.badradio.badradio.model.radio.RadioService
+import nz.badradio.badradio.view.PlayerActivity
 import nz.badradio.badradio.viewmodel.RadioVMObserver
 import nz.badradio.badradio.viewmodel.RadioVMState
 

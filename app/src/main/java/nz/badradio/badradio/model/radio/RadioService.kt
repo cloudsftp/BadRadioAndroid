@@ -3,23 +3,27 @@ package nz.badradio.badradio.model.radio
 import android.app.Service
 import android.content.Intent
 import android.net.Uri
-import android.os.*
-import com.google.android.exoplayer2.C
-import com.google.android.exoplayer2.DefaultLoadControl
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
-import nz.badradio.badradio.utilities.client
-import com.google.android.exoplayer2.audio.AudioAttributes
-import com.google.android.exoplayer2.ext.okhttp.OkHttpDataSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import nz.badradio.badradio.viewmodel.RadioVM
-import nz.badradio.badradio.viewmodel.UserInputVMObserver
+import android.os.Binder
+import android.os.Handler
+import android.os.IBinder
+import android.os.Looper
+import androidx.media3.common.AudioAttributes
+import androidx.media3.common.C
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.okhttp.OkHttpDataSource
+import androidx.media3.exoplayer.DefaultLoadControl
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.exoplayer.source.ProgressiveMediaSource
 import nz.badradio.badradio.model.station.StationInfo
 import nz.badradio.badradio.model.station.getStationInfo
+import nz.badradio.badradio.utilities.client
 import nz.badradio.badradio.utilities.generateFunExecuteWhen
+import nz.badradio.badradio.viewmodel.RadioVM
+import nz.badradio.badradio.viewmodel.UserInputVMObserver
 
-class RadioService : Service(), UserInputVMObserver {
+@UnstableApi class RadioService : Service(), UserInputVMObserver {
     private lateinit var mediaPlayer: ExoPlayer
 
     private val audioAttributes = AudioAttributes.Builder().apply {
