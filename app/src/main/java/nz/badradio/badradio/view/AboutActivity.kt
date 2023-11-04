@@ -9,9 +9,6 @@ import nz.badradio.badradio.R
 import nz.badradio.badradio.databinding.ActivityAboutBinding
 
 class AboutActivity : AppCompatActivity() {
-    private val radioWebsite    = "https://badradio.nz"
-    private val badradioDiscord = "https://discord.gg/sY87mUcyYD"
-
     private lateinit var binding: ActivityAboutBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -27,13 +24,18 @@ class AboutActivity : AppCompatActivity() {
             }
         }
 
-        binding.websiteButton.setOnClickListener { openWebsite(radioWebsite) }
-        binding.discordButton.setOnClickListener { openWebsite(badradioDiscord) }
+        binding.websiteButton.setOnClickListener {
+            openWebsite(resources.getString(R.string.website_url))
+        }
+        binding.discordButton.setOnClickListener {
+            openWebsite(resources.getString(R.string.discord_url))
+        }
 
         binding.appVersionTextView.text = String.format(
             resources.getString(R.string.version_name),
             BuildConfig.VERSION_NAME
         )
+
         binding.shareButton.setOnClickListener { shareApp() }
         binding.betaButton.setOnClickListener {
             openWebsite(String.format(

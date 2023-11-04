@@ -10,7 +10,9 @@
     <string name="paul">Paul Grey</string>
 
     <string name="website">website</string>
+    <string name="website_url">https://badradio.nz</string>
     <string name="discord">discord</string>
+    <string name="discord_url">https://discord.gg/sY87mUcyYD</string>
 
     <string name="version_name">Android App Version: %1$s</string>
     <string name="share">share</string>
