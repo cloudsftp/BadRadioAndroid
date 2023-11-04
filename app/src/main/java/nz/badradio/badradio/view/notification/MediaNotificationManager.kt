@@ -5,6 +5,7 @@ import android.app.PendingIntent
 import android.app.TaskStackBuilder
 import android.content.Context
 import android.content.Intent
+import android.content.pm.ServiceInfo
 import android.os.Build
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.NotificationChannelCompat
@@ -91,7 +92,14 @@ class MediaNotificationManager(
         }
 
         val notification = notificationBuilder.build()
-        service.startForeground(notificationId, notification)
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+            service.startForeground(notificationId, notification)
+        } else {
+            service.startForeground(
+                notificationId, notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
+            )
+        }
     }
 
     private fun addActions(state: RadioVMState) {
