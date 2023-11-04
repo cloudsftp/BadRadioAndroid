@@ -18,6 +18,8 @@
     <string name="join_beta">join beta</string>
     <string name="beta_link">https://play.google.com/apps/testing/%1$s</string>
     <string name="beta_feedback">Please send bugs and improvements on discord</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_url">https://badradio.nz/privacy-policy/</string>
 
     <string name="restart_service">Restart Service</string>
     <string name="stop_service">Stop Service</string>

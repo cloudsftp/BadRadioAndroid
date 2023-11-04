@@ -42,6 +42,9 @@ class AboutActivity : AppCompatActivity() {
             ))
         }
 
+        binding.privacyButton.setOnClickListener {
+            openWebsite(resources.getString(R.string.privacy_policy_url))
+        }
     }
 
     private fun openWebsite(url: String) {
