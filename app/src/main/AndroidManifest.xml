@@ -5,8 +5,9 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+        android:minSdkVersion="34" />
     <!-- required permission for radio streaming and visualizer -->
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
     <!-- requires permissions for notification -->
@@ -27,10 +28,12 @@
         </activity>
         <activity android:name="nz.badradio.badradio.view.AboutActivity" />
 
-        <service android:name="nz.badradio.badradio.model.radio.RadioService"/>
+        <service android:name="nz.badradio.badradio.model.radio.RadioService"
+            android:foregroundServiceType="mediaPlayback" />
 
         <service android:name=".model.radio.MediaBrowser"
-            android:exported="true">
+            android:foregroundServiceType="mediaPlayback"
+            android:exported="false">
             <intent-filter>
                 <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
