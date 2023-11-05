@@ -6,6 +6,9 @@ on:
       - develop
     tags:
       - 'v*'
+  shedule:
+    cron:
+      - '0 5 * * 3'
 
 jobs:
   build:
