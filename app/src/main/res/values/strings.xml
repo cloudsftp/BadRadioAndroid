@@ -10,7 +10,9 @@
     <string name="paul">Paul Grey</string>
 
     <string name="website">website</string>
+    <string name="website_url">https://badradio.nz</string>
     <string name="discord">discord</string>
+    <string name="discord_url">https://discord.gg/sY87mUcyYD</string>
 
     <string name="version_name">Android App Version: %1$s</string>
     <string name="share">share</string>
@@ -18,6 +20,8 @@
     <string name="join_beta">join beta</string>
     <string name="beta_link">https://play.google.com/apps/testing/%1$s</string>
     <string name="beta_feedback">Please send bugs and improvements on discord</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_url">https://badradio.nz/privacy-policy/</string>
 
     <string name="restart_service">Restart Service</string>
     <string name="stop_service">Stop Service</string>
