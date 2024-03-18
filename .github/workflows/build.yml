@@ -3,7 +3,7 @@ name: Build Develop
 on:
   push:
     branches:
-      - develop
+      - latest
     tags:
       - 'v*'
 

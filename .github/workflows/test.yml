@@ -3,7 +3,7 @@ name: Unit Tests Develop
 on:
   push:
     branches:
-      - develop
+      - latest
     tags:
       - 'v*'
   schedule:
