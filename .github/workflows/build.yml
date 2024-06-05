@@ -1,11 +1,11 @@
-name: Build Develop
+name: Build
 
 on:
   push:
     branches:
       - latest
     tags:
-      - 'v*'
+      - "v*"
 
 jobs:
   build:
@@ -24,11 +24,11 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: ${{ runner.os }}-build-${{ hashFiles('gradlew') }}
-        
+
       - uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
-          java-version: '17'
+          distribution: "adopt"
+          java-version: "17"
 
       - name: Load keystore
         run: echo "${{ secrets.KEYSTORE }}" | base64 -d > app/keystore.jks

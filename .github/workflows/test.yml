@@ -1,13 +1,13 @@
-name: Unit Tests Develop
+name: Unit Tests
 
 on:
   push:
     branches:
       - latest
     tags:
-      - 'v*'
+      - "v*"
   schedule:
-    - cron: '0 5 * * 3'
+    - cron: "0 5 * * 3"
 
 jobs:
   build:
@@ -23,10 +23,10 @@ jobs:
             ~/.gradle/caches
             ~/.gradle/wrapper
           key: ${{ runner.os }}-test-${{ hashFiles('gradlew') }}
-        
+
       - uses: actions/setup-java@v3
         with:
-          distribution: 'adopt'
-          java-version: '17'
-          
+          distribution: "adopt"
+          java-version: "17"
+
       - run: ./gradlew test
