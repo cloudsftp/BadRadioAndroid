@@ -3,13 +3,17 @@ package nz.badradio.badradio.model.metadata.art
 import android.graphics.Bitmap
 import android.util.Log
 import com.squareup.picasso.Picasso
+import nz.badradio.badradio.R
 import nz.badradio.badradio.model.metadata.SongMetadata
 import java.io.IOException
 
 class StreamingServiceCrawler : IStreamingServiceDataObserver {
+
+    private val bandcampBaseUrl = "https://bandcamp.com/"
+
     private val crawlers = listOf(
         // ITunesCrawler, TODO: re-enable
-        BandcampCrawler,
+        BandcampCrawler(bandcampBaseUrl),
         SoundcloudCrawler,
     )
 

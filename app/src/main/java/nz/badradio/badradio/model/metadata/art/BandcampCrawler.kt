@@ -1,5 +1,6 @@
 package nz.badradio.badradio.model.metadata.art
 
+import android.util.Log
 import nz.badradio.badradio.model.metadata.SongMetadata
 import nz.badradio.badradio.utilities.buildSearchUrl
 import nz.badradio.badradio.utilities.executeRequestAndCheckResponse
@@ -7,11 +8,9 @@ import nz.badradio.badradio.utilities.firstMatch
 import okhttp3.Request
 import java.io.IOException
 
-object BandcampCrawler : IStreamingServiceCrawler {
+class BandcampCrawler(val baseUrl: String) : IStreamingServiceCrawler {
 
     // search query: https://bandcamp.com/search?q=come%20and%20see%20cassyb&item_type=t
-
-    private const val urlBase = "https://bandcamp.com/search"
 
     @Throws(IOException::class)
     override fun search(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata) {
@@ -33,7 +32,7 @@ object BandcampCrawler : IStreamingServiceCrawler {
     @Throws(IOException::class)
     fun getSongUrl(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata): String {
         val searchUrl = buildSearchUrl(
-            urlBase,
+            "${baseUrl}/search",
             "q",
             songMetadata,
             mapOf("item_type" to "t"),

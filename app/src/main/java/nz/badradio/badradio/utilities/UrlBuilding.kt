@@ -4,7 +4,7 @@ import nz.badradio.badradio.model.metadata.SongMetadata
 import java.net.URLEncoder
 
 fun buildSearchUrl(
-    urlBase: String,
+    url: String,
     searchTermParameterName: String,
     songMetadata: SongMetadata,
     additionalParameters: Map<String, String>? = null,
@@ -21,7 +21,7 @@ fun buildSearchUrl(
         )
     }
 
-    return "$urlBase?$searchTermParameterName=$searchTerm$additionalParametersStringBuilder"
+    return "$url?$searchTermParameterName=$searchTerm$additionalParametersStringBuilder"
 }
 
 private fun encode(value: String): String = URLEncoder.encode(value, "UTF-8")
