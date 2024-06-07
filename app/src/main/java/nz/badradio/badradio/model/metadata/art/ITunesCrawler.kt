@@ -8,16 +8,17 @@ import nz.badradio.badradio.utilities.moshi
 import okhttp3.Request
 import java.io.IOException
 
-object ITunesCrawler : IStreamingServiceCrawler {
+class ITunesCrawler(val baseUrl: String) : IStreamingServiceCrawler {
+    companion object {
+        val canon = ITunesCrawler("https://itunes.apple.com/search")
+    }
 
     // search query: https://itunes.apple.com/search?term=come%20and%20see%20cassyb&media=music&limit=1
-
-    private const val urlBase = "https://itunes.apple.com/search"
 
     @Throws(IOException::class, IndexOutOfBoundsException::class)
     override fun search(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata) {
         val searchUrl = buildSearchUrl(
-            urlBase,
+            baseUrl,
             "term",
             songMetadata,
             mapOf(

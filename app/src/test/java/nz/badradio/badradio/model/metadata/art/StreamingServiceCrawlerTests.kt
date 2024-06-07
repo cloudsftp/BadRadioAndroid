@@ -20,4 +20,7 @@ class StreamingServiceCrawlerTests {
         assert(runSongMatchesMetadata("thissong", "thissong feat. collaborator"))
     }
 
+    companion object {
+        val testDataDirectory = "src/test/res"
+    }
 }

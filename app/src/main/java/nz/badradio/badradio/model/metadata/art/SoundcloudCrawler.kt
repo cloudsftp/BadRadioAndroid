@@ -7,12 +7,14 @@ import nz.badradio.badradio.utilities.firstMatch
 import okhttp3.Request
 import java.io.IOException
 
-object SoundcloudCrawler : IStreamingServiceCrawler {
+class SoundcloudCrawler(val baseUrl: String) : IStreamingServiceCrawler {
 
     // search query: https://soundcloud.com/search/sounds?q=come%20and%20see%20cassyb
 
-    private const val urlBase = "https://soundcloud.com"
-    private const val searchEndpoint = "search/sounds"
+    companion object {
+        val canon = SoundcloudCrawler("https://soundcloud.com")
+        val searchEndpoint = "search/sounds"
+    }
 
     @Throws(IOException::class)
     override fun search(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata) {
@@ -28,7 +30,7 @@ object SoundcloudCrawler : IStreamingServiceCrawler {
     @Throws(IOException::class)
     fun getSongUrl(parent: IStreamingServiceDataObserver, songMetadata: SongMetadata): String {
         val searchURL = buildSearchUrl(
-            "$urlBase/$searchEndpoint",
+            "$baseUrl/$searchEndpoint",
             "q",
             songMetadata,
         )
@@ -52,7 +54,7 @@ object SoundcloudCrawler : IStreamingServiceCrawler {
         }
 
         val songUrlSuffix = match.groupValues[1]
-        return "$urlBase$songUrlSuffix"
+        return "$baseUrl$songUrlSuffix"
     }
 
     @Throws(IOException::class)

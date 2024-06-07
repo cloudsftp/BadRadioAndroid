@@ -1,8 +1,7 @@
-package nz.badradio.badradio.model.metadata.art.bandcamp
+package nz.badradio.badradio.model.metadata.art
 
 import nz.badradio.badradio.model.metadata.SongMetadata
-import nz.badradio.badradio.model.metadata.art.BandcampCrawler
-import nz.badradio.badradio.model.metadata.art.IStreamingServiceDataObserver
+import nz.badradio.badradio.model.metadata.art.StreamingServiceCrawlerTests.Companion.testDataDirectory
 import okhttp3.HttpUrl
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
@@ -29,19 +28,17 @@ class BandcampCrawlerTests {
         mockWebServer.shutdown()
     }
 
-    val responsesFilesDirectory = "src/test/java/nz/badradio/badradio/model/metadata/art/bandcamp"
-
     @Test
     fun testGetImageUrl() {
         var mockSearchResponseContent = File(
-            "${responsesFilesDirectory}/bandcamp_search_response.html",
+            "${testDataDirectory}/bandcamp_search_response.html",
         ).readText(Charsets.UTF_8)
         mockSearchResponseContent = mockSearchResponseContent
             .replace("https://cassyb.bandcamp.com", baseUrl.toString())
         val mockSearchResponse = MockResponse().setBody(mockSearchResponseContent)
         mockWebServer.enqueue(mockSearchResponse)
 
-        val mockSongPageResponseContent = File("${responsesFilesDirectory}/bandcamp_song_page.html")
+        val mockSongPageResponseContent = File("${testDataDirectory}/bandcamp_song_page.html")
             .readText(Charsets.UTF_8)
         val mockSongPageResponse = MockResponse().setBody(mockSongPageResponseContent)
         mockWebServer.enqueue(mockSongPageResponse)
@@ -64,7 +61,7 @@ class BandcampCrawlerTests {
     @Test
     fun testGetSongUrl() {
         val mockSearchResponseContent = File(
-            "${responsesFilesDirectory}/bandcamp_search_response.html",
+            "${testDataDirectory}/bandcamp_search_response.html",
         ).readText(Charsets.UTF_8)
         val mockSearchResponse = MockResponse().setBody(mockSearchResponseContent)
         mockWebServer.enqueue(mockSearchResponse)

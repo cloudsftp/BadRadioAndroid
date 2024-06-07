@@ -8,6 +8,9 @@ import okhttp3.Request
 import java.io.IOException
 
 class BandcampCrawler(val baseUrl: String) : IStreamingServiceCrawler {
+    companion object {
+        val canon = BandcampCrawler("https://bandcamp.com/")
+    }
 
     // search query: https://bandcamp.com/search?q=come%20and%20see%20cassyb&item_type=t
 

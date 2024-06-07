@@ -8,13 +8,10 @@ import nz.badradio.badradio.model.metadata.SongMetadata
 import java.io.IOException
 
 class StreamingServiceCrawler : IStreamingServiceDataObserver {
-
-    private val bandcampBaseUrl = "https://bandcamp.com/"
-
     private val crawlers = listOf(
         // ITunesCrawler, TODO: re-enable
-        BandcampCrawler(bandcampBaseUrl),
-        SoundcloudCrawler,
+        BandcampCrawler.canon,
+        SoundcloudCrawler.canon,
     )
 
     private val albumArtUrls = mutableListOf<String>()
