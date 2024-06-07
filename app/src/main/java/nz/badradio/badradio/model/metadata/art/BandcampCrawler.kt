@@ -1,6 +1,5 @@
 package nz.badradio.badradio.model.metadata.art
 
-import android.util.Log
 import nz.badradio.badradio.model.metadata.SongMetadata
 import nz.badradio.badradio.utilities.buildSearchUrl
 import nz.badradio.badradio.utilities.executeRequestAndCheckResponse

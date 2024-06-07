@@ -33,13 +33,14 @@ class BandcampCrawlerTests {
 
     @Test
     fun testGetImageUrl() {
-        val mockSearchResponseContent = File("${responsesFilesDirectory}/bandcamp_search_response.html")
-            .readText(Charsets.UTF_8)
+        var mockSearchResponseContent = File(
+            "${responsesFilesDirectory}/bandcamp_search_response.html",
+        ).readText(Charsets.UTF_8)
+        mockSearchResponseContent = mockSearchResponseContent
+            .replace("https://cassyb.bandcamp.com", baseUrl.toString())
         val mockSearchResponse = MockResponse().setBody(mockSearchResponseContent)
         mockWebServer.enqueue(mockSearchResponse)
 
-        // TODO: second call not working???
-        // base url different: cassyb.bandcamp.com
         val mockSongPageResponseContent = File("${responsesFilesDirectory}/bandcamp_song_page.html")
             .readText(Charsets.UTF_8)
         val mockSongPageResponse = MockResponse().setBody(mockSongPageResponseContent)
@@ -62,6 +63,12 @@ class BandcampCrawlerTests {
 
     @Test
     fun testGetSongUrl() {
+        val mockSearchResponseContent = File(
+            "${responsesFilesDirectory}/bandcamp_search_response.html",
+        ).readText(Charsets.UTF_8)
+        val mockSearchResponse = MockResponse().setBody(mockSearchResponseContent)
+        mockWebServer.enqueue(mockSearchResponse)
+
         val songUrl = BandcampCrawler(baseUrl.toString()).getSongUrl(
             object : IStreamingServiceDataObserver {
                 override fun notifyOfAlbumArtUrl(url: String) { }
