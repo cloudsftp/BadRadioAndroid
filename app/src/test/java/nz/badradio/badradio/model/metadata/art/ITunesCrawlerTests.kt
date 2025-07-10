@@ -36,6 +36,7 @@ class ITunesCrawlerTests {
 
         var imageUrl = ""
         ITunesCrawler(baseUrl.toString()).search(
+            
             object : IStreamingServiceDataObserver {
                 override fun notifyOfAlbumArtUrl(url: String) { imageUrl = url }
                 override fun notifyOfSoundcloudUrl(url: String) { }
