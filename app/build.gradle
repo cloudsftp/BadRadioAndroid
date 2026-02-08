@@ -13,8 +13,8 @@ android {
         minSdkVersion 23
         compileSdk 36
         targetSdkVersion 36
-        versionCode 323
-        versionName "3.0.7"
+        versionCode 324
+        versionName "3.1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
     signingConfigs {
