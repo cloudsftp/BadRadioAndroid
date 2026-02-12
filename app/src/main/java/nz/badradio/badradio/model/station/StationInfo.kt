@@ -26,13 +26,8 @@ fun getStationInfo(callback: (StationInfo) -> Unit) {
 }
 
 private fun handleStationInfoResponse(response:Response, callback: (StationInfo) -> Unit) {
-    if (response.body == null) {
-        Log.w(tag, "Station info response has no body")
-        fallbackStationInfo(callback)
-    }
-
     try {
-        processStationInfoResponse(response.body!!.string(), callback)
+        processStationInfoResponse(response.body.string(), callback)
     } catch (e: Exception) {
         Log.w(tag, "Exception while parsing station info response", e)
         fallbackStationInfo(callback)

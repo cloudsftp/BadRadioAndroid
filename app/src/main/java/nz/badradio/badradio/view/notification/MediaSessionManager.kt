@@ -64,7 +64,7 @@ class MediaSessionManager(context: Context, state: RadioVMState) : RadioVMObserv
             || state.actualTitle == defaultTitle
         ) {
             metadataBuilder.apply {
-                putString( androidx.media2.common.MediaMetadata.METADATA_KEY_TITLE, state.actualTitle)
+                putString(androidx.media2.common.MediaMetadata.METADATA_KEY_TITLE, state.actualTitle)
                 putString(androidx.media2.common.MediaMetadata.METADATA_KEY_ARTIST, state.artist)
 
                 putBitmap( androidx.media2.common.MediaMetadata.METADATA_KEY_ART, state.notificationArt)

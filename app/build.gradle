@@ -1,7 +1,6 @@
 plugins {
     id 'com.android.application'
-    id 'kotlin-android'
-    id 'com.google.devtools.ksp' version '2.2.0-2.0.2'
+    id 'com.google.devtools.ksp' version '2.3.2'
 }
 
 android {
@@ -34,6 +33,7 @@ android {
     }
     buildFeatures {
         viewBinding true
+        buildConfig true
     }
     namespace 'nz.badradio.badradio'
 

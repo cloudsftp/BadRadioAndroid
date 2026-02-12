@@ -27,12 +27,6 @@ fun executeRequestAndCheckResponse(request: Request, name: String): Response {
         throw e
     }
 
-    if (response.body == null) {
-        val e = IOException("$name had no body")
-        Log.e(tag, "See exception", e)
-        throw e
-    }
-
     return response
 }
 
